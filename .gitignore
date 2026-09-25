@@ -1,0 +1,6 @@
+.DS_Store
+*.bak
+*.premigrate.bak
+node_modules/
+.vercel/
+.fuse_hidden*

@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our District | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+  .page-header{padding-top:68px;background:var(--navy);position:relative;overflow:hidden;}
+  .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,150,42,0.12) 0%,transparent 60%);}
+  .page-header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);}
+  .page-header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 1.5rem 3.5rem;}
+  .page-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+  .page-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.25rem);color:var(--white);line-height:1.1;margin-bottom:1rem;}
+  .page-title em{font-style:italic;color:var(--gold-lt);}
+  .page-desc{font-size:1.0625rem;color:rgba(255,255,255,0.6);line-height:1.75;max-width:55ch;}
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);transition:color var(--transition);}
+  .breadcrumb a:hover{color:var(--navy);}
+  .breadcrumb-sep{opacity:0.4;}
+  .ltg-card { cursor: pointer !important; }
+  .ltg-card .board-card-front {
+    border-top: 2.5px solid var(--gold);
+    position: relative;
+  }
+  .ltg-nav-hint {
+    position: absolute;
+    bottom: 0.6rem; right: 0.7rem;
+    width: 20px; height: 20px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition), transform var(--transition);
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+  .ltg-nav-hint svg { width: 10px; height: 10px; color: var(--navy); }
+  .ltg-card:hover .ltg-nav-hint { opacity: 1; transform: translateX(2px); }
+  .board-card.has-photo.ltg-card:hover .board-card-inner { transform: rotateY(180deg); }
+  .section-tabs{background:var(--white);border-bottom:2px solid var(--border);position:sticky;top:68px;z-index:200;}
+  .section-tabs-inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;}
+  .section-tab{padding:1rem 1.5rem;font-size:0.875rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:color var(--transition),border-color var(--transition);}
+  .section-tab:hover{color:var(--navy);}
+  .section-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+  .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;color:var(--gold);margin-bottom:0.75rem;}
+  .section-title{font-family:var(--ff-display);font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1;color:var(--navy);margin-bottom:1rem;}
+  .section-title em{font-style:italic;color:var(--blue);}
+  .section-desc{font-size:1.0625rem;color:var(--muted);line-height:1.75;max-width:52ch;}
+  .section-header{margin-bottom:3rem;}
+  .board-intro{background:var(--cream);padding:2rem 1.5rem;border-radius:var(--radius);margin-bottom:2.5rem;}
+  .board-intro p{font-size:1rem;color:var(--muted);line-height:1.7;max-width:65ch;}
+  .board-group-title{font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);margin:2.5rem 0 1.5rem;padding-bottom:0.5rem;border-bottom:2px solid var(--gold);}
+  .board-photo-strip{display:flex;gap:1.25rem;margin-bottom:2.5rem;width:100%;}
+  .board-photo-main{flex:3;border-radius:var(--radius);overflow:visible;border:1px solid var(--border);box-shadow:var(--shadow-card);background:var(--cream);}
+  .board-photo-mascot{flex:1;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-card);background:var(--cream);}
+  .board-photo-main img,.board-photo-mascot img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
+  @media(max-width:600px){.board-photo-strip{flex-direction:column;}.board-photo-mascot{flex:unset;height:220px;}}
+  .board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem;margin-bottom:2rem;align-items:stretch;}
+  .board-card {
+    perspective: 900px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    cursor: default;
+  }
+  .board-card-inner {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+    border-radius: var(--radius);
+  }
+  .board-card.has-photo:hover .board-card-inner {
+    transform: rotateY(180deg);
+  }
+  .board-card:not(.has-photo):hover .board-card-front {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+  .board-card-front {
+    position: relative;
+    width: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .board-card.has-photo .board-card-front {
+    border-top: 2.5px solid var(--gold);
+  }
+  .board-card-back {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: rotateY(180deg);
+    overflow: hidden;
+    background: var(--navy);
+    box-shadow: var(--shadow-hover);
+  }
+  .board-card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+  .board-card-back-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(10,22,40,0.9) 0%, transparent 100%);
+    padding: 1.25rem 1rem 0.875rem;
+  }
+  .board-card-back-name {
+    font-family: var(--ff-display);
+    font-size: 0.9375rem;
+    color: var(--white);
+    line-height: 1.2;
+  }
+  .board-card-back-role {
+    font-size: 0.7rem;
+    color: var(--gold-lt);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 600;
+    margin-top: 0.2rem;
+  }
+  .flip-hint {
+    position: absolute;
+    top: 0.6rem; right: 0.7rem;
+    width: 18px; height: 18px;
+    opacity: 0.3;
+    color: var(--gold);
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+  .board-avatar{width:72px;height:72px;border-radius:50%;background:var(--navy);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-family:var(--ff-display);font-size:1.5rem;color:var(--gold);}
+  .board-name{font-weight:600;font-size:0.9375rem;color:var(--navy);margin-bottom:0.25rem;}
+  .board-role{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:500;}
+  .board-email{font-size:0.75rem;color:var(--blue);margin-top:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
+  .map-section-wrap{background:var(--cream);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .map-layout{display:flex;height:700px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.09);}
+  .map-sidebar{width:300px;flex-shrink:0;background:var(--white);display:flex;flex-direction:column;border-right:1px solid var(--border);}
+  .sidebar-header{padding:1rem 1.25rem 0.875rem;background:var(--navy);}
+  .sidebar-title{font-family:var(--ff-display);font-size:1rem;color:var(--white);margin-bottom:0.625rem;}
+  .sidebar-search-wrap{position:relative;}
+  .sidebar-search{width:100%;padding:0.575rem 0.75rem 0.575rem 2.2rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:0.8125rem;color:var(--white);outline:none;transition:border-color 0.2s;box-sizing:border-box;font-family:inherit;}
+  .sidebar-search::placeholder{color:rgba(255,255,255,0.4);}
+  .sidebar-search:focus{border-color:var(--gold);}
+  .search-ico{position:absolute;left:0.65rem;top:50%;transform:translateY(-50%);width:13px;height:13px;color:rgba(255,255,255,0.45);pointer-events:none;}
+  .sidebar-list{flex:1;overflow-y:auto;padding:0.375rem 0;}
+  .sidebar-list::-webkit-scrollbar{width:4px;}
+  .sidebar-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .sdiv-label{padding:0.45rem 1.25rem 0.2rem;font-size:0.61rem;text-transform:uppercase;letter-spacing:0.12em;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:0.45rem;position:sticky;top:0;background:var(--white);z-index:1;}
+  .sdiv-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+  .sitem{padding:0.38rem 1.25rem;cursor:pointer;transition:background 0.13s;}
+  .sitem:hover{background:var(--cream);}
+  .sitem.active{background:rgba(30,80,160,0.07);border-left:3px solid var(--blue);padding-left:calc(1.25rem - 3px);}
+  .sitem-name{font-size:0.795rem;font-weight:500;color:var(--navy);line-height:1.3;}
+  .sidebar-detail{border-top:1px solid rgba(255,255,255,0.1);background:var(--navy);padding:0.9rem 1.25rem;display:none;}
+  .sidebar-detail.on{display:block;}
+  .sd-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;font-weight:700;color:var(--gold-lt);margin-bottom:0.25rem;}
+  .sd-name{font-family:var(--ff-display);font-size:0.95rem;color:var(--white);margin-bottom:0.15rem;line-height:1.25;}
+  .sd-div{font-size:0.71rem;color:rgba(255,255,255,0.5);margin-bottom:0.25rem;}
+  .sd-addr{font-size:0.7rem;color:rgba(255,255,255,0.42);line-height:1.45;}
+  .sd-close{font-size:0.67rem;color:var(--gold-lt);cursor:pointer;text-decoration:underline;margin-top:0.35rem;display:inline-block;}
+  #districtMap{flex:1;min-width:0;}
+  .leaflet-popup-content-wrapper{border-radius:8px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.12);}
+  .leaflet-popup-content{margin:11px 15px;font-family:'DM Sans',sans-serif;}
+  .popup-name{font-weight:600;font-size:0.875rem;color:#1a2744;margin-bottom:2px;}
+  .popup-div{font-size:0.74rem;color:#555;}
+  .popup-addr{font-size:0.69rem;color:#888;margin-top:3px;line-height:1.4;}
+  .county-tooltip{font-family:'DM Sans',sans-serif;font-size:0.8rem;padding:4px 8px;background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.1);border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+  .map-legend{background:rgba(255,255,255,0.96);border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:8px 10px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+  .map-legend-title{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#1a2744;margin-bottom:5px;}
+  .map-legend-row{display:flex;align-items:center;gap:5px;font-size:0.67rem;color:#444;margin-bottom:2px;}
+  .map-legend-sw{width:11px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,0.12);}
+  .bylaws-card{background:var(--navy);border-radius:var(--radius);padding:3rem;color:var(--white);display:flex;gap:3rem;align-items:center;}
+  .bylaws-text h3{font-family:var(--ff-display);font-size:1.625rem;color:var(--white);margin-bottom:1rem;}
+  .bylaws-text p{font-size:0.9375rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:1.5rem;}
+  .bylaws-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.9375rem;transition:all var(--transition);}
+  .bylaws-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,150,42,0.5);}
+  .bylaws-icon{font-size:5rem;flex-shrink:0;opacity:0.3;}
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1200px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+  .section-divider{border:none;border-top:1px solid var(--border);margin:0;}
+  @media(max-width:1024px){.bylaws-card{flex-direction:column;gap:1.5rem;}.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}.map-layout{height:600px;}.map-sidebar{width:255px;}}
+  @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.board-grid{grid-template-columns:repeat(2,1fr);}.section-tab{padding:0.75rem 1rem;font-size:0.8rem;}.footer-top{grid-template-columns:1fr;}.map-layout{flex-direction:column;height:auto;}.map-sidebar{width:100%;height:280px;border-right:none;border-bottom:1px solid var(--border);}}
+
+  /* ══════════════════════════════════════════
+     BOARD PHOTO INTERACTIVE OVERLAY
+  ══════════════════════════════════════════ */
+  .board-photo-main {
+    flex: 3;
+    border-radius: var(--radius);
+    overflow: visible; /* let label boxes escape the photo boundary */
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    background: var(--cream);
+  }
+  .bpo-wrap {
+    position: relative;
+    display: block;
+    line-height: 0;
+    border-radius: var(--radius);
+    overflow: visible;
+  }
+  .bpo-wrap > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: var(--radius);
+  }
+  /* Hover hint badge */
+  .bpo-hint {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(10,22,40,0.82);
+    border: 1px solid rgba(200,150,42,0.45);
+    border-radius: 100px;
+    padding: 0.35rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(200,150,42,0.9);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .bpo-hint svg { width: 12px; height: 12px; flex-shrink: 0; }
+  .bpo-wrap:hover .bpo-hint { opacity: 0; }
+  /* Hit zone divs (injected by JS) */
+  .bpo-hit-div {
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: all;
+    background: transparent;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+  }
+  /* Label box */
+  .bpo-label-div {
+    position: absolute;
+    background: #0a1628;
+    border: 2px solid #C8962A;
+    border-radius: 10px;
+    padding: 10px 16px 8px;
+    pointer-events: none;
+    z-index: 20;
+    white-space: nowrap;
+    box-shadow:
+      0 0 12px 3px rgba(200,150,42,0.55),
+      0 0 24px 6px rgba(200,150,42,0.25);
+    transform: translate(-50%, 0);
+    transition: opacity 0.15s ease;
+  }
+  .bpo-label-div .bpo-label-name {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1rem;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+  .bpo-label-div .bpo-label-role {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem;
+    color: #C8962A;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text"><span class="nav-logo-name">MO-ARK District</span><span class="nav-logo-sub">Key Club International</span></div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="about.html">About MO-ARK</a><a href="about.html#history">Our History</a><a href="about.html#mission">Mission &amp; Values</a><div class="nav-dropdown-divider"></div><a href="contact.html">Contact Us</a></div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link active">Our District<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="our-district.html#board">District Board</a><a href="our-district.html#clubs">Club Directory</a><a href="our-district.html#bylaws">District Bylaws</a></div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="dlc.html">DLC 2027</a><a href="dlc.html#calendar">Event Calendar</a><a href="resources.html#forms">DLC Forms</a></div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div><a href="about.html">About MO-ARK</a><a href="about.html#history">Our History</a><a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div><a href="our-district.html#board">District Board</a><a href="our-district.html#clubs">Club Directory</a><a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div><a href="newsletters.html">Newsletters</a><a href="resources.html">Resources</a><a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div><a href="contact.html">Contact Us</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-bg"></div><div class="page-header-grid"></div>
+  <div class="page-header-inner">
+    <div class="page-eyebrow">The Missouri-Arkansas District</div>
+    <h1 class="page-title">Our <em>District</em></h1>
+    <p class="page-desc">Find clubs in our district, meet your board members, and read the District Bylaws.</p>
+  </div>
+</div>
+
+<div class="breadcrumb"><div class="breadcrumb-inner"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><span>Our District</span></div></div>
+
+<div class="section-tabs">
+  <div class="section-tabs-inner">
+    <a href="#board" class="section-tab active">District Board</a>
+    <a href="#clubs" class="section-tab">Club Directory</a>
+    <a href="#bylaws" class="section-tab">District Bylaws</a>
+  </div>
+</div>
+
+<div id="board" class="section">
+  <div class="section-header fade-in">
+    <div class="section-label">Your Leaders</div>
+    <h2 class="section-title">Our District <em>Board</em></h2>
+    <p class="section-desc">The Missouri-Arkansas District Board oversees all 10 divisions. Board members are elected annually at DLC and serve throughout the year.</p>
+  </div>
+  <div class="board-intro">
+    <p>The district board is responsible for overseeing all 10 divisions in the district. Board meetings are held throughout the service year where members discuss the district bylaw, work in committees, and plan the District Leadership Conference. For more information about DLC, <a href="dlc.html" style="color:var(--blue);font-weight:600;">visit the DLC page.</a></p>
+  </div>
+
+  <!-- ── BOARD PHOTO STRIP ── -->
+  <div class="board-photo-strip fade-in">
+
+    <!-- ══ INTERACTIVE GROUP PHOTO ══ -->
+    <div class="board-photo-main">
+      <div class="bpo-wrap" id="bpoWrap">
+        <img src="BOARDPIC.png" alt="District Board Photo" id="bpoImg">
+
+        <!-- Hover hint badge -->
+        <div class="bpo-hint" id="bpoHint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Hover over a person to see their name
+        </div>
+
+        <!--
+          Canvas for the neon ellipse + line drawing.
+          Sized and redrawn in JS on every hover/resize.
+        -->
+        <canvas id="bpoCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+
+        <!-- Label box (single, repositioned by JS) -->
+        <div id="bpoLabel" class="bpo-label-div" style="display:none;">
+          <div class="bpo-label-name" id="bpoLabelName"></div>
+          <div class="bpo-label-role" id="bpoLabelRole"></div>
+        </div>
+
+        <!--
+          Person data — coords in native image pixels (1448×1086).
+          JS converts to screen coords on every render/resize.
+          data-cx, data-cy = ellipse center
+          data-rx, data-ry = ellipse radii
+          data-side = label direction: top|bottom|left|right
+        -->
+        <div class="bpo-persons" style="display:none;">
+          <!-- BACK ROW -->
+          <span data-cx="503"  data-cy="205" data-rx="68" data-ry="93"  data-side="top"    data-name="Rahul Awasthi"           data-role="Webmaster"></span>
+          <span data-cx="610"  data-cy="191" data-rx="68" data-ry="93"  data-side="top"    data-name="Abraham Ireland"         data-role="Treasurer"></span>
+          <span data-cx="734"  data-cy="200" data-rx="68" data-ry="93"  data-side="top"    data-name="Nandu Rakesh Nair"       data-role="Editor"></span>
+          <span data-cx="887"  data-cy="201" data-rx="68" data-ry="93"  data-side="top"    data-name="Omar Vargas Garcia"      data-role="Secretary"></span>
+          <span data-cx="989"  data-cy="201" data-rx="68" data-ry="93"  data-side="right"  data-name="Dakota Menning"          data-role="Governor"></span>
+          <span data-cx="1111" data-cy="188" data-rx="68" data-ry="93"  data-side="right"  data-name="Amara Miles"             data-role="Div. 9 Lt. Governor"></span>
+          <!-- FRONT ROW -->
+          <span data-cx="100"  data-cy="431" data-rx="60" data-ry="122" data-side="left"   data-name="Cheryl Anderson"         data-role="District Administrator"></span>
+          <span data-cx="224"  data-cy="414" data-rx="65" data-ry="128" data-side="left"   data-name="Miranda Young"           data-role="Adult Staff"></span>
+          <span data-cx="377"  data-cy="414" data-rx="65" data-ry="128" data-side="left"   data-name="Andy Santizo"            data-role="Div. 8 Lt. Governor"></span>
+          <span data-cx="494"  data-cy="430" data-rx="65" data-ry="128" data-side="bottom" data-name="Savanna Scruggs"         data-role="Div. 1 Lt. Governor"></span>
+          <span data-cx="614"  data-cy="409" data-rx="70" data-ry="133" data-side="bottom" data-name="Pritam Avuthu"           data-role="Div. 2 Lt. Governor"></span>
+          <span data-cx="739"  data-cy="450" data-rx="65" data-ry="128" data-side="bottom" data-name="Makenlei Shafferkoetter" data-role="Div. 5 Lt. Governor"></span>
+          <span data-cx="899"  data-cy="431" data-rx="65" data-ry="128" data-side="bottom" data-name="Ava Long"                data-role="Div. 6 Lt. Governor"></span>
+          <span data-cx="1012" data-cy="450" data-rx="65" data-ry="128" data-side="bottom" data-name="Tanvi Narendhula"        data-role="Div. 10 Lt. Governor"></span>
+          <span data-cx="1102" data-cy="448" data-rx="65" data-ry="128" data-side="right"  data-name="Mary Ann Gingerich"      data-role="Div. 3 Lt. Governor"></span>
+          <span data-cx="1207" data-cy="414" data-rx="65" data-ry="128" data-side="right"  data-name="Carla OBrien"            data-role="Adult Staff"></span>
+          <span data-cx="1323" data-cy="423" data-rx="65" data-ry="128" data-side="right"  data-name="James Sturch"            data-role="Adult Staff"></span>
+        </div>
+
+        <!-- Invisible hit-zone divs injected by JS, positioned in screen px -->
+        <div id="bpoHitContainer" style="position:absolute;inset:0;pointer-events:none;"></div>
+      </div>
+    </div>
+    <!-- ══ END INTERACTIVE GROUP PHOTO ══ -->
+
+    <div style="display:flex;flex-direction:column;gap:0.75rem;flex:1;">
+      <div class="board-photo-mascot" style="flex:1;">
+        <img src="MASCOT.jpeg" alt="District Mascot">
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:10px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:0.1em;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Marty the Meerkat - Our District Mascot
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board-group-title">Executive Board Members</div>
+  <p style="font-size:0.875rem;color:var(--muted);margin-bottom:1.5rem;">These positions are the officers of the board. They fulfill the day-to-day staff and administrative work needed to keep things running.</p>
+  <div class="board-grid" id="exec-grid">
+    <div class="board-card fade-in" data-img="Board Photos/governor.png" style="cursor:pointer;" onclick="window.location='exec-profile.html?id=governor'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">G</div>
+          <div class="board-name">Dakota Menning</div>
+          <div class="board-role">Governor</div>
+          <div class="board-email">governor@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Dakota Menning</div>
+            <div class="board-card-back-role">Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/secretary.png" style="cursor:pointer;" onclick="window.location='exec-profile.html?id=secretary'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">S</div>
+          <div class="board-name">Omar Vargas Garcia</div>
+          <div class="board-role">Secretary</div>
+          <div class="board-email">secretary@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Omar Vargas Garcia</div>
+            <div class="board-card-back-role">Secretary</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/treasurer.png" style="cursor:pointer;" onclick="window.location='exec-profile.html?id=treasurer'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">T</div>
+          <div class="board-name">Abraham Ireland</div>
+          <div class="board-role">Treasurer</div>
+          <div class="board-email">treasurer@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Abraham Ireland</div>
+            <div class="board-card-back-role">Treasurer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/webmaster.png" style="cursor:pointer;" onclick="window.location='exec-profile.html?id=webmaster'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">W</div>
+          <div class="board-name">Rahul Awasthi</div>
+          <div class="board-role">Webmaster</div>
+          <div class="board-email">webmaster@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Rahul Awasthi</div>
+            <div class="board-card-back-role">Webmaster</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/editor.png" style="cursor:pointer;" onclick="window.location='exec-profile.html?id=editor'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">E</div>
+          <div class="board-name">Nandu Rakesh Nair</div>
+          <div class="board-role">Editor</div>
+          <div class="board-email">editor@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Nandu Rakesh Nair</div>
+            <div class="board-card-back-role">Editor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board-group-title">Board Members — Lieutenant Governors</div>
+  <p style="font-size:0.875rem;color:var(--muted);margin-bottom:0.75rem;">Each leads a division in MO-ARK. Use the Club Directory map below to find your division.</p>
+  <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.1);border:1px solid rgba(200,150,42,0.28);border-radius:100px;padding:0.4rem 1rem;font-size:0.775rem;font-weight:600;color:var(--gold);margin-bottom:1.5rem;letter-spacing:0.03em;">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v14M1 8h14"/><circle cx="8" cy="8" r="7"/></svg>
+    Click any LTG card to view their division page
+  </div>
+  <div class="board-grid" id="ltg-grid">
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg1.jpeg" data-div="1" style="cursor:pointer;" onclick="window.location='division.html?div=1'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">1</div>
+          <div class="board-name">Savanna Scruggs</div>
+          <div class="board-role">Division 1 — Lt. Governor</div>
+          <div class="board-email">ltg.01@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Savanna Scruggs</div>
+            <div class="board-card-back-role">Division 1 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg2.jpeg" data-div="2" style="cursor:pointer;" onclick="window.location='division.html?div=2'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">2</div>
+          <div class="board-name">Pritam Avuthu</div>
+          <div class="board-role">Division 2 — Lt. Governor</div>
+          <div class="board-email">ltg.02@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Pritam Avuthu</div>
+            <div class="board-card-back-role">Division 2 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg3.jpeg" data-div="3" style="cursor:pointer;" onclick="window.location='division.html?div=3'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">3</div>
+          <div class="board-name">Mary Ann Gingerich</div>
+          <div class="board-role">Division 3 — Lt. Governor</div>
+          <div class="board-email">ltg.03@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Mary Ann Gingerich</div>
+            <div class="board-card-back-role">Division 3 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg4.jpeg" data-div="4" style="cursor:pointer;" onclick="window.location='division.html?div=4'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">4</div>
+          <div class="board-name">Bethany Liao</div>
+          <div class="board-role">Division 4 — Lt. Governor</div>
+          <div class="board-email">ltg.04@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Bethany Liao</div>
+            <div class="board-card-back-role">Division 4 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg5.jpeg" data-div="5" style="cursor:pointer;" onclick="window.location='division.html?div=5'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">5</div>
+          <div class="board-name">Makenlei Shafferkoetter</div>
+          <div class="board-role">Division 5 — Lt. Governor</div>
+          <div class="board-email">ltg.05@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Makenlei Shafferkoetter</div>
+            <div class="board-card-back-role">Division 5 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg6.jpeg" data-div="6" style="cursor:pointer;" onclick="window.location='division.html?div=6'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">6</div>
+          <div class="board-name">Ava Long</div>
+          <div class="board-role">Division 6 — Lt. Governor</div>
+          <div class="board-email">ltg.06@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Ava Long</div>
+            <div class="board-card-back-role">Division 6 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="" data-div="7" style="cursor:pointer;" onclick="window.location='division.html?div=7'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">7</div>
+          <div class="board-name">[OPEN APPLICATIONS]</div>
+          <div class="board-role">Division 7 — Lt. Governor</div>
+          <div class="board-email">Apply by August 21, 2026 · ltg.07@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">[OPEN APPLICATIONS]</div>
+            <div class="board-card-back-role">Division 7 — Lt. Governor · Apply by Aug 21, 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg8.jpeg" data-div="8" style="cursor:pointer;" onclick="window.location='division.html?div=8'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">8</div>
+          <div class="board-name">Andy Santizo</div>
+          <div class="board-role">Division 8 — Lt. Governor</div>
+          <div class="board-email">ltg.08@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Andy Santizo</div>
+            <div class="board-card-back-role">Division 8 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg9.jpeg" data-div="9" style="cursor:pointer;" onclick="window.location='division.html?div=9'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">9</div>
+          <div class="board-name">Amara Miles</div>
+          <div class="board-role">Division 9 — Lt. Governor</div>
+          <div class="board-email">ltg.09@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Amara Miles</div>
+            <div class="board-card-back-role">Division 9 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in ltg-card" data-img="Board Photos/ltg10.jpeg" data-div="10" style="cursor:pointer;" onclick="window.location='division.html?div=10'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar">10</div>
+          <div class="board-name">Tanvi Narendhula</div>
+          <div class="board-role">Division 10 — Lt. Governor</div>
+          <div class="board-email">ltg.10@moarkkeyclub.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Tanvi Narendhula</div>
+            <div class="board-card-back-role">Division 10 — Lt. Governor</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board-group-title">Adult Staff</div>
+  <p style="font-size:0.875rem;color:var(--muted);margin-bottom:1.5rem;">Our adult staff mentors the board and ensures operations follow protocol.</p>
+  <div class="board-grid" style="grid-template-columns:repeat(5,1fr);" id="staff-grid">
+    <div class="board-card fade-in" data-img="Board Photos/AS1.jpeg" style="cursor:pointer;" onclick="window.location='adult-profile.html?id=as1'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar" style="background:var(--blue);">A</div>
+          <div class="board-name">Cheryl Anderson</div>
+          <div class="board-role">District Administrator</div>
+          <div class="board-email">clanderson8247@sbcglobal.net</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Cheryl Anderson</div>
+            <div class="board-card-back-role">District Administrator</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/AS2.jpeg" style="cursor:pointer;" onclick="window.location='adult-profile.html?id=as2'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar" style="background:var(--blue);">A</div>
+          <div class="board-name">Gaylon Lewis</div>
+          <div class="board-role">Adult Staff</div>
+          <div class="board-email">EMAIL</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Gaylon Lewis</div>
+            <div class="board-card-back-role">Adult Staff</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/AS3.jpeg" style="cursor:pointer;" onclick="window.location='adult-profile.html?id=as3'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar" style="background:var(--blue);">A</div>
+          <div class="board-name">Carla OBrien</div>
+          <div class="board-role">Adult Staff</div>
+          <div class="board-email">carla.obrien@outlook.com</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Carla OBrien</div>
+            <div class="board-card-back-role">Adult Staff</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/AS4.jpeg" style="cursor:pointer;" onclick="window.location='adult-profile.html?id=as4'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar" style="background:var(--blue);">A</div>
+          <div class="board-name">Miranda Young</div>
+          <div class="board-role">Adult Staff</div>
+          <div class="board-email">EMAIL</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">Miranda Young</div>
+            <div class="board-card-back-role">Adult Staff</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="board-card fade-in" data-img="Board Photos/AS5.jpeg" style="cursor:pointer;" onclick="window.location='adult-profile.html?id=as5'">
+      <div class="board-card-inner">
+        <div class="board-card-front">
+          <div class="board-avatar" style="background:var(--blue);">A</div>
+          <div class="board-name">James Sturch</div>
+          <div class="board-role">Adult Staff</div>
+          <div class="board-email">james.sturch@southsideschools.org</div>
+        </div>
+        <div class="board-card-back">
+          <div class="board-card-back-overlay">
+            <div class="board-card-back-name">James Sturch</div>
+            <div class="board-card-back-role">Adult Staff</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<div id="clubs" class="section" style="padding-bottom:0;">
+  <div class="section-header fade-in">
+    <div class="section-label">Find Your Club</div>
+    <h2 class="section-title">Club <em>Directory</em></h2>
+    <p class="section-desc">Search for your school or click a dot on the map. County shading shows each division's territory.</p>
+  </div>
+</div>
+
+<div class="map-section-wrap">
+  <div style="max-width:1400px;margin:0 auto;padding:0 1.5rem 3rem;">
+    <div class="map-layout fade-in">
+      <div class="map-sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">Club Directory</div>
+          <div class="sidebar-search-wrap">
+            <svg class="search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4"/><path d="M11 11l3 3"/></svg>
+            <input type="text" class="sidebar-search" id="schoolSearch" placeholder="Search schools…" autocomplete="off">
+          </div>
+        </div>
+        <div class="sidebar-list" id="sidebarList"></div>
+        <div class="sidebar-detail" id="sidebarDetail">
+          <div class="sd-label">Selected School</div>
+          <div class="sd-name" id="detailName">—</div>
+          <div class="sd-div" id="detailDiv">—</div>
+          <div class="sd-addr" id="detailAddress">—</div>
+          <span class="sd-close" id="detailClose">✕ Clear selection</span>
+        </div>
+      </div>
+      <div id="districtMap"></div>
+    </div>
+    <div style="background:var(--cream);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:1rem 1.5rem;">
+      <p style="font-size:0.9rem;color:var(--muted);line-height:1.7;margin:0;"><strong>Not sure what division you're in?</strong> Search your school or click its dot on the map. Then visit the <a href="#board" style="color:var(--blue);font-weight:600;">District Board</a> section above to find your lieutenant governor.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<div id="bylaws" class="section">
+  <div class="section-header fade-in">
+    <div class="section-label">Governance</div>
+    <h2 class="section-title">District <em>Bylaws</em></h2>
+  </div>
+  <div class="bylaws-card fade-in">
+    <div class="bylaws-icon">📋</div>
+    <div class="bylaws-text">
+      <h3>Missouri-Arkansas District Bylaws</h3>
+      <p>The bylaws below are a collection of guidelines for Missouri-Arkansas District Key Clubs. They are reviewed and amended each year by the District Board and should be referred to as necessary.</p>
+      <a href="Files/MO-ARK_Key_Club_Bylaws.pdf" target="_blank" class="bylaws-btn">View Bylaws PDF <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const DIV_COLORS = {
+  1:'#d94f4f',2:'#4a82c4',3:'#2e7d4f',4:'#d4b030',5:'#6b3fa0',
+  6:'#9b30d0',7:'#d4682a',8:'#20a8a0',9:'#7a9a30',10:'#e060a0',
+};
+const DIV_NAMES = {
+  1:'Division 1 — Western Missouri',2:'Division 2 — North/Central Missouri',
+  3:'Division 3 — Central & Southwest Missouri',4:'Division 4 — St. Charles Corridor',
+  5:'Division 5 — Southeast Missouri',6:'Division 6 — Northwest Arkansas',
+  7:'Division 7 — Southwest Arkansas',8:'Division 8 — Northeast Arkansas',
+  9:'Division 9 — Central & South Arkansas',10:'Division 10 — St. Louis Metro'
+};
+const CD = {
+  '29005':1,'29147':1,'29227':1,'29081':1,'29129':1,'29171':1,'29087':1,'29003':1,'29075':1,'29061':1,'29079':1,'29211':1,'29021':1,'29063':1,'29049':1,'29025':1,'29117':1,'29115':1,'29033':1,'29041':1,'29165':1,'29047':1,'29177':1,'29095':1,'29107':1,'29195':1,'29037':1,'29101':1,
+  '29197':2,'29199':2,'29045':2,'29001':2,'29103':2,'29111':2,'29121':2,'29205':2,'29127':2,'29175':2,'29137':2,'29173':2,'29007':2,'29089':2,'29019':2,'29027':2,'29053':2,
+  '29159':3,'29135':3,'29051':3,'29083':3,'29015':3,'29141':3,'29131':3,'29013':3,'29185':3,'29085':3,'29029':3,'29217':3,'29039':3,'29167':3,'29059':3,'29105':3,'29011':3,'29057':3,'29077':3,'29225':3,'29229':3,'29097':3,'29109':3,'29043':3,'29067':3,'29145':3,'29209':3,'29213':3,'29153':3,'29119':3,'29009':3,
+  '29163':4,'29113':4,'29139':4,'29219':4,'29183':4,
+  '29151':5,'29073':5,'29071':5,'29125':5,'29169':5,'29161':5,'29055':5,'29221':5,'29187':5,'29186':5,'29215':5,'29065':5,'29093':5,'29123':5,'29179':5,'29203':5,'29223':5,'29035':5,'29091':5,'29149':5,'29181':5,'29023':5,'29099':5,'29157':5,'29017':5,'29031':5,'29201':5,'29207':5,'29143':5,'29133':5,
+  '29189':10,'29510':10,
+  '05007':6,'05015':6,'05009':6,'05089':6,'05005':6,'05143':6,'05087':6,'05101':6,'05129':6,'05137':6,'05065':6,'05049':6,
+  '05033':7,'05047':7,'05071':7,'05115':7,'05131':7,'05083':7,'05149':7,'05127':7,'05113':7,'05097':7,'05061':7,'05109':7,'05133':7,'05081':7,'05057':7,'05099':7,'05103':7,'05013':7,'05091':7,'05073':7,'05027':7,'05139':7,'05011':7,'05043':7,'05003':7,'05017':7,
+  '05135':8,'05121':8,'05021':8,'05075':8,'05055':8,'29069':8,'05063':8,'05067':8,'05031':8,'05093':8,'05023':8,'05145':8,'05147':8,'05037':8,'05111':8,'05123':8,'05035':8,'05077':8,'05077':8,'29155':8,
+  '05141':9,'05029':9,'05045':9,'05085':9,'05117':9,'05105':9,'05119':9,'05125':9,'05051':9,'05095':9,'05107':9,'05053':9,'05069':9,'05001':9,'05059':9,'05019':9,'05039':9,'05025':9,'05079':9,'05041':9,
+};
+const SCHOOLS = [
+  {name:"Académie Lafayette",div:1,addr:"3421 Madison Ave, Kansas City, MO 64111",lat:39.0670,lng:-94.5780},
+  {name:"Carrollton High School",div:1,addr:"1306 N Mason St, Carrollton, MO 64633",lat:39.3580,lng:-93.4990},
+  {name:"Center High School",div:1,addr:"8715 Holmes Rd, Kansas City, MO 64131",lat:38.9960,lng:-94.5570},
+  {name:"Chillicothe R-11 High School",div:1,addr:"1000 Trenton St, Chillicothe, MO 64601",lat:39.7940,lng:-93.5540},
+  {name:"Excelsior Springs High School",div:1,addr:"2000 Tiger Dr, Excelsior Springs, MO 64024",lat:39.3410,lng:-94.2270},
+  {name:"Harrisonville High School",div:1,addr:"503 S Lexington St, Harrisonville, MO 64701",lat:38.6530,lng:-94.3480},
+  {name:"Liberty High School",div:1,addr:"16 W Kansas St, Liberty, MO 64068",lat:39.2470,lng:-94.4190},
+  {name:"Liberty North High School",div:1,addr:"2101 NE Flintlock Rd, Kansas City, MO 64156",lat:39.3010,lng:-94.4270},
+  {name:"Lincoln College Prep High School",div:1,addr:"2111 Woodland Ave, Kansas City, MO 64108",lat:39.0820,lng:-94.5770},
+  {name:"Oak Park High School",div:1,addr:"875 NE 82nd Terrace, Kansas City, MO 64155",lat:39.2080,lng:-94.5150},
+  {name:"Trenton High School",div:1,addr:"909 Oklahoma Ave, Trenton, MO 64683",lat:40.0800,lng:-93.6150},
+  {name:"Truman High School",div:1,addr:"3301 S Noland Rd, Independence, MO 64055",lat:39.0560,lng:-94.3630},
+  {name:"Boonville High School",div:2,addr:"1600 Ashley Rd, Boonville, MO 65233",lat:38.9730,lng:-92.7430},
+  {name:"Canton R-V High School",div:2,addr:"1 Culberson Dr, Canton, MO 63435",lat:40.1260,lng:-91.5230},
+  {name:"Centralia High School",div:2,addr:"301 S Rollins St, Centralia, MO 65240",lat:39.2130,lng:-92.1380},
+  {name:"Father Tolton High School",div:2,addr:"3000 W Broadway, Columbia, MO 65203",lat:38.9620,lng:-92.3610},
+  {name:"Fulton High School",div:2,addr:"2501 S Business 54, Fulton, MO 65251",lat:38.8320,lng:-91.9480},
+  {name:"Hannibal Senior High School",div:2,addr:"4500 McMasters Ave, Hannibal, MO 63401",lat:39.7200,lng:-91.3860},
+  {name:"Hickman High School",div:2,addr:"1104 N Providence Rd, Columbia, MO 65203",lat:38.9680,lng:-92.3350},
+  {name:"Kirksville Senior High School",div:2,addr:"1901 E Illinois St, Kirksville, MO 63501",lat:40.1920,lng:-92.5670},
+  {name:"Marion County R-II High School",div:2,addr:"700 S Nichols St, Palmyra, MO 63461",lat:39.7960,lng:-91.5270},
+  {name:"Mexico High School",div:2,addr:"1 Bulldog Blvd, Mexico, MO 65265",lat:39.1680,lng:-91.8830},
+  {name:"Palmyra High School",div:2,addr:"700 S Nichols St, Palmyra, MO 63461",lat:39.7930,lng:-91.5240},
+  {name:"Rock Bridge High School",div:2,addr:"4303 S Providence Rd, Columbia, MO 65203",lat:38.9050,lng:-92.3480},
+  {name:"Calvary Lutheran High School",div:3,addr:"4301 S Jefferson Ave, Springfield, MO 65807",lat:37.1700,lng:-93.2950},
+  {name:"Central Senior High School",div:3,addr:"423 E Central St, Springfield, MO 65802",lat:37.2230,lng:-93.2870},
+  {name:"Gloria Deo Academy",div:3,addr:"3300 W Sunshine St, Springfield, MO 65807",lat:37.1990,lng:-93.3260},
+  {name:"Joplin High School",div:3,addr:"2104 Indiana Ave, Joplin, MO 64804",lat:37.0580,lng:-94.5130},
+  {name:"Kickapoo High School",div:3,addr:"3710 S Jefferson Ave, Springfield, MO 65807",lat:37.1540,lng:-93.2950},
+  {name:"Monett High School",div:3,addr:"900 E Scott St, Monett, MO 65708",lat:36.9270,lng:-93.9220},
+  {name:"Mountain Grove High School",div:3,addr:"200 N Elm St, Mountain Grove, MO 65711",lat:37.1290,lng:-92.2680},
+  {name:"Neosho High School",div:3,addr:"511 Neosho Blvd, Neosho, MO 64850",lat:36.8680,lng:-94.3710},
+  {name:"Ozark High School",div:3,addr:"1350 W South St, Ozark, MO 65721",lat:37.0170,lng:-93.2090},
+  {name:"Republic High School",div:3,addr:"518 N Hampton Ave, Republic, MO 65738",lat:37.1200,lng:-93.4790},
+  {name:"Sacred Heart School",div:3,addr:"1200 N Weller Ave, Springfield, MO 65802",lat:37.2270,lng:-93.2720},
+  {name:"Fort Zumwalt West High School",div:4,addr:"555 Fort Zumwalt W Blvd, O'Fallon, MO 63368",lat:38.7570,lng:-90.7200},
+  {name:"Francis Howell High School",div:4,addr:"1 Harvester School Rd, St. Peters, MO 63376",lat:38.8040,lng:-90.6290},
+  {name:"Liberty High School (Wentzville)",div:4,addr:"11 Liberty High School Dr, Wentzville, MO 63385",lat:38.8240,lng:-90.8660},
+  {name:"Lutheran High St. Charles County",div:4,addr:"1 Warriors Ln, Lake St. Louis, MO 63367",lat:38.7960,lng:-90.7740},
+  {name:"Pattonville Senior High School",div:10,addr:"2497 Creve Coeur Mill Rd, Maryland Heights, MO 63043",lat:38.7270,lng:-90.4700},
+  {name:"Saint Charles West High School",div:4,addr:"3601 Droste Rd, St. Charles, MO 63301",lat:38.7990,lng:-90.5320},
+  {name:"St. Charles High School",div:4,addr:"725 N Kingshighway, St. Charles, MO 63301",lat:38.7880,lng:-90.4850},
+  {name:"Wentzville Holt High School",div:4,addr:"100 Holt High School Dr, Wentzville, MO 63385",lat:38.8110,lng:-90.8730},
+  {name:"Wright City High School",div:4,addr:"570 Route W, Wright City, MO 63390",lat:38.8270,lng:-91.0190},
+  {name:"Charleston High School",div:5,addr:"740 E Commercial Ave, Charleston, MO 63834",lat:36.9250,lng:-89.3530},
+  {name:"Crawford County R-II High School",div:5,addr:"1 Wildcat Dr, Cuba, MO 65453",lat:38.0630,lng:-91.3950},
+  {name:"Doniphan High School",div:5,addr:"511 Pine St, Doniphan, MO 63935",lat:36.6230,lng:-90.8260},
+  {name:"Farmington High School",div:5,addr:"1 Black Knight Dr, Farmington, MO 63640",lat:37.7820,lng:-90.4150},
+  {name:"Festus Senior High School",div:10,addr:"1 Tiger Dr, Festus, MO 63028",lat:38.2120,lng:-90.4040},
+  {name:"Fox High School",div:10,addr:"745 Jeffco Blvd, Arnold, MO 63010",lat:38.4330,lng:-90.3780},
+  {name:"Rolla High School",div:5,addr:"900 Bulldog Run, Rolla, MO 65401",lat:37.9530,lng:-91.7680},
+  {name:"Seckman High School",div:10,addr:"1000 Seckman Rd, Imperial, MO 63052",lat:38.3680,lng:-90.3780},
+  {name:"Sikeston High School",div:5,addr:"110 Oriole Dr, Sikeston, MO 63801",lat:36.8780,lng:-89.5870},
+  {name:"Union High School",div:5,addr:"1 Wildcat Ln, Union, MO 63084",lat:38.4510,lng:-91.0070},
+  {name:"Bergman High School",div:6,addr:"12291 Hwy 65N, Bergman, AR 72615",lat:36.3760,lng:-92.6630},
+  {name:"Berryville High School",div:6,addr:"905 W Trimble Ave, Berryville, AR 72616",lat:36.3660,lng:-93.5640},
+  {name:"Fayetteville High School",div:6,addr:"1 Purple Dog Dr, Fayetteville, AR 72701",lat:36.0620,lng:-94.1710},
+  {name:"Gravette High School",div:6,addr:"1201 Tiger Dr, Gravette, AR 72736",lat:36.4250,lng:-94.4560},
+  {name:"Harrison High School",div:6,addr:"1 Goblin Dr, Harrison, AR 72601",lat:36.2280,lng:-93.0990},
+  {name:"Huntsville High School",div:6,addr:"685 W Main St, Huntsville, AR 72740",lat:36.0870,lng:-93.7430},
+  {name:"Jasper High School",div:6,addr:"800 School Dr, Jasper, AR 72641",lat:36.0040,lng:-93.1840},
+  {name:"Lincoln High School",div:6,addr:"204 W Pridemore Dr, Lincoln, AR 72744",lat:35.9500,lng:-94.4210},
+  {name:"Mountain Home High School",div:6,addr:"2000 Bomber Blvd, Mountain Home, AR 72653",lat:36.3510,lng:-92.3960},
+  {name:"Springdale High School",div:6,addr:"1103 W Emma Ave, Springdale, AR 72764",lat:36.1840,lng:-94.1380},
+  {name:"Valley Springs High School",div:6,addr:"6895 Hwy 65S, Valley Springs, AR 72682",lat:36.1630,lng:-92.9440},
+  {name:"Booneville High School (AR)",div:7,addr:"1101 W 8th St, Booneville, AR 72927",lat:35.1400,lng:-93.9250},
+  {name:"Camden Fairview High School",div:7,addr:"350 Tate Dr, Camden, AR 71701",lat:33.5860,lng:-92.8440},
+  {name:"Crossett High School",div:9,addr:"1302 W 2nd Ave, Crossett, AR 71635",lat:33.1280,lng:-91.9630},
+  {name:"Dover High School",div:7,addr:"1 Pirates Dr, Dover, AR 72837",lat:35.4040,lng:-93.1160},
+  {name:"Foreman Senior High School",div:7,addr:"300 School St, Foreman, AR 71836",lat:33.7190,lng:-94.3960},
+  {name:"Harmony Grove (AR)",div:9,addr:"6700 Hwy 229, Benton, AR 72019",lat:34.5840,lng:-92.5500},
+  {name:"Mountainburg High School",div:7,addr:"226 N Hwy 71, Mountainburg, AR 72946",lat:35.6380,lng:-94.1750},
+  {name:"Prescott High School",div:7,addr:"500 E Oak St, Prescott, AR 71857",lat:33.8030,lng:-93.3800},
+  {name:"Southside High School (Fort Smith)",div:7,addr:"3200 Zero St, Fort Smith, AR 72908",lat:35.3480,lng:-94.3980},
+  {name:"Batesville Senior High School",div:8,addr:"1 Pioneer Dr, Batesville, AR 72501",lat:35.7700,lng:-91.6400},
+  {name:"Cave City High School",div:8,addr:"1140 E Main St, Cave City, AR 72521",lat:35.9420,lng:-91.5490},
+  {name:"Greene County Tech High School",div:8,addr:"510 Eagle Ave, Paragould, AR 72450",lat:36.0700,lng:-90.5220},
+  {name:"Highland High School",div:8,addr:"22 Highway 62-412, Hardy, AR 72542",lat:36.3460,lng:-91.5130},
+  {name:"Jonesboro Sr High School",div:8,addr:"2609 Panthers Dr, Jonesboro, AR 72401",lat:35.8570,lng:-90.6700},
+  {name:"Kennett High School",div:8,addr:"2900 Kennett Ave, Kennett, MO 63857",lat:36.2270,lng:-90.0390},
+  {name:"Midland High School",div:7,addr:"1105 Midland Blvd, Fort Smith, AR 72904",lat:35.3990,lng:-94.3830},
+  {name:"Paragould High School",div:8,addr:"900 W Court St, Paragould, AR 72450",lat:36.0580,lng:-90.5020},
+  {name:"Pocahontas High School",div:8,addr:"2600 Pace Ln, Pocahontas, AR 72455",lat:36.2620,lng:-90.9770},
+  {name:"Southside High School (Batesville)",div:8,addr:"1 Southside Dr, Batesville, AR 72501",lat:35.7500,lng:-91.6120},
+  {name:"Walnut Ridge High School",div:8,addr:"1116 SW 3rd St, Walnut Ridge, AR 72476",lat:36.0660,lng:-90.9500},
+  {name:"Cabot Freshman Academy",div:9,addr:"200 N Lincoln, Cabot, AR 72023",lat:34.9770,lng:-92.0210},
+  {name:"Cabot High School",div:9,addr:"200 N Lincoln, Cabot, AR 72023",lat:34.9740,lng:-92.0230},
+  {name:"Conway High School",div:9,addr:"2300 Prince St, Conway, AR 72034",lat:35.0680,lng:-92.4430},
+  {name:"Fountain Lake High School",div:9,addr:"180 Fountain Lake Dr, Hot Springs, AR 71913",lat:34.4770,lng:-93.0810},
+  {name:"Harding Academy",div:9,addr:"1400 Cherry Rd, Searcy, AR 72143",lat:35.2370,lng:-91.7550},
+  {name:"Little Rock Central High School",div:9,addr:"1500 S Park St, Little Rock, AR 72202",lat:34.7330,lng:-92.3220},
+  {name:"Morrilton High School",div:9,addr:"400 Morrilton Dr, Morrilton, AR 72110",lat:35.1510,lng:-92.7440},
+  {name:"North Little Rock High School",div:9,addr:"2700 N Olive St, North Little Rock, AR 72114",lat:34.7770,lng:-92.2660},
+  {name:"North Point High School",div:9,addr:"25900 N Point Dr, Sherwood, AR 72120",lat:34.8390,lng:-92.1580},
+  {name:"RALI",div:9,addr:"Little Rock, AR 72201",lat:34.7460,lng:-92.2890},
+  {name:"Sacred Heart High School (AR)",div:9,addr:"2415 Lee Ave, Little Rock, AR 72206",lat:34.7420,lng:-92.3100},
+  {name:"Affton High School",div:10,addr:"8309 Mackenzie Rd, St. Louis, MO 63123",lat:38.5450,lng:-90.3330},
+  {name:"Hancock High School",div:10,addr:"9601 Tesson Ferry Rd, St. Louis, MO 63123",lat:38.5030,lng:-90.3640},
+  {name:"Lindbergh High School",div:10,addr:"5000 S Lindbergh Blvd, St. Louis, MO 63126",lat:38.5540,lng:-90.3970},
+  {name:"Lutheran High School South",div:10,addr:"9011 Tesson Ferry Rd, St. Louis, MO 63123",lat:38.5080,lng:-90.3560},
+  {name:"Maplewood Richmond Heights",div:10,addr:"7539 Manchester Rd, Maplewood, MO 63143",lat:38.6100,lng:-90.3270},
+  {name:"Marquette High School",div:10,addr:"2351 Clarkson Rd, Chesterfield, MO 63017",lat:38.6480,lng:-90.5350},
+  {name:"Mehlville High School",div:10,addr:"3200 Lemay Ferry Rd, St. Louis, MO 63125",lat:38.5290,lng:-90.3220},
+  {name:"Normandy High School",div:10,addr:"6701 Natural Bridge Ave, St. Louis, MO 63121",lat:38.7000,lng:-90.3080},
+  {name:"Oakville Senior High School",div:10,addr:"5557 Milburn Rd, St. Louis, MO 63129",lat:38.4780,lng:-90.3220},
+  {name:"Parkway North Senior High School",div:10,addr:"12860 Fee Fee Rd, Maryland Heights, MO 63043",lat:38.7400,lng:-90.4870},
+  {name:"Parkway South Senior High School",div:10,addr:"801 Hanna Rd, Manchester, MO 63021",lat:38.5930,lng:-90.5150},
+  {name:"Parkway West High School",div:10,addr:"14653 Clayton Rd, Ballwin, MO 63011",lat:38.5920,lng:-90.5480},
+  {name:"University City High School",div:10,addr:"7401 Balson Ave, University City, MO 63130",lat:38.6530,lng:-90.3290},
+];
+SCHOOLS.sort((a,b)=>a.div-b.div||a.name.localeCompare(b.name));
+
+const map = L.map('districtMap',{center:[37.4,-92.3],zoom:6,zoomControl:true});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'&copy; <a href="https://carto.com/">CARTO</a>',maxZoom:18}).addTo(map);
+
+fetch('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json')
+  .then(r=>r.json())
+  .then(data=>{
+    const moar={type:'FeatureCollection',features:data.features.filter(f=>f.properties.STATE==='29'||f.properties.STATE==='05')};
+    L.geoJSON(moar,{
+      style(feature){
+        const fips=feature.properties.GEO_ID.replace('0500000US','');
+        const div=CD[fips];
+        return{fillColor:div?DIV_COLORS[div]:'#e0e0e0',fillOpacity:0.55,color:'rgba(255,255,255,0.85)',weight:1.0,interactive:true};
+      },
+      onEachFeature(feature,layer){
+        const fips=feature.properties.GEO_ID.replace('0500000US','');
+        const div=CD[fips];
+        layer.bindTooltip(`<strong>${feature.properties.NAME} Co.</strong><br>${div?DIV_NAMES[div]:'—'}`,{sticky:true,className:'county-tooltip'});
+        layer.on('mouseover',function(){this.setStyle({fillOpacity:0.78});});
+        layer.on('mouseout',function(){this.setStyle({fillOpacity:0.55});});
+      }
+    }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:18,pane:'shadowPane'}).addTo(map);
+  })
+  .catch(()=>{L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:18}).addTo(map);});
+
+function makeIcon(div){
+  const c=DIV_COLORS[div]||'#888';
+  return L.divIcon({className:'',html:`<div style="width:11px;height:11px;border-radius:50%;background:${c};border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,0.4);"></div>`,iconSize:[11,11],iconAnchor:[5.5,5.5],popupAnchor:[0,-8]});
+}
+const markerMap={};
+SCHOOLS.forEach(s=>{
+  const m=L.marker([s.lat,s.lng],{icon:makeIcon(s.div)}).addTo(map)
+    .bindPopup(`<div class="popup-name">${s.name}</div><div class="popup-div">${DIV_NAMES[s.div]}</div><div class="popup-addr">${s.addr}</div>`);
+  m.on('click',()=>selectSchool(s));
+  markerMap[s.name]=m;
+});
+
+const legend=L.control({position:'bottomright'});
+legend.onAdd=()=>{
+  const d=L.DomUtil.create('div','map-legend');
+  d.innerHTML='<div class="map-legend-title">Divisions</div>'+Object.entries(DIV_COLORS).map(([div,col])=>`<div class="map-legend-row"><div class="map-legend-sw" style="background:${col}"></div>Div ${div}</div>`).join('');
+  return d;
+};
+legend.addTo(map);
+
+const listEl=document.getElementById('sidebarList');
+const searchEl=document.getElementById('schoolSearch');
+const detailPanel=document.getElementById('sidebarDetail');
+const detailName=document.getElementById('detailName');
+const detailDiv=document.getElementById('detailDiv');
+const detailAddress=document.getElementById('detailAddress');
+
+function renderList(q){
+  q=(q||'').toLowerCase().trim();
+  listEl.innerHTML='';
+  const grouped={};
+  SCHOOLS.forEach(s=>{if(q&&!s.name.toLowerCase().includes(q))return;if(!grouped[s.div])grouped[s.div]=[];grouped[s.div].push(s);});
+  const divs=Object.keys(grouped).map(Number).sort((a,b)=>a-b);
+  if(!divs.length){listEl.innerHTML='<div style="padding:1rem 1.25rem;font-size:0.8rem;color:var(--muted);">No schools found.</div>';return;}
+  divs.forEach(d=>{
+    const g=document.createElement('div');
+    const lbl=document.createElement('div');lbl.className='sdiv-label';
+    lbl.innerHTML=`<span class="sdiv-swatch" style="background:${DIV_COLORS[d]}"></span>Division ${d}`;
+    g.appendChild(lbl);
+    grouped[d].forEach(s=>{
+      const el=document.createElement('div');el.className='sitem';el.dataset.name=s.name;
+      el.innerHTML=`<div class="sitem-name">${s.name}</div>`;
+      el.addEventListener('click',()=>{map.setView([s.lat,s.lng],13,{animate:true});markerMap[s.name]?.openPopup();selectSchool(s);});
+      g.appendChild(el);
+    });
+    listEl.appendChild(g);
+  });
+}
+function selectSchool(s){
+  document.querySelectorAll('.sitem').forEach(el=>el.classList.remove('active'));
+  const el=listEl.querySelector(`[data-name="${CSS.escape(s.name)}"]`);
+  if(el){el.classList.add('active');el.scrollIntoView({block:'nearest',behavior:'smooth'});}
+  detailName.textContent=s.name;detailDiv.textContent=DIV_NAMES[s.div];detailAddress.textContent=s.addr;
+  detailPanel.classList.add('on');
+}
+document.getElementById('detailClose').addEventListener('click',()=>{detailPanel.classList.remove('on');document.querySelectorAll('.sitem').forEach(el=>el.classList.remove('active'));map.closePopup();});
+searchEl.addEventListener('input',()=>renderList(searchEl.value));
+renderList('');
+
+const tabs=document.querySelectorAll('.section-tab');
+const sections=['board','clubs','bylaws'].map(id=>document.getElementById(id));
+window.addEventListener('scroll',()=>{let cur=0;sections.forEach((s,i)=>{if(s&&window.scrollY>=s.offsetTop-150)cur=i;});tabs.forEach((t,i)=>t.classList.toggle('active',i===cur));},{passive:true});
+
+const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}});},{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+const nt=document.getElementById('navToggle'),nm=document.getElementById('navMobile');
+if(nt)nt.addEventListener('click',()=>{const o=nm.classList.toggle('open');nt.setAttribute('aria-expanded',o);});
+
+document.querySelectorAll('.ltg-card').forEach(card=>{
+  const front=card.querySelector('.board-card-front');
+  if(front){const hint=document.createElement('span');hint.className='ltg-nav-hint';hint.title='Click to view division page';hint.innerHTML=`<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h6M5 2l3 3-3 3"/></svg>`;front.appendChild(hint);}
+});
+
+document.querySelectorAll('.board-card[data-img]').forEach(card=>{
+  const src=card.dataset.img;if(!src)return;
+  const probe=new Image();
+  probe.onload=function(){
+    const back=card.querySelector('.board-card-back');if(!back)return;
+    const img=document.createElement('img');img.src=src;img.alt=(card.querySelector('.board-name')?.textContent||'')+' photo';img.loading='lazy';
+    back.insertBefore(img,back.firstChild);
+    card.classList.add('has-photo');
+    const front=card.querySelector('.board-card-front');
+    if(front){const hint=document.createElement('span');hint.className='flip-hint';hint.title='Hover to see photo';hint.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>`;front.appendChild(hint);}
+  };
+  probe.src=src;
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   BOARD PHOTO INTERACTIVE OVERLAY
+   Uses actual rendered image dimensions to position hit zones.
+   Recalculates on every resize so it's always pixel-accurate.
+═══════════════════════════════════════════════════════════════ */
+(function() {
+  const IMG_W = 1448, IMG_H = 1086; // native image dimensions
+
+  const img        = document.getElementById('bpoImg');
+  const wrap       = document.getElementById('bpoWrap');
+  const canvas     = document.getElementById('bpoCanvas');
+  const label      = document.getElementById('bpoLabel');
+  const labelName  = document.getElementById('bpoLabelName');
+  const labelRole  = document.getElementById('bpoLabelRole');
+  const hitCont    = document.getElementById('bpoHitContainer');
+  const hint       = document.getElementById('bpoHint');
+
+  if (!img || !wrap || !canvas) return;
+
+  const ctx = canvas.getContext('2d');
+
+  // Read all person data from the hidden spans
+  const people = Array.from(document.querySelectorAll('.bpo-persons span')).map(function(s) {
+    return {
+      cx:   +s.dataset.cx,
+      cy:   +s.dataset.cy,
+      rx:   +s.dataset.rx,
+      ry:   +s.dataset.ry,
+      side: s.dataset.side || 'top',
+      name: s.dataset.name,
+      role: s.dataset.role
+    };
+  });
+
+  let activePerson = null;
+  let scale = 1, offX = 0, offY = 0;
+
+  /* ── Calculate how object-fit:cover renders the image inside its container ── */
+  function getImageRenderRect() {
+    // Use the actual rendered size of the img element itself
+    const rect = img.getBoundingClientRect();
+    const cW = rect.width;
+    const cH = rect.height;
+    const imgRatio = IMG_W / IMG_H;
+    const conRatio = cW / cH;
+
+    let renderW, renderH;
+    if (imgRatio > conRatio) {
+      // Image is wider relative to container → height fills, width overflows (cropped sides)
+      renderH = cH;
+      renderW = cH * imgRatio;
+    } else {
+      // Image is taller relative to container → width fills, height overflows (cropped top/bottom)
+      renderW = cW;
+      renderH = cW / imgRatio;
+    }
+
+    const scale = renderW / IMG_W; // same as renderH / IMG_H
+    // object-position: center → center the rendered image in the container
+    const ox = (cW - renderW) / 2;
+    const oy = (cH - renderH) / 2;
+    return { renderW, renderH, ox, oy, cW, cH, scale };
+  }
+
+  /* ── Convert native image px → container px ── */
+  function imgToScreen(ix, iy) {
+    const r = getImageRenderRect();
+    return {
+      x: r.ox + ix * r.scale,
+      y: r.oy + iy * r.scale
+    };
+  }
+
+  /* ── Size canvas to match container exactly ── */
+  function resizeCanvas() {
+    canvas.width  = img.clientWidth;
+    canvas.height = img.clientHeight;
+  }
+
+  /* ── Build / reposition all hit-zone divs ── */
+  function rebuildHitZones() {
+    hitCont.innerHTML = '';
+    const r = getImageRenderRect();
+
+    people.forEach(function(p, i) {
+      const cx = r.ox + p.cx * r.scale;
+      const cy = r.oy + p.cy * r.scale;
+      const rx = p.rx * r.scale;
+      const ry = p.ry * r.scale;
+
+      const div = document.createElement('div');
+      div.className = 'bpo-hit-div';
+      div.style.left   = cx + 'px';
+      div.style.top    = cy + 'px';
+      div.style.width  = (rx * 2) + 'px';
+      div.style.height = (ry * 2) + 'px';
+      div.dataset.idx  = i;
+
+      div.addEventListener('mouseenter', function() {
+        activePerson = p;
+        hint.style.opacity = '0';
+        drawActive(p);
+        showLabel(p);
+      });
+      div.addEventListener('mouseleave', function() {
+        activePerson = null;
+        clearCanvas();
+        hideLabel();
+        hint.style.opacity = '';
+      });
+      div.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (activePerson === p) {
+          activePerson = null;
+          clearCanvas();
+          hideLabel();
+        } else {
+          activePerson = p;
+          drawActive(p);
+          showLabel(p);
+        }
+      }, { passive: false });
+
+      hitCont.appendChild(div);
+    });
+  }
+
+  /* ── Draw neon ellipse + connector line on canvas ── */
+  function drawActive(p) {
+    resizeCanvas();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const r   = getImageRenderRect();
+    const cx  = r.ox + p.cx * r.scale;
+    const cy  = r.oy + p.cy * r.scale;
+    const rx  = p.rx * r.scale;
+    const ry  = p.ry * r.scale;
+
+    // ── Neon fill + stroke ellipse ──
+    ctx.save();
+    ctx.shadowBlur  = 22;
+    ctx.shadowColor = 'rgba(200,150,42,0.9)';
+
+    // Fill
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(200,150,42,0.10)';
+    ctx.fill();
+
+    // Stroke (draw twice for extra glow)
+    for (let i = 0; i < 2; i++) {
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = '#C8962A';
+      ctx.lineWidth   = 2.5;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // ── Connector line ──
+    const OFFSET = 20;
+    let lx1, ly1, lx2, ly2;
+    if      (p.side === 'top')    { lx1 = cx;      ly1 = cy - ry; lx2 = cx;      ly2 = ly1 - OFFSET; }
+    else if (p.side === 'bottom') { lx1 = cx;      ly1 = cy + ry; lx2 = cx;      ly2 = ly1 + OFFSET; }
+    else if (p.side === 'left')   { lx1 = cx - rx; ly1 = cy;      lx2 = lx1 - OFFSET; ly2 = cy; }
+    else                          { lx1 = cx + rx; ly1 = cy;      lx2 = lx1 + OFFSET; ly2 = cy; }
+
+    ctx.save();
+    ctx.shadowBlur  = 12;
+    ctx.shadowColor = 'rgba(200,150,42,0.8)';
+    ctx.beginPath();
+    ctx.moveTo(lx1, ly1);
+    ctx.lineTo(lx2, ly2);
+    ctx.strokeStyle = '#C8962A';
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  /* ── Position and show label div ── */
+  function showLabel(p) {
+    labelName.textContent = p.name;
+    labelRole.textContent = p.role.toUpperCase();
+    label.style.display = 'block';
+
+    // Position after making visible so we can measure width
+    requestAnimationFrame(function() {
+      const r      = getImageRenderRect();
+      const cx     = r.ox + p.cx * r.scale;
+      const cy     = r.oy + p.cy * r.scale;
+      const rx     = p.rx * r.scale;
+      const ry     = p.ry * r.scale;
+      const lW     = label.offsetWidth;
+      const lH     = label.offsetHeight;
+      const GAP    = 20;
+      const cW     = img.clientWidth;
+      const cH     = img.clientHeight;
+
+      let top, left;
+      if (p.side === 'top') {
+        top  = cy - ry - GAP - lH;
+        left = cx - lW / 2;
+      } else if (p.side === 'bottom') {
+        top  = cy + ry + GAP;
+        left = cx - lW / 2;
+      } else if (p.side === 'left') {
+        top  = cy - lH / 2;
+        left = cx - rx - GAP - lW;
+      } else { // right
+        top  = cy - lH / 2;
+        left = cx + rx + GAP;
+      }
+
+      // Clamp so label stays inside/near the wrap
+      left = Math.max(-lW * 0.1, Math.min(left, cW - lW * 0.9));
+      top  = Math.max(-lH * 0.5, Math.min(top,  cH + lH * 0.1));
+
+      label.style.left      = left + 'px';
+      label.style.top       = top  + 'px';
+      label.style.transform = 'none'; // override the CSS default
+    });
+  }
+
+  function hideLabel() {
+    label.style.display = 'none';
+  }
+
+  /* ── Dismiss on outside touch ── */
+  document.addEventListener('touchstart', function(e) {
+    if (!e.target.closest('#bpoWrap')) {
+      activePerson = null;
+      clearCanvas();
+      hideLabel();
+    }
+  });
+
+  /* ── Rebuild on resize ── */
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      rebuildHitZones();
+      if (activePerson) { drawActive(activePerson); showLabel(activePerson); }
+      else clearCanvas();
+    }, 60);
+  });
+
+  /* ── Init: wait for image to load then build ── */
+  function init() {
+    resizeCanvas();
+    rebuildHitZones();
+    if (new URLSearchParams(window.location.search).get('debug') === '1') {
+      resizeCanvas();
+      const r = getImageRenderRect();
+      people.forEach(function(p) {
+        const cx = r.ox + p.cx * r.scale;
+        const cy = r.oy + p.cy * r.scale;
+        const rx = p.rx * r.scale;
+        const ry = p.ry * r.scale;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,80,80,0.8)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,80,80,0.15)';
+        ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(p.name.split(' ')[0], cx - 20, cy + 4);
+      });
+    }
+    if (new URLSearchParams(window.location.search).get('edit') === '1') {
+      launchEditor();
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     VISUAL EDITOR — only active when ?edit=1 in the URL
+     Drag ellipses to the right person, resize with scroll,
+     then click "Copy Coords" to get the HTML to paste back.
+  ══════════════════════════════════════════════════════ */
+  function launchEditor() {
+    // Block normal hover behaviour
+    hitCont.style.pointerEvents = 'none';
+    label.style.display = 'none';
+    hint.style.display  = 'none';
+
+    const IMG_W = 1448, IMG_H = 1086;
+
+    // Editor state — one entry per person, stored in native image px
+    const state = people.map(function(p) {
+      return { cx: p.cx, cy: p.cy, rx: p.rx, ry: p.ry, side: p.side, name: p.name, role: p.role };
+    });
+
+    let selected = null;   // index of selected ellipse
+    let dragMode = null;   // 'move' | 'resizeX' | 'resizeY'
+    let dragStart = null;
+
+    // ── Build editor UI panel ──
+    const panel = document.createElement('div');
+    panel.id = 'bpoEditorPanel';
+    panel.style.cssText = [
+      'position:fixed','bottom:20px','left:50%','transform:translateX(-50%)',
+      'background:#0a1628','border:2px solid #C8962A','border-radius:12px',
+      'padding:14px 20px','z-index:99999','font-family:DM Sans,sans-serif',
+      'display:flex','gap:12px','align-items:center','flex-wrap:wrap',
+      'box-shadow:0 0 30px rgba(200,150,42,0.5)','max-width:90vw'
+    ].join(';');
+
+    const selLabel = document.createElement('span');
+    selLabel.style.cssText = 'color:#C8962A;font-weight:700;font-size:0.85rem;min-width:180px;';
+    selLabel.textContent = 'Click an ellipse to select';
+
+    const sideSelect = document.createElement('select');
+    sideSelect.style.cssText = 'background:#1a2744;color:#C8962A;border:1px solid #C8962A;border-radius:6px;padding:4px 8px;font-size:0.8rem;';
+    ['top','bottom','left','right'].forEach(function(s) {
+      const o = document.createElement('option'); o.value = s; o.textContent = s;
+      sideSelect.appendChild(o);
+    });
+    sideSelect.addEventListener('change', function() {
+      if (selected !== null) { state[selected].side = sideSelect.value; redraw(); }
+    });
+
+    const infoTip = document.createElement('span');
+    infoTip.style.cssText = 'color:rgba(255,255,255,0.5);font-size:0.75rem;';
+    infoTip.textContent = 'Drag=move • Shift+drag=resize • Scroll=resize';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '📋 Copy Coords';
+    copyBtn.style.cssText = 'background:#C8962A;color:#0a1628;font-weight:700;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:0.85rem;';
+    copyBtn.addEventListener('click', copyCoords);
+
+    const doneBtn = document.createElement('button');
+    doneBtn.textContent = '✕ Exit Editor';
+    doneBtn.style.cssText = 'background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:0.85rem;';
+    doneBtn.addEventListener('click', function() {
+      window.location.href = window.location.pathname;
+    });
+
+    panel.appendChild(selLabel);
+    panel.appendChild(sideSelect);
+    panel.appendChild(infoTip);
+    panel.appendChild(copyBtn);
+    panel.appendChild(doneBtn);
+    document.body.appendChild(panel);
+
+    // ── Overlay canvas (full image, pointer events on) ──
+    const eCanvas = document.createElement('canvas');
+    eCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;z-index:100;';
+    wrap.appendChild(eCanvas);
+    const ec = eCanvas.getContext('2d');
+
+    function sizeEditorCanvas() {
+      eCanvas.width  = img.clientWidth;
+      eCanvas.height = img.clientHeight;
+    }
+
+    // ── Get image render rect ──
+    function getRR() {
+      const cW = img.clientWidth, cH = img.clientHeight;
+      const imgR = IMG_W / IMG_H, conR = cW / cH;
+      let rW, rH;
+      if (imgR > conR) { rH = cH; rW = cH * imgR; }
+      else             { rW = cW; rH = cW / imgR; }
+      const sc = rW / IMG_W;
+      return { ox: (cW - rW)/2, oy: (cH - rH)/2, scale: sc, cW, cH };
+    }
+
+    // ── Native ↔ screen conversion ──
+    function toScreen(nx, ny) { const r=getRR(); return { x: r.ox+nx*r.scale, y: r.oy+ny*r.scale }; }
+    function toNative(sx, sy) { const r=getRR(); return { x: (sx-r.ox)/r.scale, y: (sy-r.oy)/r.scale }; }
+
+    // ── Draw all ellipses ──
+    function redraw() {
+      sizeEditorCanvas();
+      const r = getRR();
+      ec.clearRect(0, 0, eCanvas.width, eCanvas.height);
+
+      state.forEach(function(p, i) {
+        const cx = r.ox + p.cx * r.scale;
+        const cy = r.oy + p.cy * r.scale;
+        const rx = p.rx * r.scale;
+        const ry = p.ry * r.scale;
+        const isSel = i === selected;
+
+        // Ellipse fill
+        ec.beginPath();
+        ec.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
+        ec.fillStyle = isSel ? 'rgba(200,150,42,0.25)' : 'rgba(200,150,42,0.10)';
+        ec.fill();
+
+        // Ellipse stroke
+        ec.beginPath();
+        ec.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
+        ec.strokeStyle = isSel ? '#FFD700' : '#C8962A';
+        ec.lineWidth   = isSel ? 3 : 1.5;
+        ec.stroke();
+
+        // Name label
+        ec.fillStyle = isSel ? '#FFD700' : 'rgba(255,255,255,0.85)';
+        ec.font = isSel ? 'bold 12px sans-serif' : '11px sans-serif';
+        ec.textAlign = 'center';
+        ec.fillText(p.name.split(' ')[0], cx, cy + 4);
+
+        // Resize handles on selected
+        if (isSel) {
+          [[cx+rx, cy],[cx-rx, cy],[cx, cy-ry],[cx, cy+ry]].forEach(function(pt) {
+            ec.beginPath(); ec.arc(pt[0], pt[1], 5, 0, Math.PI*2);
+            ec.fillStyle='#FFD700'; ec.fill();
+          });
+        }
+      });
+      ec.textAlign = 'left';
+    }
+
+    // ── Hit test: which ellipse was clicked? ──
+    function hitTest(sx, sy) {
+      const r = getRR();
+      // Test in reverse order so topmost (last drawn) wins
+      for (let i = state.length-1; i >= 0; i--) {
+        const p = state[i];
+        const cx = r.ox + p.cx * r.scale;
+        const cy = r.oy + p.cy * r.scale;
+        const rx = p.rx * r.scale;
+        const ry = p.ry * r.scale;
+        const dx = (sx - cx) / rx;
+        const dy = (sy - cy) / ry;
+        if (dx*dx + dy*dy <= 1.1) return i;
+      }
+      return null;
+    }
+
+    // ── Mouse events ──
+    function getPos(e) {
+      const rect = eCanvas.getBoundingClientRect();
+      const touch = e.touches ? e.touches[0] : e;
+      return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+    }
+
+    eCanvas.addEventListener('mousedown', function(e) {
+      const pos = getPos(e);
+      const hit = hitTest(pos.x, pos.y);
+      if (hit !== null) {
+        selected = hit;
+        sideSelect.value = state[hit].side;
+        selLabel.textContent = state[hit].name;
+        dragMode  = e.shiftKey ? 'resize' : 'move';
+        dragStart = { ...pos, cx: state[hit].cx, cy: state[hit].cy, rx: state[hit].rx, ry: state[hit].ry };
+        e.preventDefault();
+      } else {
+        selected = null;
+        selLabel.textContent = 'Click an ellipse to select';
+      }
+      redraw();
+    });
+
+    window.addEventListener('mousemove', function(e) {
+      if (selected === null || !dragStart) return;
+      const pos  = getPos(e);
+      const r    = getRR();
+      const dx   = (pos.x - dragStart.x) / r.scale;
+      const dy   = (pos.y - dragStart.y) / r.scale;
+      if (dragMode === 'move') {
+        state[selected].cx = Math.round(dragStart.cx + dx);
+        state[selected].cy = Math.round(dragStart.cy + dy);
+      } else {
+        state[selected].rx = Math.max(20, Math.round(dragStart.rx + dx));
+        state[selected].ry = Math.max(20, Math.round(dragStart.ry + dy));
+      }
+      redraw();
+    });
+
+    window.addEventListener('mouseup', function() { dragStart = null; });
+
+    // Scroll to resize selected ellipse
+    eCanvas.addEventListener('wheel', function(e) {
+      if (selected === null) return;
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -3 : 3;
+      if (e.shiftKey) {
+        state[selected].ry = Math.max(20, state[selected].ry + delta);
+      } else {
+        state[selected].rx = Math.max(20, state[selected].rx + delta);
+        state[selected].ry = Math.max(20, state[selected].ry + delta);
+      }
+      redraw();
+    }, { passive: false });
+
+    // ── Copy coords to clipboard ──
+    function copyCoords() {
+      const lines = state.map(function(p) {
+        return `          <span data-cx="${p.cx}" data-cy="${p.cy}" data-rx="${p.rx}" data-ry="${p.ry}" data-side="${p.side}" data-name="${p.name}" data-role="${p.role}"></span>`;
+      });
+      const text = lines.join('\n');
+      navigator.clipboard.writeText(text).then(function() {
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(function() { copyBtn.textContent = '📋 Copy Coords'; }, 2000);
+      }).catch(function() {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        copyBtn.textContent = '✅ Copied!';
+        setTimeout(function() { copyBtn.textContent = '📋 Copy Coords'; }, 2000);
+      });
+    }
+
+    // ── Keyboard nudge (arrow keys) ──
+    document.addEventListener('keydown', function(e) {
+      if (selected === null) return;
+      const step = e.shiftKey ? 5 : 1;
+      if (e.key==='ArrowLeft')  { state[selected].cx -= step; e.preventDefault(); }
+      if (e.key==='ArrowRight') { state[selected].cx += step; e.preventDefault(); }
+      if (e.key==='ArrowUp')    { state[selected].cy -= step; e.preventDefault(); }
+      if (e.key==='ArrowDown')  { state[selected].cy += step; e.preventDefault(); }
+      if (e.key==='+' || e.key==='=') { state[selected].rx+=2; state[selected].ry+=2; }
+      if (e.key==='-') { state[selected].rx=Math.max(20,state[selected].rx-2); state[selected].ry=Math.max(20,state[selected].ry-2); }
+      // Tab to next person
+      if (e.key==='Tab') {
+        selected = (selected + (e.shiftKey ? -1 : 1) + state.length) % state.length;
+        sideSelect.value = state[selected].side;
+        selLabel.textContent = state[selected].name;
+        e.preventDefault();
+      }
+      redraw();
+    });
+
+    window.addEventListener('resize', function() { redraw(); });
+    redraw();
+  }
+  /* ══ END EDITOR ══ */
+
+  if (img.complete && img.naturalWidth) {
+    init();
+  } else {
+    img.addEventListener('load', init);
+  }
+})();
+/* ═══════════════ END BOARD PHOTO OVERLAY ═══════════════ */
+
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

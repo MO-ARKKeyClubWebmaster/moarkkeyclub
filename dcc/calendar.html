@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Calendar | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+<style>
+.cal-tabs { display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:2rem; }
+.cal-tab { padding:0.875rem 1.5rem;font-size:0.9375rem;font-weight:600;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;font-family:var(--ff-body);transition:color .18s,border-color .18s; }
+.cal-tab:hover { color:var(--navy); }
+.cal-tab.active { color:var(--blue);border-bottom-color:var(--blue); }
+
+.timeline-wrap { background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-card);overflow:hidden; }
+.timeline-scroll { overflow-x:auto;padding:1.5rem;min-height:220px; }
+.timeline-grid { display:grid;min-width:900px;position:relative; }
+.timeline-months-row { display:flex;border-bottom:1px solid var(--border);padding-bottom:0.5rem;margin-bottom:0.5rem; }
+.timeline-month-cell { font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);text-align:center;flex:1;padding:0.25rem 0; }
+.timeline-month-cell.current { color:var(--blue); }
+.timeline-rows { display:flex;flex-direction:column;gap:5px; }
+.timeline-row { display:flex;height:30px;position:relative;align-items:center; }
+.timeline-bar { position:absolute;height:26px;border-radius:5px;display:flex;align-items:center;padding:0 0.625rem;font-size:0.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:filter .15s,transform .15s,box-shadow .15s;user-select:none;min-width:48px; }
+.timeline-bar:hover { filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.18);z-index:10; }
+
+.tl-view-header { padding:1.25rem 1.5rem;border-bottom:1px solid var(--border-lt);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap; }
+.tl-view-actions { display:flex;gap:0.5rem;flex-wrap:wrap; }
+.legend { display:flex;flex-wrap:wrap;gap:0.625rem;padding:0.875rem 1.5rem;border-top:1px solid var(--border-lt);background:var(--cream); }
+.legend-item { display:flex;align-items:center;gap:0.375rem;font-size:0.7rem;color:var(--muted); }
+.legend-dot { width:10px;height:10px;border-radius:3px;flex-shrink:0; }
+
+.meeting-cards { display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem; }
+.meeting-card { background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-card);overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:pointer; }
+.meeting-card:hover { box-shadow:var(--shadow-hover);transform:translateY(-2px); }
+.meeting-card-banner { height:6px; }
+.meeting-card-body { padding:1.375rem 1.5rem; }
+.meeting-card-header { display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:1rem; }
+.meeting-card-title { font-family:var(--ff-display);font-size:1.0625rem;color:var(--navy);line-height:1.2; }
+.meeting-card-subtitle { font-size:0.8125rem;color:var(--muted);margin-top:0.2rem; }
+.meeting-card-dates { display:flex;align-items:center;gap:0.5rem;margin-bottom:0.875rem; }
+.meeting-date-chip { background:var(--cream);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.5rem 0.875rem;font-size:0.8125rem;font-weight:600;text-align:center;flex:1; }
+.meeting-date-chip-label { font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:600;margin-bottom:0.2rem; }
+.meeting-card-location { display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);margin-bottom:0.875rem; }
+.meeting-card-sessions { display:flex;gap:0.375rem;flex-wrap:wrap; }
+.session-chip { background:rgba(30,80,160,0.07);border:1px solid rgba(30,80,160,0.15);border-radius:100px;padding:0.2rem 0.625rem;font-size:0.7rem;font-weight:600;color:var(--blue); }
+.meeting-card-footer { padding:0.875rem 1.5rem;border-top:1px solid var(--border-lt);display:flex;align-items:center;justify-content:space-between; }
+.badge-draft { background:rgba(107,114,128,0.1);border:1px solid rgba(107,114,128,0.2);color:#4b5563;display:inline-flex;align-items:center;gap:5px;padding:0.25rem 0.625rem;border-radius:100px;font-size:0.7rem;font-weight:600; }
+.badge-published { background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#14532d;display:inline-flex;align-items:center;gap:5px;padding:0.25rem 0.625rem;border-radius:100px;font-size:0.7rem;font-weight:600; }
+.countdown-chip { background:rgba(200,150,42,0.12);border:1px solid rgba(200,150,42,0.3);color:#92400e;border-radius:100px;padding:0.3rem 0.75rem;font-size:0.75rem;font-weight:700; }
+
+.modal-full { max-width:860px;width:96vw; }
+.detail-days { display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem; }
+.detail-day { border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden; }
+.detail-day-hd { background:var(--navy);padding:0.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between; }
+.detail-day-name { font-family:var(--ff-display);font-size:0.9375rem;color:var(--white); }
+.detail-day-date { font-size:0.75rem;color:rgba(255,255,255,0.5); }
+.detail-sessions { padding:0.75rem 1.25rem;display:flex;flex-direction:column;gap:0.5rem; }
+.detail-session { display:flex;gap:1rem;align-items:flex-start;padding:0.625rem 0.75rem;border-radius:var(--radius-sm);background:var(--cream); }
+.detail-session-time { font-size:0.75rem;font-weight:700;color:var(--blue);white-space:nowrap;min-width:80px;padding-top:0.1rem; }
+.detail-session-title { font-size:0.875rem;font-weight:600;color:var(--navy); }
+.detail-session-desc { font-size:0.8rem;color:var(--muted);margin-top:0.2rem;line-height:1.5; }
+.detail-meta-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem; }
+.detail-meta-label { font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.3rem; }
+.detail-meta-value { font-size:0.9rem;color:var(--navy);font-weight:500; }
+.detail-info-box { background:var(--cream);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-bottom:1.25rem; }
+.detail-checklist { list-style:none; }
+.detail-checklist li { padding:0.3rem 0;font-size:0.875rem;color:var(--text);display:flex;gap:0.5rem;align-items:flex-start; }
+.detail-checklist li::before { content:'·';color:var(--gold);font-weight:700;flex-shrink:0; }
+
+.yr-tabs { display:flex;gap:0.5rem;margin-bottom:1.5rem; }
+.yr-tab { padding:0.5rem 1.25rem;font-size:0.8125rem;font-weight:600;border:1px solid var(--border);border-radius:100px;cursor:pointer;background:var(--white);color:var(--muted);font-family:var(--ff-body);transition:all .18s; }
+.yr-tab.active { background:var(--navy);color:var(--white);border-color:var(--navy); }
+
+.build-section { border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:1.25rem;overflow:hidden; }
+.build-section-hd { background:var(--cream);padding:0.75rem 1.125rem;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);display:flex;align-items:center;justify-content:space-between; }
+.build-section-body { padding:1rem 1.125rem; }
+.build-day { border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:0.875rem;overflow:hidden; }
+.build-day-hd { background:var(--navy);padding:0.625rem 1rem;display:flex;align-items:center;justify-content:space-between;font-size:0.8125rem;font-weight:600;color:var(--white); }
+.build-day-body { padding:0.875rem 1rem; }
+.build-session { display:grid;grid-template-columns:110px 110px 1fr 1fr auto;gap:0.5rem;align-items:center;margin-bottom:0.5rem; }
+.build-session-remove { background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0.25rem;border-radius:4px;transition:color .15s; }
+.build-session-remove:hover { color:#ef4444; }
+.add-session-btn { background:none;border:1px dashed var(--border);border-radius:var(--radius-sm);padding:0.5rem 1rem;font-size:0.8125rem;color:var(--muted);cursor:pointer;font-family:var(--ff-body);width:100%;text-align:left;transition:border-color .15s,color .15s;margin-top:0.25rem; }
+.add-session-btn:hover { border-color:var(--blue);color:var(--blue); }
+
+.ev-row { border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.875rem 1rem;margin-bottom:0.75rem;background:var(--white); }
+.ev-row-top { display:grid;grid-template-columns:1fr 110px 110px 130px 130px auto;gap:0.5rem;align-items:end;margin-bottom:0.625rem; }
+.ev-row-bottom { display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem; }
+.ev-row-label { font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.3rem; }
+
+.color-picker { display:flex;gap:0.375rem;flex-wrap:wrap; }
+.color-swatch { width:22px;height:22px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s; }
+.color-swatch:hover { transform:scale(1.15); }
+.color-swatch.selected { border-color:var(--navy);transform:scale(1.15); }
+
+.cal-empty { text-align:center;padding:3.5rem 1.5rem;color:var(--muted); }
+.cal-empty-icon { font-size:2.5rem;margin-bottom:1rem; }
+.cal-empty h3 { font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);margin-bottom:0.5rem; }
+.cal-empty p { font-size:0.9rem;line-height:1.6; }
+
+.cal-tooltip { position:fixed;background:var(--navy);color:var(--white);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.8125rem;max-width:280px;pointer-events:none;z-index:9999;opacity:0;transition:opacity .15s;box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+.cal-tooltip.show { opacity:1; }
+.cal-tooltip-title { font-weight:700;margin-bottom:0.25rem; }
+.cal-tooltip-body { color:rgba(255,255,255,0.65);line-height:1.5;font-size:0.775rem; }
+
+@media(max-width:640px){
+  .meeting-cards{grid-template-columns:1fr;}
+  .detail-meta-grid{grid-template-columns:1fr;}
+  .build-session{grid-template-columns:1fr 1fr;}
+  .ev-row-top{grid-template-columns:1fr 1fr 1fr;}
+  .ev-row-bottom{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="dashboard.html" class="topnav-logo">
+    <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
+    <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+  </a>
+  <div class="topnav-divider"></div>
+  <div class="topnav-links">
+    <a href="dashboard.html" class="topnav-link">Dashboard</a>
+    <a href="newsletter.html" class="topnav-link" id="navNewsletter">Newsletter</a>
+    <a href="dcm.html" class="topnav-link">DCMs</a>
+    <a href="mrf.html" class="topnav-link">Monthly RF</a>
+    <a href="committee.html" class="topnav-link">Committee Reports</a>
+    <a href="calendar.html" class="topnav-link active">Calendar</a>
+    <a href="review.html" class="topnav-link" id="navReview" style="display:none">Review Queue</a>
+    <a href="console.html" class="topnav-link topnav-console" id="navConsole" style="display:none">Console</a>
+  </div>
+  <div class="topnav-user">
+    <div class="topnav-avatar" id="navAvatar">?</div>
+    <span class="topnav-username" id="navName"></span>
+    <span class="role-chip" id="navRole"></span>
+    <button class="topnav-logout" onclick="AUTH.logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">District <em>Calendar</em></h1>
+      <p class="page-desc">Year at a glance and board meeting schedules for MO-ARK District.</p>
+    </div>
+    <div id="headerActions" style="display:flex;gap:0.75rem;flex-wrap:wrap;"></div>
+  </div>
+
+  <div class="cal-tabs">
+    <button class="cal-tab active" id="tabYear" onclick="switchTab('year')">Year Calendar</button>
+    <button class="cal-tab" id="tabMeetings" onclick="switchTab('meetings')">Board Meetings</button>
+  </div>
+
+  <div id="panelYear">
+    <div class="yr-tabs">
+      <button class="yr-tab" id="ytab-2025-2026" onclick="setYearView('2025-2026')">2025-2026</button>
+      <button class="yr-tab active" id="ytab-2026-2027" onclick="setYearView('2026-2027')">2026-2027</button>
+    </div>
+    <div class="timeline-wrap">
+      <div class="tl-view-header">
+        <div>
+          <div style="font-family:var(--ff-display);font-size:1.0625rem;color:var(--navy);">Year at a Glance</div>
+          <div style="font-size:0.8125rem;color:var(--muted);margin-top:0.2rem;" id="tlSubtitle"></div>
+        </div>
+        <div class="tl-view-actions" id="tlViewActions"></div>
+      </div>
+      <div class="timeline-scroll">
+        <div class="timeline-grid" id="timelineGrid"></div>
+      </div>
+      <div class="legend" id="timelineLegend" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div id="panelMeetings" style="display:none;">
+    <div id="meetingsContent"></div>
+  </div>
+</div>
+
+<div class="cal-tooltip" id="calTooltip">
+  <div class="cal-tooltip-title" id="ttTitle"></div>
+  <div class="cal-tooltip-body" id="ttBody"></div>
+</div>
+
+<div class="modal-overlay" id="tlEventModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="tlEventTitle">Event</div><button class="modal-close" onclick="closeModal('tlEventModal')">&#x2715;</button></div>
+    <div class="modal-body" id="tlEventBody"></div>
+    <div class="modal-footer" id="tlEventFooter"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="meetingDetailModal">
+  <div class="modal modal-full">
+    <div class="modal-header"><div class="modal-title" id="mdTitle">Board Meeting</div><button class="modal-close" onclick="closeModal('meetingDetailModal')">&#x2715;</button></div>
+    <div class="modal-body" id="mdBody"></div>
+    <div class="modal-footer" id="mdFooter"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="buildYearModal">
+  <div class="modal modal-full">
+    <div class="modal-header"><div class="modal-title" id="byTitle">Build Year Calendar</div><button class="modal-close" onclick="closeModal('buildYearModal')">&#x2715;</button></div>
+    <div class="modal-body" id="byBody"></div>
+    <div class="modal-footer" id="byFooter"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="buildMeetingModal">
+  <div class="modal modal-full">
+    <div class="modal-header"><div class="modal-title" id="bmTitle">New Board Meeting</div><button class="modal-close" onclick="closeModal('buildMeetingModal')">&#x2715;</button></div>
+    <div class="modal-body" id="bmBody"></div>
+    <div class="modal-footer" id="bmFooter"></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+/* ── DATA LAYER ─────────────────────────────────────────────────── */
+const CAL = (() => {
+  const K = { yr:'moark_yr_cals_v2', mtg:'moark_mtg_v2' };
+  const ld  = k => { try { return JSON.parse(localStorage.getItem(k)||'[]'); } catch { return []; } };
+  const sv  = (k,d) => localStorage.setItem(k, JSON.stringify(d));
+  const ups = (k,it) => { const a=ld(k); const i=a.findIndex(x=>x.id===it.id); i>-1?a[i]=it:a.push(it); sv(k,a); };
+  return {
+    uid: () => Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    getYears:  ()    => ld(K.yr),
+    saveYear:  c     => ups(K.yr,c),
+    delYear:   id    => sv(K.yr,ld(K.yr).filter(c=>c.id!==id)),
+    pubYear:   yr    => ld(K.yr).find(c=>c.year===yr&&c.published),
+    getMtgs:   ()    => ld(K.mtg),
+    saveMtg:   m     => ups(K.mtg,m),
+    delMtg:    id    => sv(K.mtg,ld(K.mtg).filter(m=>m.id!==id)),
+  };
+})();
+
+/* ── SETUP ──────────────────────────────────────────────────────── */
+const user = AUTH.requireAuth();
+if (!AUTH.isLTG())          document.getElementById('navNewsletter').href = 'archive.html';
+
+const canEdit = AUTH.isWebmaster() || AUTH.isGovernor();
+if (canEdit) {
+  document.getElementById('headerActions').innerHTML =
+    `<button class="btn btn-outline" onclick="openBuildYearModal()">+ Year Calendar</button>
+     <button class="btn btn-primary" onclick="openBuildMeetingModal()">+ Board Meeting</button>`;
+}
+
+/* ── CONSTANTS ──────────────────────────────────────────────────── */
+const TL_M  = ['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+const TL_MF = ['March','April','May','June','July','August','September','October','November','December','January','February'];
+const CMAP  = {red:'#ef4444',blue:'#3b82f6',green:'#22c55e',orange:'#f97316',gold:'#C8962A',purple:'#a855f7',teal:'#14b8a6',pink:'#ec4899',navy:'#0A1628',sky:'#0ea5e9'};
+const COLS  = Object.keys(CMAP);
+const ECATS = ['General','Service Project','Fundraiser','Training','Conference','Reporting','Elections','Promotion','Convention','Other'];
+
+/* ── TABS ───────────────────────────────────────────────────────── */
+let activeTab = 'year', curYr = '2026-2027';
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('panelYear').style.display     = tab==='year'?'':'none';
+  document.getElementById('panelMeetings').style.display = tab==='meetings'?'':'none';
+  document.getElementById('tabYear').classList.toggle('active',    tab==='year');
+  document.getElementById('tabMeetings').classList.toggle('active', tab==='meetings');
+  tab==='year' ? renderYearCal() : renderMeetings();
+}
+
+function setYearView(yr) {
+  curYr = yr;
+  ['2025-2026','2026-2027'].forEach(y => document.getElementById(`ytab-${y}`).classList.toggle('active', y===yr));
+  renderYearCal();
+}
+
+/* ── YEAR CAL RENDER ────────────────────────────────────────────── */
+function renderYearCal() {
+  const pub  = CAL.pubYear(curYr);
+  const all  = CAL.getYears().filter(c=>c.year===curYr);
+  const show = canEdit ? (pub || all.sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''))[0] || null) : pub;
+
+  document.getElementById('tlSubtitle').textContent = show
+    ? (show.published ? `Published  ·  ${show.events?.length||0} events` : `Draft  ·  Last saved ${fmtDate(show.updatedAt)}`)
+    : 'No calendar published for this year yet.';
+
+  if (canEdit) {
+    document.getElementById('tlViewActions').innerHTML =
+      (show ? `<button class="btn btn-outline btn-sm" onclick="openBuildYearModal('${show.id}')">Edit</button>` : '') +
+      (show && !show.published ? `<button class="btn btn-primary btn-sm" onclick="pubYearCal('${show.id}')">Publish</button>` : '') +
+      (show && show.published  ? `<button class="btn btn-outline btn-sm" onclick="unpubYearCal('${show.id}')">Unpublish</button>` : '') +
+      `<button class="btn btn-outline btn-sm" onclick="openBuildYearModal()">+ New</button>`;
+  }
+
+  const grid = document.getElementById('timelineGrid');
+  const leg  = document.getElementById('timelineLegend');
+
+  if (!show?.events?.length) {
+    grid.innerHTML = `<div class="cal-empty" style="padding:2.5rem;"><p>${canEdit?'No events yet. Click Edit or + New to build.':'No calendar published for this year yet.'}</p></div>`;
+    leg.style.display = 'none'; return;
+  }
+
+  const curM = new Date().toLocaleDateString('en-US',{month:'short'});
+  let html = `<div class="timeline-months-row">${TL_M.map((m,i)=>`<div class="timeline-month-cell${m===curM?' current':''}">${m}</div>`).join('')}</div><div class="timeline-rows">`;
+
+  show.events.forEach(ev => {
+    const si = TL_M.indexOf(ev.startMonth), ei = TL_M.indexOf(ev.endMonth);
+    if (si<0||ei<0) return;
+    const span = Math.max(ei-si+1,1);
+    const col  = CMAP[ev.color]||CMAP.blue;
+    const tc   = ['gold','green','sky'].includes(ev.color) ? '#0A1628' : '#fff';
+    const ttDate = ev.startDate ? ev.startDate+(ev.endDate&&ev.endDate!==ev.startDate?' \u2013 '+ev.endDate:'') : TL_MF[si]+(si!==ei?' \u2013 '+TL_MF[ei]:'');
+    const ttBody = [ev.category, ttDate, ev.owner].filter(Boolean).join(' \u00B7 ');
+    html += `<div class="timeline-row"><div class="timeline-bar" style="left:${(si/12)*100}%;width:calc(${(span/12)*100}% - 2px);background:${col};color:${tc};" onclick="openEvDetail('${ev.id}','${show.id}',event)" onmouseenter="showTT('${escS(ev.title)}','${escS(ttBody)}',event)" onmouseleave="hideTT()">${escH(ev.title)}${ev.deadline?' \u2691':''}</div></div>`;
+  });
+
+  html += `</div>`;
+  grid.innerHTML = html;
+
+  const uc = [...new Set(show.events.map(e=>e.color).filter(Boolean))];
+  leg.style.display = 'flex';
+  leg.innerHTML = uc.map(c=>`<div class="legend-item"><div class="legend-dot" style="background:${CMAP[c]};"></div><span style="text-transform:capitalize;">${c}</span></div>`).join('');
+}
+
+function openEvDetail(evId, calId, e) {
+  e?.stopPropagation();
+  const cal = CAL.getYears().find(c=>c.id===calId);
+  const ev  = cal?.events?.find(ev=>ev.id===evId);
+  if (!ev) return;
+  const si = TL_M.indexOf(ev.startMonth), ei = TL_M.indexOf(ev.endMonth);
+  const mr = si>=0&&ei>=0 ? (si===ei?TL_MF[si]:`${TL_MF[si]} \u2013 ${TL_MF[ei]}`) : '\u2014';
+  document.getElementById('tlEventTitle').textContent = ev.title;
+  document.getElementById('tlEventBody').innerHTML = `
+    <div class="detail-meta-grid">
+      <div><div class="detail-meta-label">Month Range</div><div class="detail-meta-value">${mr}</div></div>
+      ${ev.startDate?`<div><div class="detail-meta-label">Start Date</div><div class="detail-meta-value">${fmtDS(ev.startDate)}</div></div>`:''}
+      ${ev.endDate?`<div><div class="detail-meta-label">End Date</div><div class="detail-meta-value">${fmtDS(ev.endDate)}</div></div>`:''}
+      ${ev.deadline?`<div><div class="detail-meta-label">Deadline</div><div class="detail-meta-value" style="color:#92400e;font-weight:700;">&#x2691; ${fmtDS(ev.deadline)}</div></div>`:''}
+      ${ev.category?`<div><div class="detail-meta-label">Category</div><div class="detail-meta-value">${escH(ev.category)}</div></div>`:''}
+      ${ev.owner?`<div><div class="detail-meta-label">Responsible</div><div class="detail-meta-value">${escH(ev.owner)}</div></div>`:''}
+    </div>
+    ${ev.description?`<div class="detail-meta-label" style="margin-bottom:0.5rem;">Description</div><p style="font-size:0.9rem;color:var(--text);line-height:1.7;">${escH(ev.description)}</p>`:''}
+    ${ev.notes?`<div class="detail-meta-label" style="margin-top:1rem;margin-bottom:0.5rem;">Notes</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.65;">${escH(ev.notes)}</p>`:''}
+    ${ev.link?`<div style="margin-top:1rem;"><a href="${escA(ev.link)}" target="_blank" class="btn btn-outline btn-sm">External Link</a></div>`:''}`;
+  document.getElementById('tlEventFooter').innerHTML = canEdit
+    ? `<button class="btn btn-outline" onclick="closeModal('tlEventModal')">Close</button><button class="btn btn-outline" onclick="closeModal('tlEventModal');openBuildYearModal('${calId}')">Edit Calendar</button>`
+    : `<button class="btn btn-outline" onclick="closeModal('tlEventModal')">Close</button>`;
+  document.getElementById('tlEventModal').classList.add('open');
+}
+
+function pubYearCal(id) {
+  const cal = CAL.getYears().find(c=>c.id===id); if (!cal) return;
+  CAL.getYears().filter(c=>c.year===cal.year&&c.id!==id).forEach(c=>{c.published=false;CAL.saveYear(c);});
+  cal.published=true; cal.publishedAt=new Date().toISOString(); CAL.saveYear(cal);
+  showToast('Year calendar published.','success'); renderYearCal();
+}
+function unpubYearCal(id) {
+  const cal=CAL.getYears().find(c=>c.id===id);
+  if (!cal||!confirm('Unpublish this calendar? Members will no longer see it.')) return;
+  cal.published=false; CAL.saveYear(cal); showToast('Calendar unpublished.','info'); renderYearCal();
+}
+
+/* ── BUILD YEAR CAL ─────────────────────────────────────────────── */
+let eYC = null;
+
+function openBuildYearModal(id=null) {
+  const found = id ? CAL.getYears().find(c=>c.id===id) : null;
+  eYC = JSON.parse(JSON.stringify(found || { id:CAL.uid(), year:curYr, published:false, title:'', events:[], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString() }));
+  document.getElementById('byTitle').textContent = id ? 'Edit Year Calendar' : 'New Year Calendar';
+  renderBYForm(); document.getElementById('buildYearModal').classList.add('open');
+}
+
+function renderBYForm() {
+  document.getElementById('byBody').innerHTML = `
+    <div class="build-section">
+      <div class="build-section-hd">Calendar Info</div>
+      <div class="build-section-body">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Academic Year</label>
+            <select class="form-select" id="byYear"><option value="2025-2026" ${eYC.year==='2025-2026'?'selected':''}>2025\u20132026</option><option value="2026-2027" ${eYC.year==='2026-2027'?'selected':''}>2026\u20132027</option></select></div>
+          <div class="form-group"><label class="form-label">Calendar Title</label>
+            <input class="form-input" id="byTitle2" value="${escA(eYC.title||'')}" placeholder="e.g. District Year Plan 2025\u20132026"></div>
+        </div>
+      </div>
+    </div>
+    <div class="build-section">
+      <div class="build-section-hd">Events <button class="btn btn-outline btn-sm" onclick="addYrEv()">+ Add Event</button></div>
+      <div class="build-section-body" id="byEvList">
+        ${!eYC.events.length?'<p style="color:var(--muted);font-size:0.875rem;margin:0;">No events yet. Click \u201c+ Add Event\u201d to start.</p>':''}
+        ${eYC.events.map(ev=>buildEvRow(ev)).join('')}
+      </div>
+    </div>`;
+  document.getElementById('byFooter').innerHTML =
+    `<button class="btn btn-outline" onclick="closeModal('buildYearModal')">Cancel</button>
+     <button class="btn btn-outline" onclick="saveYC(false)">Save Draft</button>
+     <button class="btn btn-primary" onclick="saveYC(true)">Save & Publish</button>`;
+}
+
+function buildEvRow(ev) {
+  return `<div class="ev-row" id="ev-${ev.id}">
+    <div class="ev-row-top">
+      <div><div class="ev-row-label">Event Title</div><input class="form-input" style="font-size:0.82rem;" value="${escA(ev.title||'')}" placeholder="Title" oninput="setEF('${ev.id}','title',this.value)"></div>
+      <div><div class="ev-row-label">Start Month</div><select class="form-select" style="font-size:0.82rem;" onchange="setEF('${ev.id}','startMonth',this.value)">${TL_M.map(m=>`<option value="${m}" ${ev.startMonth===m?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div><div class="ev-row-label">End Month</div><select class="form-select" style="font-size:0.82rem;" onchange="setEF('${ev.id}','endMonth',this.value)">${TL_M.map(m=>`<option value="${m}" ${ev.endMonth===m?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div><div class="ev-row-label">Start Date</div><input class="form-input" style="font-size:0.82rem;" type="date" value="${ev.startDate||''}" onchange="setEF('${ev.id}','startDate',this.value)"></div>
+      <div><div class="ev-row-label">End Date</div><input class="form-input" style="font-size:0.82rem;" type="date" value="${ev.endDate||''}" onchange="setEF('${ev.id}','endDate',this.value)"></div>
+      <button class="build-session-remove" style="margin-top:1.25rem;" onclick="remYrEv('${ev.id}')">&#x2715;</button>
+    </div>
+    <div class="ev-row-bottom">
+      <div><div class="ev-row-label">Category</div><select class="form-select" style="font-size:0.82rem;" onchange="setEF('${ev.id}','category',this.value)"><option value="">-- Select --</option>${ECATS.map(c=>`<option value="${c}" ${ev.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div><div class="ev-row-label">Responsible Party</div><input class="form-input" style="font-size:0.82rem;" value="${escA(ev.owner||'')}" placeholder="e.g. Governor" oninput="setEF('${ev.id}','owner',this.value)"></div>
+      <div><div class="ev-row-label">Deadline Date</div><input class="form-input" style="font-size:0.82rem;" type="date" value="${ev.deadline||''}" onchange="setEF('${ev.id}','deadline',this.value)"></div>
+      <div><div class="ev-row-label">Description</div><input class="form-input" style="font-size:0.82rem;" value="${escA(ev.description||'')}" placeholder="Brief description" oninput="setEF('${ev.id}','description',this.value)"></div>
+      <div><div class="ev-row-label">Notes</div><input class="form-input" style="font-size:0.82rem;" value="${escA(ev.notes||'')}" placeholder="Extra notes" oninput="setEF('${ev.id}','notes',this.value)"></div>
+      <div><div class="ev-row-label">External Link</div><input class="form-input" style="font-size:0.82rem;" value="${escA(ev.link||'')}" placeholder="https://..." oninput="setEF('${ev.id}','link',this.value)"></div>
+    </div>
+    <div style="margin-top:0.625rem;"><div class="ev-row-label" style="margin-bottom:0.375rem;">Color</div>
+      <div class="color-picker" id="evcp-${ev.id}">${COLS.map(c=>`<div class="color-swatch${ev.color===c?' selected':''}" style="background:${CMAP[c]};" title="${c}" onclick="setEF('${ev.id}','color','${c}');document.querySelectorAll('#evcp-${ev.id} .color-swatch').forEach(s=>s.classList.remove('selected'));this.classList.add('selected')"></div>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function addYrEv() {
+  const ev = {id:CAL.uid(),title:'',startMonth:'Sep',endMonth:'Sep',startDate:'',endDate:'',color:'blue',category:'',description:'',notes:'',owner:'',deadline:'',link:''};
+  eYC.events.push(ev);
+  const list = document.getElementById('byEvList');
+  list.querySelectorAll('p').forEach(p=>p.remove());
+  const tmp = document.createElement('div'); tmp.innerHTML=buildEvRow(ev);
+  while(tmp.firstChild) list.appendChild(tmp.firstChild);
+}
+function remYrEv(id) { eYC.events=eYC.events.filter(e=>e.id!==id); document.getElementById(`ev-${id}`)?.remove(); }
+function setEF(eid,f,v) { const e=eYC.events.find(e=>e.id===eid); if(e) e[f]=v; }
+
+function saveYC(pub) {
+  eYC.year = document.getElementById('byYear').value;
+  eYC.title = document.getElementById('byTitle2').value.trim();
+  eYC.updatedAt = new Date().toISOString();
+  if (pub) {
+    CAL.getYears().filter(c=>c.year===eYC.year&&c.id!==eYC.id).forEach(c=>{c.published=false;CAL.saveYear(c);});
+    eYC.published=true; eYC.publishedAt=new Date().toISOString();
+  }
+  CAL.saveYear(eYC); closeModal('buildYearModal');
+  curYr=eYC.year; setYearView(curYr);
+  showToast(pub?'Year calendar published.':'Draft saved.',pub?'success':'info');
+}
+
+/* ── MEETINGS RENDER ────────────────────────────────────────────── */
+function renderMeetings() {
+  const all  = CAL.getMtgs();
+  const vis  = canEdit ? all : all.filter(m=>m.published);
+  const el   = document.getElementById('meetingsContent');
+  if (!vis.length) {
+    el.innerHTML=`<div class="cal-empty"><div class="cal-empty-icon" style="font-size:2.5rem;">&#127968;</div><h3>No board meetings yet</h3><p>${canEdit?'Click "+ Board Meeting" to schedule the first one.':'Board meetings will appear here once scheduled.'}</p></div>`;
+    return;
+  }
+  const now  = new Date();
+  const dfs  = canEdit ? vis.filter(m=>!m.published) : [];
+  const up   = vis.filter(m=>m.published&&new Date(m.endDate+'T23:59:59')>=now).sort((a,b)=>new Date(a.startDate)-new Date(b.startDate));
+  const past = vis.filter(m=>m.published&&new Date(m.endDate+'T23:59:59')<now).sort((a,b)=>new Date(b.startDate)-new Date(a.startDate));
+  let html='';
+  if (dfs.length)  html+=sec('Drafts \u2014 only visible to you',dfs);
+  if (up.length)   html+=sec('Upcoming',up);
+  if (past.length) html+=sec('Past Meetings',past);
+  el.innerHTML=html;
+}
+function sec(lbl,items) {
+  return `<div style="margin-bottom:1.75rem;"><div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.875rem;">${lbl}</div><div class="meeting-cards">${items.map(mtgCard).join('')}</div></div>`;
+}
+function mtgCard(m) {
+  const start=new Date(m.startDate+'T12:00:00'), end=new Date(m.endDate+'T12:00:00');
+  const fs=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const sess=(m.days||[]).reduce((s,d)=>s+(d.sessions?.length||0),0);
+  const now=new Date();
+  let cd='';
+  if (m.published&&start>now) { const d=Math.ceil((start-now)/86400000); cd=`<div><span class="countdown-chip">${d} day${d!==1?'s':''} away</span></div><div style="height:0.75rem;"></div>`; }
+  return `<div class="meeting-card" onclick="openMtgDetail('${m.id}')">
+    <div class="meeting-card-banner" style="background:${CMAP[m.color]||CMAP.navy};"></div>
+    <div class="meeting-card-body">
+      <div class="meeting-card-header">
+        <div><div class="meeting-card-title">${escH(m.name)}</div><div class="meeting-card-subtitle">${escH(m.type||'Board Meeting')}</div></div>
+        ${m.published?'<span class="badge-published">Published</span>':'<span class="badge-draft">Draft</span>'}
+      </div>
+      ${cd}
+      <div class="meeting-card-dates">
+        <div class="meeting-date-chip"><div class="meeting-date-chip-label">Check-In</div>${fs(start)}</div>
+        <div style="color:var(--muted);">&rarr;</div>
+        <div class="meeting-date-chip"><div class="meeting-date-chip-label">Check-Out</div>${fs(end)}</div>
+      </div>
+      <div class="meeting-card-location">&#x1F4CD; ${escH(m.hotel?(m.hotel+(m.location?', '+m.location:'')):m.location||'Location TBD')}</div>
+      <div class="meeting-card-sessions">
+        <span class="session-chip">${(m.days||[]).length} day${(m.days||[]).length!==1?'s':''}</span>
+        <span class="session-chip">${sess} session${sess!==1?'s':''}</span>
+        ${m.year?`<span class="session-chip">${m.year}</span>`:''}
+      </div>
+    </div>
+    <div class="meeting-card-footer"><span style="font-size:0.75rem;color:var(--muted);">${m.published?'Published':'Draft'}</span><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openMtgDetail('${m.id}')">View</button></div>
+  </div>`;
+}
+
+function openMtgDetail(id) {
+  const m=CAL.getMtgs().find(x=>x.id===id); if (!m) return;
+  const ff=iso=>new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const now=new Date(), start=new Date(m.startDate+'T12:00:00'), end=new Date(m.endDate+'T12:00:00');
+  const sess=(m.days||[]).reduce((s,d)=>s+(d.sessions?.length||0),0);
+  let cd='';
+  if (start>now) { const d=Math.ceil((start-now)/86400000); cd=`<div style="margin-bottom:1.25rem;"><span class="countdown-chip">${d} day${d!==1?'s':''} until check-in</span></div>`; }
+  else if (end>=now) cd=`<div style="margin-bottom:1.25rem;"><span class="countdown-chip" style="background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.3);color:#14532d;">In progress</span></div>`;
+
+  const daysHtml=(m.days||[]).map(day=>{
+    const dt=new Date(day.date+'T12:00:00');
+    return `<div class="detail-day">
+      <div class="detail-day-hd"><span class="detail-day-name">${dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</span><span class="detail-day-date">${escH(day.label||'')}</span></div>
+      <div class="detail-sessions">
+        ${!(day.sessions||[]).length?'<div style="color:var(--muted);font-size:0.85rem;">No sessions listed.</div>':''}
+        ${(day.sessions||[]).map(s=>`<div class="detail-session">
+          <div class="detail-session-time">${fmtT(s.startTime)} &ndash; ${fmtT(s.endTime)}</div>
+          <div><div class="detail-session-title">${escH(s.title)}</div>${s.description?`<div class="detail-session-desc">${escH(s.description)}</div>`:''}</div>
+        </div>`).join('')}
+      </div></div>`;
+  }).join('');
+
+  const bring=[m.dresscode?`Attire: ${m.dresscode}`:null,m.roomBlock?`Room block: ${m.roomBlock}`:null,m.whatToBring||null].filter(Boolean);
+
+  document.getElementById('mdTitle').textContent=m.name;
+  document.getElementById('mdBody').innerHTML=`${cd}
+    <div class="detail-meta-grid">
+      <div><div class="detail-meta-label">Check-In</div><div class="detail-meta-value">${ff(m.startDate)}</div></div>
+      <div><div class="detail-meta-label">Check-Out</div><div class="detail-meta-value">${ff(m.endDate)}</div></div>
+      <div><div class="detail-meta-label">Hotel / Venue</div><div class="detail-meta-value">${escH(m.hotel||'TBD')}</div></div>
+      <div><div class="detail-meta-label">City, State</div><div class="detail-meta-value">${escH(m.location||'TBD')}</div></div>
+      ${m.roomBlock?`<div><div class="detail-meta-label">Room Block / Rate</div><div class="detail-meta-value">${escH(m.roomBlock)}</div></div>`:''}
+      ${m.dresscode?`<div><div class="detail-meta-label">Dress Code</div><div class="detail-meta-value">${escH(m.dresscode)}</div></div>`:''}
+      ${m.contactName?`<div><div class="detail-meta-label">Point of Contact</div><div class="detail-meta-value">${escH(m.contactName)}${m.contactEmail?' &middot; '+escH(m.contactEmail):''}</div></div>`:''}
+      ${m.regLink?`<div><div class="detail-meta-label">Registration</div><div class="detail-meta-value"><a href="${escA(m.regLink)}" target="_blank" class="btn btn-outline btn-sm">Register</a></div></div>`:''}
+      <div><div class="detail-meta-label">Duration</div><div class="detail-meta-value">${(m.days||[]).length} day${(m.days||[]).length!==1?'s':''} &middot; ${sess} session${sess!==1?'s':''}</div></div>
+      <div><div class="detail-meta-label">Academic Year</div><div class="detail-meta-value">${escH(m.year||'\u2014')}</div></div>
+    </div>
+    ${m.description?`<div class="detail-info-box"><div class="detail-meta-label" style="margin-bottom:0.375rem;">About This Meeting</div><p style="font-size:0.9rem;color:var(--text);line-height:1.7;margin:0;">${escH(m.description)}</p></div>`:''}
+    ${bring.length?`<div class="detail-info-box"><div class="detail-meta-label" style="margin-bottom:0.5rem;">What to Know / Bring</div><ul class="detail-checklist">${bring.map(b=>`<li>${escH(b)}</li>`).join('')}</ul></div>`:''}
+    ${m.agenda?`<div class="detail-info-box"><div class="detail-meta-label" style="margin-bottom:0.375rem;">General Agenda / Notes</div><p style="font-size:0.875rem;color:var(--muted);line-height:1.65;margin:0;">${escH(m.agenda)}</p></div>`:''}
+    ${(m.days||[]).length?`<div class="detail-meta-label" style="margin-bottom:0.875rem;">Day-by-Day Schedule</div><div class="detail-days">${daysHtml}</div>`:''}`;
+
+  document.getElementById('mdFooter').innerHTML=canEdit
+    ?`<button class="btn btn-deny" onclick="delMtg('${m.id}')" style="margin-right:auto;">Delete</button>
+      <button class="btn btn-outline" onclick="closeModal('meetingDetailModal')">Close</button>
+      <button class="btn btn-outline" onclick="closeModal('meetingDetailModal');openBuildMeetingModal('${m.id}')">Edit</button>
+      ${!m.published?`<button class="btn btn-primary" onclick="pubMtg('${m.id}')">Publish</button>`:`<button class="btn btn-outline" onclick="unpubMtg('${m.id}')">Unpublish</button>`}`
+    :`<button class="btn btn-outline" onclick="closeModal('meetingDetailModal')">Close</button>`;
+  document.getElementById('meetingDetailModal').classList.add('open');
+}
+
+function pubMtg(id)  { const m=CAL.getMtgs().find(x=>x.id===id); if(!m) return; m.published=true; m.publishedAt=new Date().toISOString(); CAL.saveMtg(m); closeModal('meetingDetailModal'); renderMeetings(); showToast('Meeting published.','success'); }
+function unpubMtg(id){ const m=CAL.getMtgs().find(x=>x.id===id); if(!m||!confirm('Unpublish this meeting?')) return; m.published=false; CAL.saveMtg(m); closeModal('meetingDetailModal'); renderMeetings(); showToast('Meeting unpublished.','info'); }
+function delMtg(id)  { if(!confirm('Permanently delete this meeting?')) return; CAL.delMtg(id); closeModal('meetingDetailModal'); renderMeetings(); showToast('Meeting deleted.','info'); }
+
+/* ── BUILD MEETING ──────────────────────────────────────────────── */
+let eMtg=null;
+
+function openBuildMeetingModal(id=null) {
+  if (!canEdit) return;
+  const found=id?CAL.getMtgs().find(m=>m.id===id):null;
+  eMtg=JSON.parse(JSON.stringify(found||{id:CAL.uid(),name:'',type:'Board Meeting',published:false,startDate:'',endDate:'',hotel:'',location:'',roomBlock:'',dresscode:'',description:'',agenda:'',whatToBring:'',contactName:'',contactEmail:'',regLink:'',color:'navy',year:curYr,days:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}));
+  document.getElementById('bmTitle').textContent=id?'Edit Board Meeting':'New Board Meeting';
+  renderBMForm(); document.getElementById('buildMeetingModal').classList.add('open');
+}
+
+function renderBMForm() {
+  const m=eMtg;
+  document.getElementById('bmBody').innerHTML=`
+    <div class="build-section"><div class="build-section-hd">Meeting Info</div><div class="build-section-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Meeting Name</label><input class="form-input" id="bm_name" value="${escA(m.name)}" placeholder="e.g. Fall Board Meeting"></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="bm_type">
+          ${['Board Meeting','District Convention','District Leadership Conference','Training','Other'].map(t=>`<option ${m.type===t?'selected':''}>${t}</option>`).join('')}
+        </select></div>
+        <div class="form-group"><label class="form-label">Academic Year</label><select class="form-select" id="bm_year">
+          <option value="2025-2026" ${m.year==='2025-2026'?'selected':''}>2025\u20132026</option>
+          <option value="2026-2027" ${m.year==='2026-2027'?'selected':''}>2026\u20132027</option>
+        </select></div>
+      </div>
+    </div></div>
+    <div class="build-section"><div class="build-section-hd">Dates</div><div class="build-section-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Check-In Date</label><input class="form-input" type="date" id="bm_start" value="${m.startDate}"></div>
+        <div class="form-group"><label class="form-label">Check-Out Date</label><input class="form-input" type="date" id="bm_end" value="${m.endDate}"></div>
+        <div class="form-group" style="display:flex;align-items:flex-end;"><button class="btn btn-outline" style="width:100%;" onclick="applyDates()">Generate Day Schedule</button></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-top:-0.25rem;">Set dates, then click "Generate Day Schedule." Existing session data is preserved.</p>
+    </div></div>
+    <div class="build-section"><div class="build-section-hd">Venue &amp; Logistics</div><div class="build-section-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Hotel / Venue Name</label><input class="form-input" id="bm_hotel" value="${escA(m.hotel)}" placeholder="e.g. University Plaza Hotel"></div>
+        <div class="form-group"><label class="form-label">City, State</label><input class="form-input" id="bm_location" value="${escA(m.location)}" placeholder="e.g. Springfield, MO"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Room Block / Nightly Rate</label><input class="form-input" id="bm_roomblock" value="${escA(m.roomBlock)}" placeholder="e.g. $89/night, cut-off Nov 15"></div>
+        <div class="form-group"><label class="form-label">Dress Code / Attire</label><input class="form-input" id="bm_dresscode" value="${escA(m.dresscode)}" placeholder="e.g. Business Casual Sat, Formal Sun"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Registration Link</label><input class="form-input" id="bm_reglink" value="${escA(m.regLink)}" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Point of Contact</label><input class="form-input" id="bm_contactname" value="${escA(m.contactName)}" placeholder="e.g. District Governor"></div>
+        <div class="form-group"><label class="form-label">Contact Email</label><input class="form-input" id="bm_contactemail" value="${escA(m.contactEmail)}" placeholder="email@example.com"></div>
+      </div>
+    </div></div>
+    <div class="build-section"><div class="build-section-hd">Notes &amp; Details</div><div class="build-section-body">
+      <div class="form-group"><label class="form-label">About This Meeting</label><textarea class="form-textarea" id="bm_desc" placeholder="Overview of purpose and goals\u2026">${escH(m.description)}</textarea></div>
+      <div class="form-group"><label class="form-label">General Agenda / Notes</label><textarea class="form-textarea" id="bm_agenda" placeholder="High-level agenda, logistics, travel tips\u2026">${escH(m.agenda)}</textarea></div>
+      <div class="form-group"><label class="form-label">What to Bring / Pack</label><textarea class="form-textarea" id="bm_wtb" placeholder="e.g. Board materials, formal attire, laptop\u2026" style="min-height:72px;">${escH(m.whatToBring)}</textarea></div>
+      <div class="form-group"><label class="form-label">Card Color</label>
+        <div class="color-picker" id="bm_cp">${COLS.map(c=>`<div class="color-swatch${m.color===c?' selected':''}" style="background:${CMAP[c]};" title="${c}" onclick="selMtgColor('${c}')"></div>`).join('')}</div>
+      </div>
+    </div></div>
+    <div class="build-section"><div class="build-section-hd">Day-by-Day Schedule</div>
+      <div class="build-section-body" id="bm_days">
+        ${!m.days.length?'<p style="color:var(--muted);font-size:0.875rem;margin:0;">Set check-in / check-out dates above, then click "Generate Day Schedule".</p>':m.days.map(buildDaySec).join('')}
+      </div>
+    </div>`;
+  document.getElementById('bmFooter').innerHTML=
+    `<button class="btn btn-outline" onclick="closeModal('buildMeetingModal')">Cancel</button>
+     <button class="btn btn-outline" onclick="saveMtg(false)">Save Draft</button>
+     <button class="btn btn-primary" onclick="saveMtg(true)">Save &amp; Publish</button>`;
+}
+
+function selMtgColor(c) {
+  eMtg.color=c;
+  document.querySelectorAll('#bm_cp .color-swatch').forEach(s=>s.classList.toggle('selected',s.title===c));
+}
+
+function applyDates() {
+  const s=document.getElementById('bm_start').value, e=document.getElementById('bm_end').value;
+  if (!s||!e) { showToast('Enter both dates first.','error'); return; }
+  const sd=new Date(s+'T12:00:00'), ed=new Date(e+'T12:00:00');
+  if (ed<sd) { showToast('Check-out must be after check-in.','error'); return; }
+  const ex=eMtg.days, nd=[];
+  for (let d=new Date(sd); d<=ed; d.setDate(d.getDate()+1)) {
+    const iso=d.toISOString().slice(0,10);
+    nd.push(ex.find(x=>x.date===iso)||{id:CAL.uid(),date:iso,label:'',sessions:[]});
+  }
+  eMtg.days=nd; eMtg.startDate=s; eMtg.endDate=e;
+  document.getElementById('bm_days').innerHTML=nd.map(buildDaySec).join('');
+  showToast(`${nd.length} day${nd.length!==1?'s':''} generated. Existing sessions preserved.`,'info');
+}
+
+function buildDaySec(day) {
+  const dt=new Date(day.date+'T12:00:00');
+  const lbl=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  return `<div class="build-day" id="bday-${day.id}">
+    <div class="build-day-hd">
+      <span>${lbl}</span>
+      <input class="form-input" style="width:200px;font-size:0.78rem;padding:0.35rem 0.6rem;background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:#fff;" placeholder="Label (e.g. Check-In Day)" value="${escA(day.label||'')}" oninput="setDL('${day.id}',this.value)">
+    </div>
+    <div class="build-day-body">
+      <div style="display:grid;grid-template-columns:110px 110px 1fr 1fr auto;gap:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.4rem;"><span>Start</span><span>End</span><span>Session Title</span><span>Description / Room</span><span></span></div>
+      <div id="sessions-${day.id}">${(day.sessions||[]).map(s=>buildSessRow(day.id,s)).join('')}</div>
+      <button class="add-session-btn" onclick="addSess('${day.id}')">+ Add Session</button>
+    </div>
+  </div>`;
+}
+
+function buildSessRow(dayId,s) {
+  return `<div class="build-session" id="sess-${s.id}">
+    <input class="form-input" style="font-size:0.8rem;" type="time" value="${s.startTime||''}" onchange="setSF('${dayId}','${s.id}','startTime',this.value)">
+    <input class="form-input" style="font-size:0.8rem;" type="time" value="${s.endTime||''}" onchange="setSF('${dayId}','${s.id}','endTime',this.value)">
+    <input class="form-input" style="font-size:0.8rem;" value="${escA(s.title||'')}" placeholder="Session title" oninput="setSF('${dayId}','${s.id}','title',this.value)">
+    <input class="form-input" style="font-size:0.8rem;" value="${escA(s.description||'')}" placeholder="Notes / room number" oninput="setSF('${dayId}','${s.id}','description',this.value)">
+    <button class="build-session-remove" onclick="remSess('${dayId}','${s.id}')">&#x2715;</button>
+  </div>`;
+}
+
+function setDL(dayId,v)  { const d=eMtg.days.find(d=>d.id===dayId); if(d) d.label=v; }
+function setSF(dayId,sid,f,v) { const d=eMtg.days.find(d=>d.id===dayId); const s=d?.sessions.find(s=>s.id===sid); if(s) s[f]=v; }
+function addSess(dayId) {
+  const day=eMtg.days.find(d=>d.id===dayId); if(!day) return;
+  const s={id:CAL.uid(),startTime:'09:00',endTime:'10:00',title:'',description:''};
+  day.sessions.push(s);
+  const c=document.getElementById(`sessions-${dayId}`);
+  const tmp=document.createElement('div'); tmp.innerHTML=buildSessRow(dayId,s);
+  while(tmp.firstChild) c.appendChild(tmp.firstChild);
+}
+function remSess(dayId,sid) {
+  const d=eMtg.days.find(d=>d.id===dayId); if(d) d.sessions=d.sessions.filter(s=>s.id!==sid);
+  document.getElementById(`sess-${sid}`)?.remove();
+}
+
+function saveMtg(pub) {
+  eMtg.name         = document.getElementById('bm_name').value.trim();
+  eMtg.type         = document.getElementById('bm_type').value;
+  eMtg.year         = document.getElementById('bm_year').value;
+  eMtg.startDate    = document.getElementById('bm_start').value;
+  eMtg.endDate      = document.getElementById('bm_end').value;
+  eMtg.hotel        = document.getElementById('bm_hotel').value.trim();
+  eMtg.location     = document.getElementById('bm_location').value.trim();
+  eMtg.roomBlock    = document.getElementById('bm_roomblock').value.trim();
+  eMtg.dresscode    = document.getElementById('bm_dresscode').value.trim();
+  eMtg.regLink      = document.getElementById('bm_reglink').value.trim();
+  eMtg.contactName  = document.getElementById('bm_contactname').value.trim();
+  eMtg.contactEmail = document.getElementById('bm_contactemail').value.trim();
+  eMtg.description  = document.getElementById('bm_desc').value.trim();
+  eMtg.agenda       = document.getElementById('bm_agenda').value.trim();
+  eMtg.whatToBring  = document.getElementById('bm_wtb').value.trim();
+  eMtg.updatedAt    = new Date().toISOString();
+  if (!eMtg.name)   { showToast('Enter a meeting name first.','error'); return; }
+  if (pub)          { eMtg.published=true; eMtg.publishedAt=new Date().toISOString(); }
+  CAL.saveMtg(eMtg); closeModal('buildMeetingModal');
+  if (activeTab==='meetings') renderMeetings();
+  showToast(pub?'Meeting published.':'Draft saved.',pub?'success':'info');
+}
+
+/* ── TOOLTIP ────────────────────────────────────────────────────── */
+function showTT(t,b,e) { document.getElementById('ttTitle').textContent=t; document.getElementById('ttBody').textContent=b||''; document.getElementById('calTooltip').classList.add('show'); posTT(e); }
+function hideTT() { document.getElementById('calTooltip').classList.remove('show'); }
+function posTT(e) { const tt=document.getElementById('calTooltip'); tt.style.left=Math.min(e.clientX+14,window.innerWidth-300)+'px'; tt.style.top=(e.clientY-64)+'px'; }
+document.addEventListener('mousemove',e=>{ if(document.getElementById('calTooltip').classList.contains('show')) posTT(e); });
+
+/* ── HELPERS ────────────────────────────────────────────────────── */
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+['tlEventModal','meetingDetailModal','buildYearModal','buildMeetingModal'].forEach(id =>
+  document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) closeModal(id); }));
+
+function fmtDate(iso) { return iso?new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'--'; }
+function fmtDS(iso)   { if(!iso) return '\u2014'; const [y,m,d]=iso.split('-'); return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); }
+function fmtT(t)      { if(!t) return '\u2014'; const [h,m]=t.split(':'); const hr=+h; return `${hr===0?12:hr>12?hr-12:hr}:${m} ${hr<12?'AM':'PM'}`; }
+function escH(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s)  { return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function escS(s)  { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+
+function showToast(msg,type='info') {
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;padding:0.875rem 1.25rem;background:${type==='success'?'#14532d':type==='error'?'#7f1d1d':'var(--navy)'};color:white;border-radius:10px;font-size:0.875rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);`;
+  t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3500);
+}
+
+/* ── INIT ───────────────────────────────────────────────────────── */
+renderYearCal();
+try { LOG.record('CALENDAR_VIEWED','Viewed district calendar'); } catch(e) {}
+</script>
+</body>
+</html>

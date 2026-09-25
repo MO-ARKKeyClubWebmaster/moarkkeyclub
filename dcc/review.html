@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Review Queue | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav">
+  <a href="dashboard.html" class="topnav-logo">
+    <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
+    <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+  </a>
+  <div class="topnav-divider"></div>
+  <div class="topnav-links">
+    <a href="dashboard.html" class="topnav-link">Dashboard</a>
+    <a href="newsletter.html" class="topnav-link">Newsletter</a>
+    <a href="dcm.html" class="topnav-link">DCMs</a>
+    <a href="mrf.html" class="topnav-link">Monthly RF</a>
+    <a href="committee.html" class="topnav-link">Committee Reports</a>
+    <a href="review.html" class="topnav-link active">Review Queue</a>
+    <a href="console.html" class="topnav-link topnav-console" id="navConsole" style="display:none">Console</a>
+  </div>
+  <div class="topnav-user">
+    <div class="topnav-avatar" id="navAvatar">?</div>
+    <span class="topnav-username" id="navName"></span>
+    <span class="role-chip" id="navRole"></span>
+    <button class="topnav-logout" onclick="AUTH.logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Review <em>Queue</em></h1>
+      <p class="page-desc" id="pageDesc">All submissions awaiting review.</p>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <select class="filter-select" id="fStatus" onchange="applyFilters()">
+      <option value="">All statuses</option>
+      <option value="pending-editor">Pending Editor</option>
+      <option value="pending-webmaster">Pending Webmaster</option>
+      <option value="approved">Approved</option>
+      <option value="denied">Needs Revision</option>
+    </select>
+    <select class="filter-select" id="fDiv" onchange="applyFilters()">
+      <option value="">All divisions</option>
+      <option value="1">Division 1</option>
+      <option value="2">Division 2</option>
+      <option value="3">Division 3</option>
+      <option value="4">Division 4</option>
+      <option value="5">Division 5</option>
+      <option value="6">Division 6</option>
+      <option value="7">Division 7</option>
+      <option value="8">Division 8</option>
+      <option value="9">Division 9</option>
+      <option value="10">Division 10</option>
+    </select>
+    <select class="filter-select" id="fYear" onchange="applyFilters()">
+      <option value="">All years</option>
+      <option value="2025-2026">2025-2026</option>
+      <option value="2026-2027">2026-2027</option>
+    </select>
+    <select class="filter-select" id="fMonth" onchange="applyFilters()">
+      <option value="">All months</option>
+      <option value="May">May</option>
+      <option value="September">September</option>
+      <option value="October">October</option>
+      <option value="November">November</option>
+      <option value="December">December</option>
+      <option value="January">January</option>
+      <option value="February">February</option>
+      <option value="March">March</option>
+    </select>
+    <select class="filter-select" id="fType" onchange="applyFilters()">
+      <option value="">All types</option>
+      <option value="newsletter">Newsletter</option>
+      <option value="dc-report">DC Report</option>
+    </select>
+  </div>
+  <div class="card"><div class="card-body" style="padding:0;" id="tableContainer">
+    <div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div>
+  </div></div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Submission</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+if (!AUTH.canReview() && !AUTH.canSeeAll()) window.location.href = 'dashboard.html';
+
+
+if (AUTH.isEditor()) {
+  document.getElementById('pageDesc').textContent = 'Review LTG submissions and forward approved ones to the webmaster.';
+  document.getElementById('fStatus').value = 'pending-editor';
+}
+if (AUTH.isWebmaster()) {
+  document.getElementById('pageDesc').textContent = 'Final approval authority. Review editor-approved submissions before publishing.';
+  document.getElementById('fStatus').value = 'pending-webmaster';
+}
+
+let allSubs = [];
+
+async function init() {
+  try {
+    allSubs = await API.getAll();
+    applyFilters();
+  } catch(e) {
+    document.getElementById('tableContainer').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function applyFilters() {
+  const status = document.getElementById('fStatus').value;
+  const div    = document.getElementById('fDiv').value;
+  const year   = document.getElementById('fYear').value;
+  const month  = document.getElementById('fMonth').value;
+  const type   = document.getElementById('fType').value;
+
+  let subs = [...allSubs];
+  if (status) subs = subs.filter(s=>s.status===status);
+  if (div)    subs = subs.filter(s=>s.division===parseInt(div));
+  if (year)   subs = subs.filter(s=>s.year===year);
+  if (month)  subs = subs.filter(s=>s.month===month);
+  if (type)   subs = subs.filter(s=>s.type===type);
+  subs.sort((a,b)=>new Date(a.submittedAt)-new Date(b.submittedAt));
+
+  const c = document.getElementById('tableContainer');
+  if (!subs.length) { c.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><h3>No submissions match</h3><p>Try adjusting your filters.</p></div>`; return; }
+
+  c.innerHTML=`<table class="sub-table"><thead><tr><th>Div</th><th>LTG</th><th>Month</th><th>Year</th><th>Type</th><th>Status</th><th>Submitted</th><th>Thread</th><th></th></tr></thead><tbody>
+    ${subs.map(s=>`<tr>
+      <td><span class="div-pill">${s.division}</span></td>
+      <td style="font-size:0.8rem;color:var(--muted);">${s.ltgName}</td>
+      <td><strong>${s.month}</strong></td><td>${s.year}</td>
+      <td style="font-size:0.8rem;">${s.type==='newsletter'?'Newsletter':'DC Report'}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td style="color:var(--muted);font-size:0.8rem;">${fmtDate(s.submittedAt)}</td>
+      <td style="text-align:center;">${s.thread.length>0?`<span style="background:rgba(30,80,160,0.1);color:var(--blue);border-radius:100px;padding:0.15rem 0.5rem;font-size:0.75rem;font-weight:600;">${s.thread.length}</span>`:'-'}</td>
+      <td><button class="btn btn-${canActOn(s)?'primary':'outline'} btn-sm" onclick="openDetail('${s.id}')">${canActOn(s)?'Review':'View'}</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function canActOn(s) {
+  return (AUTH.isEditor() && s.status==='pending-editor') || (AUTH.isWebmaster() && s.status==='pending-webmaster');
+}
+
+async function openDetail(id) {
+  try {
+    const s = await API.getById(id);
+    document.getElementById('modalTitle').textContent = `Div ${s.division} - ${s.month} ${s.year}`;
+    const canAct = canActOn(s);
+    const isE = AUTH.isEditor();
+    
+    // Convert Worker pdfUrl to GitHub raw URL
+    // Old format: /pdf/moark-123-abc -> New: https://raw.githubusercontent.com/.../submissions/moark-123-abc.pdf
+    const pdfId = s.id;
+    const githubRawUrl = `https://moark-portal-api.moarkkeyclubwebmaster.workers.dev/pdf/${s.id}`;
+
+    document.getElementById('modalBody').innerHTML=`
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;">${statusBadge(s.status)}
+        <span style="font-size:0.8125rem;color:var(--muted);">By <strong>${s.ltgName}</strong> · ${fmtDate(s.submittedAt)}</span>
+      </div>
+      <div style="margin-bottom:1.25rem;"><div class="form-label">File</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;background:var(--cream);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <span>📄</span>
+          <div><div style="font-size:0.875rem;font-weight:600;">${s.fileName}</div><div style="font-size:0.75rem;color:var(--muted);">${fmtSize(s.fileSize)}</div></div>
+          <div style="margin-left:auto;display:flex;gap:0.5rem;">
+            <a href="${githubRawUrl}" download="${s.fileName}" class="btn btn-outline btn-sm">Download</a>
+            <a href="${githubRawUrl}" target="_blank" class="btn btn-navy btn-sm">View PDF</a>
+          </div>
+        </div>
+      </div>
+      ${s.thread.length>0?`<div style="margin-bottom:1.25rem;">
+        <div class="form-label" style="margin-bottom:0.625rem;">Thread (${s.thread.length})</div>
+        <div class="thread">${s.thread.map(m=>`<div class="thread-msg from-${m.from}">
+          <div class="thread-meta"><span class="thread-from">${m.fromName}</span><span class="thread-time">${fmtDate(m.timestamp)}</span></div>
+          <div class="thread-body">${m.message}</div></div>`).join('')}
+        </div></div>`:''}
+      ${canAct?`<div style="border-top:1px solid var(--border-lt);padding-top:1.25rem;">
+        <div class="form-label" style="margin-bottom:0.5rem;">Comment ${isE?'(required if returning to LTG)':'(required if returning to Editor)'}</div>
+        <textarea class="form-textarea" id="reviewComment" placeholder="Leave a comment…"></textarea></div>`:''}`;
+
+    // Build footer with webmaster delete button
+    let footerHTML = '';
+    
+    if (canAct) {
+      footerHTML = `
+        ${AUTH.isWebmaster() ? `<button class="btn btn-deny" onclick="deleteSubmission('${s.id}')" style="margin-right:auto;">🗑 Delete Submission</button>` : ''}
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-deny" onclick="handleAction('${s.id}','deny')">↩ Return ${isE?'to LTG':'to Editor'}</button>
+        <button class="btn btn-approve" onclick="handleAction('${s.id}','approve')">${isE?'→ Forward to Webmaster':'✓ Approve & Publish'}</button>`;
+    } else {
+      footerHTML = `
+        ${AUTH.isWebmaster() ? `<button class="btn btn-deny" onclick="deleteSubmission('${s.id}')" style="margin-right:auto;">🗑 Delete Submission</button>` : ''}
+        <button class="btn btn-outline" onclick="closeModal()">Close</button>`;
+    }
+    
+    document.getElementById('modalFooter').innerHTML = footerHTML;
+    document.getElementById('detailModal').classList.add('open');
+    document.getElementById('detailModal').dataset.subId = id;
+  } catch(e) { alert('Failed to load: '+e.message); }
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+async function deleteSubmission(id) {
+  if (!AUTH.isWebmaster()) {
+    alert('Only webmaster can delete submissions.');
+    return;
+  }
+  
+  if (!confirm('⚠️ PERMANENTLY DELETE THIS SUBMISSION?\n\nThis will completely remove it from the system and cannot be undone.\n\nAre you absolutely sure?')) return;
+  
+  try {
+    await API.update(id, { deleted: true, _logActor: user.email, _logActorName: user.name, _logActorRole: user.role });
+    allSubs = allSubs.filter(s => s.id !== id);
+    closeModal();
+    applyFilters();
+    showToast('Submission permanently deleted.', 'info');
+  } catch(e) { 
+    showToast('Delete failed: ' + e.message, 'error'); 
+  }
+}
+
+async function handleAction(id, action) {
+  const comment = document.getElementById('reviewComment')?.value?.trim();
+  if (action==='deny' && !comment) { alert('Please add a comment before returning.'); return; }
+  try {
+    const isE = AUTH.isEditor();
+    const newStatus = action==='approve' ? (isE?'pending-webmaster':'approved') : 'denied';
+    const actionKey = action==='approve' ? (isE?'EDITOR_APPROVED':'WEBMASTER_APPROVED') : 'SUBMISSION_RETURNED';
+    const subInfo = allSubs.find(s=>s.id===id);
+    const detail = subInfo ? `Div ${subInfo.division} - ${subInfo.month} ${subInfo.year} - ${subInfo.type==='newsletter'?'Newsletter':'DC Report'}` : id;
+    const data = {
+      status: newStatus,
+      _logActor:     user.email,
+      _logActorName: user.name,
+      _logActorRole: user.role,
+      _logDetail:    detail,
+    };
+    if (comment) data.threadMessage = { from:user.role, fromName:user.name, to:isE?'ltg':'editor', message:comment };
+    await API.update(id, data);
+    closeModal();
+    // Update local cache
+    const idx = allSubs.findIndex(s=>s.id===id);
+    if (idx>-1) { allSubs[idx].status=newStatus; if(comment) allSubs[idx].thread.push({...data.threadMessage,timestamp:new Date().toISOString()}); }
+    applyFilters();
+    showToast(action==='approve'?(isE?'Forwarded to webmaster.':'Approved and published!'):'Returned with comments.', action==='approve'?'success':'info');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+}
+
+function statusBadge(s){const m={'pending-editor':['badge-pending-editor','Pending Editor'],'pending-webmaster':['badge-pending-webmaster','Pending Webmaster'],'approved':['badge-approved','✓ Approved'],'denied':['badge-denied','Needs Revision']};const[c,l]=m[s]||['badge-pending-editor',s];return`<span class="badge ${c}">${l}</span>`;}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtSize(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+function showToast(msg,type='info'){const t=document.createElement('div');t.style.cssText=`position:fixed;bottom:1.5rem;right:1.5rem;padding:0.875rem 1.25rem;background:${type==='success'?'#14532d':type==='error'?'#7f1d1d':'var(--navy)'};color:white;border-radius:10px;font-size:0.875rem;font-weight:500;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.2);`;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3500);}
+
+init();
+</script>
+</body>
+</html>

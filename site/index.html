@@ -1,0 +1,3492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZFC2BE8DN1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZFC2BE8DN1');
+</script>
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MO-ARK District | Key Club International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital,wght@0,400;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+     ============================================================ */
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex; align-items: center;
+    overflow: hidden;
+    padding-top: 68px;
+
+    /* Photo background — crop top 33% by starting at 33% of the image height.
+       background-size: cover ensures it fills the hero width.
+       The dark overlay (next rule) keeps text readable on any photo. */
+    background-color: var(--navy);
+    background-image:
+      linear-gradient(
+        to bottom,
+        rgba(10, 22, 40, 0.62) 0%,
+        rgba(10, 22, 40, 0.55) 40%,
+        rgba(10, 22, 40, 0.72) 100%
+      ),
+      url('Images/Key_Slideshow13.PNG');
+    background-size: cover;
+    /* Start at 33% down the image to crop the Instagram text at the top */
+    background-position: center 53%;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* subtle parallax on desktop */
+  }
+
+  /* On mobile, fixed attachment causes rendering issues — switch to scroll */
+  @media (max-width: 768px) {
+    .hero {
+      background-attachment: scroll;
+      /* On smaller screens, push a touch further down the image
+         to keep the subject (people/action) centered */
+      background-position: center 40%;
+    }
+  }
+
+  /* Geometric background patterns — layered on top of the photo */
+  .hero-bg {
+    position: absolute; inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    top: -20%; right: -10%;
+    width: 65vw; height: 65vw;
+    background: radial-gradient(ellipse at 60% 40%, rgba(200,150,42,0.08) 0%, rgba(26,58,107,0.12) 50%, transparent 75%);
+    border-radius: 50%;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -10%; left: -5%;
+    width: 50vw; height: 50vw;
+    background: radial-gradient(ellipse, rgba(26,58,107,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* ── 2D PARALLAX KEY ── */
+  .parallax-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .parallax-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      will-change: transform;
+      pointer-events: none;
+    }
+  /* Allow clicks to reach the key specifically */
+  #pl-key {
+    pointer-events: none;
+  }
+  #pl-key .key-wrap {
+    pointer-events: all;
+  }
+  /* keyWrap stays absolutely positioned within the parallax layer */
+
+  /* Key sizing strategy:
+     - Height is the real constraint: key SVG is 480h × 200w (2.4:1 tall ratio)
+     - We want the full key visible, so cap its height to hero available height minus padding
+     - Width follows from the aspect ratio
+     - On wide screens: allow up to 38vw but cap by height
+     - On medium screens: shrink more aggressively
+     - On narrow: hide and show a small centered version instead */
+  /* Fix: key layers must not clip and key-wrap anchors to viewport right */
+  #pl-shadow,
+  #pl-key {
+    overflow: visible;
+  }
+  .key-wrap {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(38vw, 42vh, 420px);
+    max-height: calc(100svh - 68px - 3rem);
+    z-index: 2;
+  }
+  .key-wrap svg {
+    width: 100%;
+    height: auto;
+    max-height: inherit;
+  }
+
+  /* Large desktops: give more room */
+  @media (min-width: 1400px) {
+    .key-wrap { width: min(420px, 34vw, 50vh); right: 6%; }
+  }
+
+  /* Standard laptops (1024–1280px): key tends to be half-visible — shrink it */
+  @media (max-width: 1280px) and (min-width: 1025px) {
+    .key-wrap { width: min(30vw, 38vh, 340px); right: 2%; }
+  }
+
+  /* Tablets landscape & small laptops (768–1024px): show a smaller centered-right key */
+  @media (max-width: 1024px) and (min-width: 769px) {
+    .key-wrap {
+      width: min(22vw, 32vh, 220px);
+      right: 1.5%;
+      opacity: 0.6;
+    }
+  }
+
+  /* Mobile & portrait tablets: hide the side key entirely */
+  @media (max-width: 768px) {
+    .key-wrap { display: none; }
+  }
+
+  .hero-inner {
+    position: relative; z-index: 1;
+    max-width: 1200px; margin: 0 auto;
+    padding: 4rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(200,150,42,0.15);
+    border: 1px solid rgba(200,150,42,0.3);
+    border-radius: 100px;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gold-lt);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+  }
+  .hero-eyebrow-dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  .hero-title {
+    font-family: var(--ff-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold-lt);
+  }
+
+  .hero-desc {
+    font-size: 1.0625rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    max-width: 44ch;
+  }
+
+  .hero-actions {
+    display: flex; flex-wrap: wrap; gap: 0.875rem;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.8125rem 1.625rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--ff-body);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all var(--transition);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+  }
+  .btn-primary:hover {
+    background: var(--gold-lt);
+    border-color: var(--gold-lt);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(200,150,42,0.4);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border-color: rgba(255,255,255,0.3);
+  }
+  .btn-outline:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.6);
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .hero-stat-value {
+    font-family: var(--ff-display);
+    font-size: 2rem;
+    color: var(--gold-lt);
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    margin-top: 0.25rem;
+  }
+
+  /* Hero right — visual card stack */
+  .hero-visual {
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .hero-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    backdrop-filter: blur(8px);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .hero-card:hover {
+    transform: translateX(4px);
+    box-shadow: -4px 0 20px rgba(200,150,42,0.15);
+    border-color: rgba(200,150,42,0.3);
+  }
+  .hero-card-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--gold-lt); font-weight: 600; margin-bottom: 0.5rem;
+  }
+  .hero-card-title {
+    font-family: var(--ff-display);
+    font-size: 1.1rem; color: var(--white); margin-bottom: 0.25rem;
+  }
+  .hero-card-sub { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+  .hero-card-badge {
+    display: inline-block;
+    margin-top: 0.75rem;
+    background: rgba(200,150,42,0.2);
+    color: var(--gold-lt);
+    font-size: 0.7rem; font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  /* ============================================================
+     SECTION LAYOUT UTILITY
+     ============================================================ */
+  .section {
+    padding: 6rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-full { padding: 6rem 0; }
+  .section-full .section-inner {
+    max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+  }
+
+  .section-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em;
+    font-weight: 600; color: var(--gold); margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: var(--ff-display);
+    font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+    line-height: 1.1;
+    color: var(--navy);
+    margin-bottom: 1rem;
+  }
+  .section-title em { font-style: italic; color: var(--blue); }
+  .section-desc {
+    font-size: 1.0625rem;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 52ch;
+  }
+
+  .section-header { margin-bottom: 3.5rem; }
+  .section-header.center { text-align: center; }
+  .section-header.center .section-desc { margin: 0 auto; }
+
+  /* ============================================================
+     QUICK LINKS (Start Here)
+     ============================================================ */
+  .quicklinks-bg {
+    background: var(--cream);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .quicklinks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .quicklink-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    display: flex; flex-direction: column;
+    gap: 0.75rem;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+    cursor: pointer;
+  }
+  .quicklink-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+    border-color: var(--gold);
+  }
+  .quicklink-icon {
+    width: 44px; height: 44px;
+    background: var(--navy);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .quicklink-icon svg { width: 22px; height: 22px; stroke: var(--gold-lt); }
+  .quicklink-card h3 {
+    font-family: var(--ff-display);
+    font-size: 1.15rem; color: var(--navy);
+  }
+  .quicklink-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.5; flex: 1; }
+  .quicklink-arrow {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.8125rem; font-weight: 600; color: var(--gold);
+    transition: gap var(--transition);
+  }
+  .quicklink-card:hover .quicklink-arrow { gap: 8px; }
+
+  /* ============================================================
+     MISSION STRIP
+     ============================================================ */
+  .mission-strip {
+    background: var(--navy);
+    padding: 5rem 1.5rem;
+  }
+  .mission-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 2fr; gap: 5rem;
+    align-items: center;
+  }
+  .mission-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--gold); font-weight: 600; margin-bottom: 1rem;
+  }
+  .mission-heading {
+    font-family: var(--ff-display);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    color: var(--white); line-height: 1.15;
+  }
+  .mission-heading em { font-style: italic; color: var(--gold-lt); }
+  .mission-pillars { display: flex; flex-direction: column; gap: 1.25rem; }
+  .mission-pillar {
+    display: flex; align-items: flex-start; gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius);
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .mission-pillar:hover {
+    background: rgba(200,150,42,0.08);
+    border-color: rgba(200,150,42,0.25);
+  }
+  .mission-pillar-num {
+    font-family: var(--ff-display);
+    font-size: 1.5rem; color: var(--gold); line-height: 1; flex-shrink: 0;
+    width: 2rem; text-align: right;
+  }
+  .mission-pillar-content h4 {
+    font-family: var(--ff-display);
+    font-size: 1.125rem; color: var(--white); margin-bottom: 0.375rem;
+  }
+  .mission-pillar-content p { font-size: 0.875rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ============================================================
+     NEWS & EVENTS
+     ============================================================ */
+  .news-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+  }
+  .news-featured {
+    background: var(--navy);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    min-height: 380px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 2rem;
+    transition: transform var(--transition);
+    cursor: pointer;
+  }
+  .news-featured:hover { transform: scale(1.01); }
+  .news-featured::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,22,40,0.95) 30%, rgba(10,22,40,0.3) 100%);
+    z-index: 1;
+  }
+  .news-featured-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: linear-gradient(135deg, #1A3A6B 0%, #0A1628 60%, #2A1A40 100%);
+  }
+  /* Space-themed art for DLC */
+  .news-featured-art {
+    position: absolute; inset: 0; z-index: 0;
+    overflow: hidden;
+  }
+  .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0.6} 50%{opacity:0.15} }
+  .news-featured-content { position: relative; z-index: 2; }
+  .news-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.7rem; font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .news-featured h3 {
+    font-family: var(--ff-display);
+    font-size: 1.625rem; color: var(--white); line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+  .news-featured p { font-size: 0.9rem; color: rgba(255,255,255,0.65); margin-bottom: 1.25rem; }
+  .news-featured-meta { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+
+  .news-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .news-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.375rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+    transition: box-shadow var(--transition), transform var(--transition);
+    cursor: pointer;
+  }
+  .news-item:hover { box-shadow: var(--shadow-hover); transform: translateX(3px); }
+  .news-item-date {
+    flex-shrink: 0;
+    background: var(--cream);
+    border-radius: var(--radius-sm);
+    width: 48px; padding: 0.5rem 0.25rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .news-item-date-month { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); font-weight: 700; }
+  .news-item-date-day { font-family: var(--ff-display); font-size: 1.375rem; color: var(--navy); line-height: 1; }
+  .news-item-body h4 { font-size: 0.9375rem; font-weight: 600; color: var(--navy); margin-bottom: 0.25rem; line-height: 1.3; }
+  .news-item-body p { font-size: 0.8125rem; color: var(--muted); line-height: 1.5; }
+
+  /* ============================================================
+     DISTRICT SNAPSHOT
+     ============================================================ */
+  .snapshot-bg { background: var(--cream); }
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+  .snapshot-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.75rem;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .snapshot-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); }
+  .snapshot-card-num {
+    font-family: var(--ff-display);
+    font-size: 3rem; color: var(--navy); line-height: 1;
+    margin-bottom: 0.375rem;
+  }
+  .snapshot-card-unit { font-size: 1rem; color: var(--gold); }
+  .snapshot-card h4 { font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: 0.375rem; }
+  .snapshot-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.5; }
+  .snapshot-card-bar {
+    height: 3px; background: var(--cream);
+    border-radius: 2px; margin-top: 1.25rem; overflow: hidden;
+  }
+  .snapshot-card-fill {
+    height: 100%; background: var(--gold); border-radius: 2px;
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ============================================================
+     CORE VALUES
+     ============================================================ */
+  .values-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+  }
+  .value-card {
+    border-radius: var(--radius);
+    padding: 2rem;
+    border: 1px solid var(--border);
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .value-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+  .value-card:nth-child(1) { background: var(--navy); }
+  .value-card:nth-child(2) { background: var(--blue); }
+  .value-card:nth-child(3) { background: var(--cream); }
+  .value-card:nth-child(1) .value-title,
+  .value-card:nth-child(2) .value-title { color: var(--white); }
+  .value-card:nth-child(3) .value-title { color: var(--navy); }
+  .value-card:nth-child(1) .value-desc,
+  .value-card:nth-child(2) .value-desc { color: rgba(255,255,255,0.6); }
+  .value-card:nth-child(3) .value-desc { color: var(--muted); }
+  .value-num {
+    font-family: var(--ff-display);
+    font-size: 3.5rem; line-height: 1;
+    color: var(--gold); opacity: 0.4;
+    margin-bottom: 0.5rem;
+  }
+  .value-title {
+    font-family: var(--ff-display);
+    font-size: 1.5rem; margin-bottom: 0.75rem;
+  }
+  .value-desc { font-size: 0.9rem; line-height: 1.7; }
+
+  /* ============================================================
+     RESOURCES STRIP
+     ============================================================ */
+  .resources-strip {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    padding: 5rem 1.5rem;
+  }
+  .resources-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+  }
+  .resources-content .section-label { color: var(--gold-lt); }
+  .resources-content .section-title { color: var(--white); }
+  .resources-content .section-title em { color: var(--gold-lt); }
+  .resources-content .section-desc { color: rgba(255,255,255,0.6); }
+  .resources-links { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem; }
+  .resource-link {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    cursor: pointer;
+  }
+  .resource-link:hover {
+    background: rgba(200,150,42,0.15);
+    border-color: rgba(200,150,42,0.35);
+    transform: translateX(4px);
+  }
+  .resource-link-icon {
+    width: 36px; height: 36px;
+    background: rgba(200,150,42,0.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .resource-link-icon svg { width: 18px; height: 18px; stroke: var(--gold-lt); }
+  .resource-link-text { flex: 1; }
+  .resource-link-text strong { font-size: 0.9375rem; font-weight: 600; display: block; }
+  .resource-link-text span { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+  .resource-link-arrow { color: rgba(255,255,255,0.3); font-size: 1.25rem; }
+
+  .resources-cta-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 2rem;
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .resources-cta-box h3 {
+    font-family: var(--ff-display);
+    font-size: 1.375rem; color: var(--white);
+  }
+  .resources-cta-box p { font-size: 0.9rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer {
+    background: var(--navy);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 4rem 1.5rem 2rem;
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+  }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+    padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 2.5rem;
+  }
+  .footer-brand p {
+    font-size: 0.875rem; color: rgba(255,255,255,0.45);
+    line-height: 1.7; margin-top: 1rem; max-width: 32ch;
+  }
+  .footer-col h4 {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--gold-lt); font-weight: 600; margin-bottom: 1.25rem;
+  }
+  .footer-col ul { display: flex; flex-direction: column; gap: 0.625rem; }
+  .footer-col ul li a {
+    font-size: 0.875rem; color: rgba(255,255,255,0.5);
+    transition: color var(--transition);
+  }
+  .footer-col ul li a:hover { color: var(--white); }
+  .footer-bottom {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-copy { font-size: 0.8125rem; color: rgba(255,255,255,0.3); }
+  .footer-socials { display: flex; gap: 0.75rem; }
+  .footer-social {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.875rem;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+    cursor: pointer;
+  }
+  .footer-social:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
+  }
+  .footer-social svg { width: 16px; height: 16px; }
+
+  /* ============================================================
+     ANIMATIONS
+     ============================================================ */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1024px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-visual { display: none; }
+    .hero-desc { max-width: none; }
+    .mission-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .news-grid { grid-template-columns: 1fr; }
+    .news-featured { min-height: 300px; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .resources-inner { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-toggle { display: flex; }
+    .values-grid { grid-template-columns: 1fr; }
+    .snapshot-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .hero-stat-value { font-size: 1.5rem; }
+    .section { padding: 4rem 1.25rem; }
+    .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+    .quicklinks-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .snapshot-grid { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; align-items: flex-start; }
+    .btn { width: 100%; justify-content: center; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ============================================================
+     GRAIN / NOISE TEXTURE OVERLAY ON HERO
+     ============================================================ */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.032;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+  }
+
+  /* ============================================================
+     HERO TITLE ANIMATED ENTRANCE
+     ============================================================ */
+  @keyframes heroLineReveal {
+    from { opacity: 0; transform: translateY(30px); filter: blur(3px); }
+    to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
+  }
+  @keyframes heroFadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Gold accent rule above eyebrow */
+  .hero-accent-rule {
+    display: block;
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+    border-radius: 2px;
+    margin-bottom: 1.25rem;
+    opacity: 0;
+    animation: heroFadeUp 0.5s ease forwards;
+    animation-delay: 0.1s;
+  }
+
+  .hero-eyebrow {
+    opacity: 0;
+    animation: heroFadeUp 0.55s ease forwards;
+    animation-delay: 0.28s;
+  }
+
+  /* Each line of the hero title animates independently */
+  .hero-title-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .hero-title-line-inner {
+    display: block;
+    opacity: 0;
+    animation: heroLineReveal 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .hero-title-line:nth-child(1) .hero-title-line-inner { animation-delay: 0.42s; }
+  .hero-title-line:nth-child(2) .hero-title-line-inner { animation-delay: 0.58s; }
+  .hero-title-line:nth-child(3) .hero-title-line-inner { animation-delay: 0.74s; }
+
+  .hero-desc {
+    opacity: 0;
+    animation: heroFadeUp 0.6s ease forwards;
+    animation-delay: 0.92s;
+  }
+  .hero-actions {
+    opacity: 0;
+    animation: heroFadeUp 0.6s ease forwards;
+    animation-delay: 1.08s;
+  }
+  .hero-stats {
+    opacity: 0;
+    animation: heroFadeUp 0.6s ease forwards;
+    animation-delay: 1.22s;
+  }
+
+  /* ============================================================
+     SECTION LABEL — gold left border editorial accent
+     ============================================================ */
+  .section-label {
+    border-left: 2px solid var(--gold);
+    padding-left: 0.6rem;
+  }
+  /* Strip it from the resources strip (white-on-navy context already has contrast) */
+  .resources-content .section-label {
+    border-left-color: var(--gold-lt);
+  }
+  /* Mission strip */
+  .mission-label {
+    border-left: 2px solid var(--gold);
+    padding-left: 0.6rem;
+  }
+
+  /* ============================================================
+     MOBILE HEADING LINE-HEIGHT FIX
+     ============================================================ */
+  @media (max-width: 480px) {
+    .hero-title, .section-title, .page-title { line-height: 1.18; }
+  }
+
+  /* ============================================================
+     MARTY THE MEERKAT — HERO MASCOT
+     ============================================================ */
+
+
+  /* Speech bubble — floats over Marty's chest/head area */
+  .marty-bubble-wrap {
+    position: absolute;
+    top: 20%;
+    left: 58%;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .marty-bubble {
+    background: #fff;
+    border: 2px solid #C8962A;
+    border-radius: 16px 16px 16px 4px;
+    padding: 8px 13px;
+    font-family: var(--ff-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #0A1628;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    position: relative;
+    transition: opacity 0.3s ease;
+  }
+  .marty-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -9px;
+    left: 14px;
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 9px solid #C8962A;
+  }
+  .marty-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 15px;
+    width: 0; height: 0;
+    border-left: 7px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 8px solid #fff;
+    z-index: 1;
+  }
+
+  /* Caption badge below Marty — matching our-district style */
+  .marty-caption {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(200,150,42,0.15);
+    border: 1px solid rgba(200,150,42,0.3);
+    border-radius: 10px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.5rem;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+
+  /* ============================================================
+     VALUE CARDS — differentiate #1 and #2
+     ============================================================ */
+  .value-card:nth-child(1) { border-top: 3px solid rgba(200,150,42,0.4); }
+  .value-card:nth-child(2) {
+    background: linear-gradient(145deg, #1e4580 0%, #0f2448 100%);
+    border-top: 3px solid var(--gold);
+  }
+  .value-card:nth-child(3) { border-top: 3px solid var(--navy); }
+
+  /* ============================================================
+     MISSION STRIP — watermark key
+     ============================================================ */
+  .mission-strip { position: relative; overflow: hidden; }
+  .mission-watermark {
+    position: absolute;
+    right: -2%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(400px, 42vw);
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mission-inner { position: relative; z-index: 1; }
+
+  /* ============================================================
+     SNAPSHOT BARS — animated via IntersectionObserver
+     ============================================================ */
+  .snapshot-card-fill {
+    width: 0 !important;
+    transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .snapshot-card-fill.bar-animate {
+    width: var(--bar-target) !important;
+  }
+
+  /* ============================================================
+     MASONRY GALLERY GRID — single source of truth; overrides below clear
+     any aspect-ratio rules from .gallery-item so each photo keeps its
+     natural shape and tiles cleanly with no gaps.
+     ============================================================ */
+  /* (The detailed rules live further down in the “GALLERY” block.) */
+
+  /* ============================================================
+     LIGHTBOX — image counter
+     ============================================================ */
+  #lightboxCounter {
+    position: absolute;
+    top: 1rem;
+    left: 1.5rem;
+    background: rgba(10,22,40,0.78);
+    border: 1px solid rgba(200,150,42,0.35);
+    border-radius: 100px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gold-lt);
+    backdrop-filter: blur(8px);
+    letter-spacing: 0.08em;
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     STAT COUNTER — tabular nums prevent layout jump
+     ============================================================ */
+  .hero-stat-value { font-variant-numeric: tabular-nums; }
+  .countdown-num   { font-variant-numeric: tabular-nums; }
+
+  /* ============================================================
+     KEY CLICK HINT
+     ============================================================ */
+  #keyWrap {
+    cursor: pointer;
+    transition: filter var(--transition);
+  }
+  #keyWrap:hover svg {
+    filter: drop-shadow(0 8px 40px rgba(200,150,42,0.55)) drop-shadow(0 2px 8px rgba(200,150,42,0.35));
+  }
+  .key-click-hint {
+    position: absolute;
+    bottom: -3.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.72rem;
+    color: var(--gold-lt);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    background: rgba(10,22,40,0.75);
+    border: 1.5px solid rgba(200,150,42,0.55);
+    border-radius: 100px;
+    padding: 0.45rem 1.1rem 0.45rem 0.9rem;
+    box-shadow: 0 0 18px rgba(200,150,42,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    animation: hintpulse 2.8s ease-in-out infinite;
+  }
+  @keyframes hintpulse {
+    0%,100% { opacity:0.6; box-shadow:0 0 14px rgba(200,150,42,0.15), inset 0 1px 0 rgba(255,255,255,0.06); }
+    50%      { opacity:1;   box-shadow:0 0 30px rgba(200,150,42,0.45), inset 0 1px 0 rgba(255,255,255,0.06); }
+  }
+
+  /* ============================================================
+     UNLOCK MODAL OVERLAY
+     ============================================================ */
+  #unlockOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: rgba(8, 16, 32, 0.97);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  #unlockOverlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* close button */
+  #unlockClose {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.5rem;
+    z-index: 9100;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    font-size: 1.25rem;
+    transition: background var(--transition), color var(--transition);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, background 0.2s ease;
+  }
+  #unlockClose.visible { opacity: 1; pointer-events: all; }
+  #unlockClose:hover { background: rgba(200,150,42,0.25); color: var(--gold-lt); }
+
+  /* ── ANIMATION STAGE (lock + key) ── */
+  #animStage {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  /* Flying key (3D CSS perspective) */
+  #flyKey {
+    position: absolute;
+    width: 140px;
+    transform-origin: center center;
+    transform: perspective(900px) translateZ(0) translateY(0) scale(1);
+    filter: drop-shadow(0 12px 48px rgba(200,150,42,0.5));
+    z-index: 10;
+  }
+
+  /* Lock SVG container */
+  #lockWrap {
+    position: absolute;
+    width: 180px;
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #lockWrap.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  /* shackle rotate on unlock */
+  #lockShackle {
+    transform-origin: 90px 50px;
+    transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  #lockShackle.open { transform: rotate(-70deg) translateY(-8px); }
+
+  /* success burst */
+  #unlockBurst {
+    position: absolute;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,150,42,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.3);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+  #unlockBurst.pop { opacity: 1; transform: scale(1); }
+
+  /* ── CONTENT PANEL (countdown + gallery) ── */
+  #unlockContent {
+    width: 100%;
+    max-width: 1100px;
+    padding: 0 1.5rem 5rem;
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s;
+  }
+  #unlockContent.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* DIVIDER */
+  .unlock-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,150,42,0.4), transparent);
+    margin: 0 0 4rem;
+  }
+
+  /* ── COUNTDOWN ── */
+  .countdown-wrap {
+    text-align: center;
+    margin-bottom: 4.5rem;
+  }
+  .countdown-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .countdown-headline {
+    font-family: var(--ff-display);
+    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+    color: var(--white);
+    margin-bottom: 0.375rem;
+    line-height: 1.1;
+  }
+  .countdown-headline em { color: var(--gold-lt); font-style: italic; }
+  .countdown-sub {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.04em;
+  }
+  .countdown-tiles {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .countdown-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 88px;
+  }
+  .countdown-num {
+    font-family: var(--ff-display);
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    line-height: 1;
+    color: var(--gold-lt);
+    background: rgba(200,150,42,0.1);
+    border: 1px solid rgba(200,150,42,0.25);
+    border-radius: 12px;
+    width: 100%;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    min-width: 88px;
+    position: relative;
+    overflow: hidden;
+  }
+  .countdown-num::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%; height: 1px;
+    background: rgba(200,150,42,0.15);
+  }
+  .countdown-unit {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+  }
+  .countdown-sep {
+    font-family: var(--ff-display);
+    font-size: 3rem;
+    color: rgba(200,150,42,0.35);
+    align-self: center;
+    padding-bottom: 1.5rem;
+    line-height: 1;
+  }
+
+  /* ── GALLERY ── */
+  .gallery-section {
+    margin-top: 0;
+  }
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .gallery-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .gallery-title {
+    font-family: var(--ff-display);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    color: var(--white);
+    margin-bottom: 0.375rem;
+  }
+  .gallery-title em { color: var(--gold-lt); font-style: italic; }
+  .gallery-desc {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* True masonry via CSS columns — each photo renders at its natural aspect
+     ratio, columns pack content top-down with no awkward gaps. */
+  .gallery-grid {
+    column-count: 3;
+    column-gap: 1.25rem;
+    display: block;
+  }
+  .gallery-item {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 0 0 1.25rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: auto;
+    height: auto;
+    border: 1px solid rgba(200,150,42,0.2);
+    cursor: pointer;
+    background: rgba(255,255,255,0.03);
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  }
+  .gallery-item:hover {
+    border-color: rgba(200,150,42,0.55);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(200,150,42,0.18), 0 0 0 1px rgba(200,150,42,0.12);
+  }
+  .gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+  }
+  .gallery-item:hover img { transform: scale(1.05); }
+  .gallery-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,22,40,0.7) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity var(--transition);
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    pointer-events: none;
+  }
+  .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+  .gallery-item-overlay span {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 900px) {
+    .gallery-grid { column-count: 2; }
+  }
+  @media (max-width: 560px) {
+    .gallery-grid { column-count: 1; }
+    .countdown-sep { display: none; }
+    .countdown-tiles { gap: 0.75rem; }
+    .countdown-tile { min-width: 72px; }
+    .countdown-num { min-width: 72px; font-size: 2.5rem; }
+  }
+
+  /* Lightbox */
+  #lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    background: rgba(5,10,20,0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  #lightbox.visible { opacity: 1; pointer-events: all; }
+  #lightbox img {
+    max-width: 92vw;
+    max-height: 88vh;
+    border-radius: 10px;
+    border: 1px solid rgba(200,150,42,0.3);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+    object-fit: contain;
+  }
+  #lightboxClose {
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    background: none; border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition);
+  }
+  #lightboxClose:hover { color: var(--gold-lt); }
+  #lightboxPrev, #lightboxNext {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    background: rgba(200,150,42,0.15);
+    border: 1px solid rgba(200,150,42,0.3);
+    border-radius: 50%;
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--gold-lt);
+    font-size: 1.25rem;
+    transition: background var(--transition);
+  }
+  #lightboxPrev:hover, #lightboxNext:hover { background: rgba(200,150,42,0.35); }
+  #lightboxPrev { left: 1.5rem; }
+  #lightboxNext { right: 1.5rem; }
+</style>
+</head>
+<body>
+<!-- ============================================================
+     2027 DLC THEME ANNOUNCEMENT SPLASH
+     Shows on first 2 visits (tracked via localStorage view count)
+     ============================================================ -->
+<div id="dlcSplash" style="display:none;">
+<style>
+#dlcSplash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #0A0F1E;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+#dlcSplash.hidden {
+  pointer-events: none;
+  animation: splashFadeOut 0.7s ease forwards;
+}
+@keyframes splashFadeOut {
+  to { opacity: 0; }
+}
+
+/* Stars background */
+#dlcStars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Confetti canvas */
+#dlcConfetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Red/white/blue light sweeps */
+.dlc-light {
+  position: absolute;
+  bottom: -20%;
+  width: 3px;
+  height: 130%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transform-origin: bottom center;
+  border-radius: 100px;
+  filter: blur(6px);
+}
+.dlc-light-1 { left: 5%; background: linear-gradient(to top, #B22234, transparent); animation: lightSweep1 3s ease-in-out 0.5s infinite; }
+.dlc-light-2 { left: 12%; background: linear-gradient(to top, #FFFFFF, transparent); animation: lightSweep2 3.4s ease-in-out 0.7s infinite; }
+.dlc-light-3 { right: 5%; background: linear-gradient(to top, #3C3B6E, transparent); animation: lightSweep1 3.2s ease-in-out 0.9s infinite reverse; }
+.dlc-light-4 { right: 12%; background: linear-gradient(to top, #B22234, transparent); animation: lightSweep2 2.8s ease-in-out 0.3s infinite reverse; }
+.dlc-light-5 { left: 50%; background: linear-gradient(to top, #FFFFFF, transparent); animation: lightSweep3 4s ease-in-out 1s infinite; }
+@keyframes lightSweep1 {
+  0%   { opacity: 0; transform: rotate(-25deg); }
+  25%  { opacity: 0.6; }
+  50%  { opacity: 0.6; transform: rotate(25deg); }
+  75%  { opacity: 0.6; }
+  100% { opacity: 0; transform: rotate(-25deg); }
+}
+@keyframes lightSweep2 {
+  0%   { opacity: 0; transform: rotate(20deg); }
+  30%  { opacity: 0.5; }
+  60%  { opacity: 0.5; transform: rotate(-20deg); }
+  100% { opacity: 0; transform: rotate(20deg); }
+}
+@keyframes lightSweep3 {
+  0%   { opacity: 0; transform: rotate(-10deg); }
+  50%  { opacity: 0.4; transform: rotate(10deg); }
+  100% { opacity: 0; transform: rotate(-10deg); }
+}
+
+/* Center content */
+.dlc-center {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  max-width: 700px;
+  width: 100%;
+}
+
+/* "2027 DLC" badge top */
+.dlc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(200,150,42,0.15);
+  border: 1px solid rgba(200,150,42,0.4);
+  border-radius: 100px;
+  padding: 0.4rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #F0C14B;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: dlcFadeUp 0.6s ease 0.3s forwards;
+}
+.dlc-badge-dot {
+  width: 7px; height: 7px;
+  background: #F0C14B;
+  border-radius: 50%;
+  animation: dlcPulse 1.5s ease infinite;
+}
+@keyframes dlcPulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.6); opacity: 0.5; }
+}
+
+/* Stars line decoration */
+.dlc-stars-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: dlcFadeUp 0.5s ease 0.5s forwards;
+}
+.dlc-star {
+  font-size: 18px;
+  color: #F0C14B;
+  animation: dlcStarSpin 3s linear infinite;
+}
+.dlc-star:nth-child(odd) { animation-direction: reverse; animation-duration: 4s; }
+
+@keyframes dlcStarSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Main headline */
+.dlc-headline {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(2.6rem, 7vw, 5.2rem);
+  line-height: 1.0;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  transform: scale(0.6) translateY(30px);
+  animation: dlcBlastIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s forwards;
+}
+.dlc-headline .dlc-year {
+  display: block;
+  font-size: clamp(3.5rem, 10vw, 7.5rem);
+  background: linear-gradient(135deg, #B22234 0%, #FFFFFF 35%, #3C3B6E 65%, #B22234 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  filter: drop-shadow(0 0 30px rgba(255,255,255,0.3));
+}
+@keyframes dlcBlastIn {
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Theme name */
+.dlc-theme-name {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-style: italic;
+  color: #F0C14B;
+  margin-bottom: 0.25rem;
+  opacity: 0;
+  animation: dlcFadeUp 0.7s ease 1.3s forwards;
+  text-shadow: 0 0 40px rgba(240,193,75,0.4);
+}
+
+/* Divider flag stripe */
+.dlc-stripe {
+  display: flex;
+  height: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1.25rem auto;
+  width: 0;
+  animation: dlcStripeGrow 0.6s ease 1.6s forwards;
+  max-width: 340px;
+}
+.dlc-stripe-r { flex: 1; background: #B22234; }
+.dlc-stripe-w { flex: 1; background: #FFFFFF; }
+.dlc-stripe-b { flex: 1; background: #3C3B6E; }
+@keyframes dlcStripeGrow {
+  to { width: 340px; }
+}
+
+/* Slogan */
+.dlc-slogan {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  opacity: 0;
+  animation: dlcFadeUp 0.6s ease 1.9s forwards;
+}
+.dlc-slogan em {
+  color: #F0C14B;
+  font-style: normal;
+}
+
+/* Body copy */
+.dlc-body {
+  font-size: 0.975rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+  max-width: 50ch;
+  margin: 0 auto 2rem;
+  opacity: 0;
+  animation: dlcFadeUp 0.6s ease 2.2s forwards;
+}
+
+@keyframes dlcFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Continue button */
+#dlcContinueBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #B22234, #3C3B6E);
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 0.875rem 2.25rem;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: dlcFadeUp 0.6s ease 2.6s forwards;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+#dlcContinueBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s ease;
+}
+#dlcContinueBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(178,34,52,0.5), 0 4px 12px rgba(60,59,110,0.4);
+}
+#dlcContinueBtn:hover::before {
+  background: rgba(255,255,255,0.08);
+}
+#dlcContinueBtn:active {
+  transform: translateY(-1px);
+}
+.dlc-btn-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+#dlcContinueBtn:hover .dlc-btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Subtle bottom flag bar */
+.dlc-flag-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 6px;
+  display: flex;
+}
+.dlc-flag-seg {
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .dlc-headline .dlc-year { font-size: clamp(3rem, 18vw, 5rem); }
+  .dlc-headline { font-size: clamp(2rem, 8vw, 3rem); }
+  .dlc-theme-name { font-size: clamp(1.4rem, 6vw, 2.2rem); }
+}
+</style>
+
+<canvas id="dlcConfetti"></canvas>
+<svg id="dlcStars" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"></svg>
+
+<!-- Searchlight sweeps -->
+<div class="dlc-light dlc-light-1"></div>
+<div class="dlc-light dlc-light-2"></div>
+<div class="dlc-light dlc-light-3"></div>
+<div class="dlc-light dlc-light-4"></div>
+<div class="dlc-light dlc-light-5"></div>
+
+<div class="dlc-center">
+  <div class="dlc-badge">
+    <div class="dlc-badge-dot"></div>
+    District Leadership Conference · Theme Announcement
+  </div>
+
+  <div class="dlc-stars-row">
+    <span class="dlc-star">★</span>
+    <span class="dlc-star">★</span>
+    <span class="dlc-star">★</span>
+    <span class="dlc-star">★</span>
+    <span class="dlc-star">★</span>
+  </div>
+
+  <div class="dlc-headline">
+    2027 DLC
+    <span class="dlc-year">Theme</span>
+    Announced
+  </div>
+
+  <div class="dlc-theme-name">Patriotism</div>
+
+  <div class="dlc-stripe">
+    <div class="dlc-stripe-r"></div>
+    <div class="dlc-stripe-w"></div>
+    <div class="dlc-stripe-b"></div>
+    <div class="dlc-stripe-r"></div>
+    <div class="dlc-stripe-w"></div>
+    <div class="dlc-stripe-b"></div>
+    <div class="dlc-stripe-r"></div>
+  </div>
+
+  <div class="dlc-slogan">"Red, White &amp; <em>You</em> — Making a Difference"</div>
+
+  <p class="dlc-body">
+    2026 marks a monumental milestone — the 250th birthday of the United States of America. 
+    As Key Club members across MO-ARK, we'll honor that legacy by stepping up, serving boldly, 
+    and proving that every act of service makes our nation stronger.
+  </p>
+
+  <button id="dlcContinueBtn" onclick="dismissDLCSplash()">
+    Let's Go
+    <span class="dlc-btn-arrow">→</span>
+  </button>
+</div>
+
+<!-- Bottom flag bar -->
+<div class="dlc-flag-bar">
+  <div class="dlc-flag-seg" style="background:#B22234;"></div>
+  <div class="dlc-flag-seg" style="background:#FFFFFF;"></div>
+  <div class="dlc-flag-seg" style="background:#3C3B6E;"></div>
+  <div class="dlc-flag-seg" style="background:#B22234;"></div>
+  <div class="dlc-flag-seg" style="background:#FFFFFF;"></div>
+  <div class="dlc-flag-seg" style="background:#3C3B6E;"></div>
+  <div class="dlc-flag-seg" style="background:#B22234;"></div>
+</div>
+
+</div>
+
+<script>
+(function() {
+  /*
+    Visit 1   → splash + fireworks/confetti
+    Visit 2-3 → splash only, no fireworks
+    Visit 4+  → skip entirely
+
+    Uses localStorage + cookie fallback so it works on file:// too.
+  */
+  const KEY = 'dlcSplash2027_views';
+
+  function readCount() {
+    try {
+      const v = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (!isNaN(v) && v > 0) return v;
+    } catch(e) {}
+    try {
+      const m = document.cookie.match(new RegExp('(?:^|; )' + KEY + '=([^;]*)'));
+      if (m) return parseInt(decodeURIComponent(m[1]), 10) || 0;
+    } catch(e) {}
+    return 0;
+  }
+
+  function writeCount(n) {
+    try { localStorage.setItem(KEY, String(n)); } catch(e) {}
+    try {
+      const exp = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
+      document.cookie = KEY + '=' + n + '; expires=' + exp + '; path=/; SameSite=Lax';
+    } catch(e) {}
+  }
+
+  const views = readCount();
+  writeCount(views + 1);
+
+  /* Visit 4+ → skip entirely */
+  if (views >= 3) {
+    document.getElementById('dlcSplash').style.display = 'none';
+    return;
+  }
+
+  /* Visit 1-3 → show splash */
+  document.getElementById('dlcSplash').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  /* Gate for fireworks — only on very first visit */
+  const showFireworks = (views === 0);
+
+  /* ── Animated star field (visit 1 only) ── */
+  if (showFireworks) (function buildStars() {
+    const svg = document.getElementById('dlcStars');
+    const count = 120;
+    for (let i = 0; i < count; i++) {
+      const cx = Math.random() * 100;
+      const cy = Math.random() * 100;
+      const r  = Math.random() * 1.4 + 0.3;
+      const delay = Math.random() * 4;
+      const dur   = 2 + Math.random() * 3;
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', cx + '%');
+      circle.setAttribute('cy', cy + '%');
+      circle.setAttribute('r', r);
+      circle.setAttribute('fill', 'white');
+      circle.setAttribute('opacity', (0.2 + Math.random() * 0.6).toFixed(2));
+      circle.style.animation = `dlcStarTwinkle ${dur}s ease-in-out ${delay}s infinite`;
+      svg.appendChild(circle);
+    }
+    const style = document.createElement('style');
+    style.textContent = `@keyframes dlcStarTwinkle { 0%,100%{opacity:0.15;} 50%{opacity:0.9;} }`;
+    document.head.appendChild(style);
+  })();
+
+  /* ── Confetti system (visit 1 only) ── */
+  if (showFireworks) (function runConfetti() {
+    const canvas = document.getElementById('dlcConfetti');
+    const ctx = canvas.getContext('2d');
+    const colors = ['#B22234','#FFFFFF','#3C3B6E','#F0C14B','#E8E8E8','#8B0000','#C0C0FF'];
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const pieces = [];
+    const TOTAL = 220;
+
+    function makePiece(side) {
+      /* side: 'left' or 'right' or 'center' */
+      const x = side === 'left'   ? Math.random() * window.innerWidth * 0.3
+              : side === 'right'  ? window.innerWidth * 0.7 + Math.random() * window.innerWidth * 0.3
+              : window.innerWidth * 0.2 + Math.random() * window.innerWidth * 0.6;
+      return {
+        x,
+        y: window.innerHeight + 20,
+        w: 8 + Math.random() * 10,
+        h: 4 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 5,
+        vy: -(14 + Math.random() * 18),
+        gravity: 0.25 + Math.random() * 0.15,
+        rot: Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 0.18,
+        alpha: 1,
+        shape: Math.random() < 0.4 ? 'circle' : 'rect',
+      };
+    }
+
+    /* Burst from both sides on load */
+    function burst(n, side) {
+      for (let i = 0; i < n; i++) pieces.push(makePiece(side));
+    }
+
+    /* Initial big burst */
+    setTimeout(() => { burst(90, 'left'); burst(90, 'right'); }, 400);
+    /* Second wave */
+    setTimeout(() => { burst(50, 'center'); }, 1200);
+    /* Steady trickle from both sides */
+    const trickle = setInterval(() => {
+      if (pieces.length > 600) return;
+      burst(8, 'left');
+      burst(8, 'right');
+    }, 600);
+
+    let raf;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = pieces.length - 1; i >= 0; i--) {
+        const p = pieces[i];
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.vy += p.gravity;
+        p.rot += p.rotV;
+        if (p.y > canvas.height + 30) {
+          p.alpha -= 0.05;
+          if (p.alpha <= 0) { pieces.splice(i, 1); continue; }
+        }
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        }
+        ctx.restore();
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+
+    /* Store cleanup reference */
+    window._dlcConfettiStop = function() {
+      clearInterval(trickle);
+      cancelAnimationFrame(raf);
+    };
+  })();
+})();
+
+function dismissDLCSplash() {
+  if (window._dlcConfettiStop) window._dlcConfettiStop();
+  const splash = document.getElementById('dlcSplash');
+  splash.classList.add('hidden');
+  document.body.style.overflow = '';
+  setTimeout(() => { splash.style.display = 'none'; }, 750);
+}
+</script>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">
+          About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">
+          Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="newsletters.html" class="nav-link">Newsletters</a>
+      </li>
+      <li class="nav-item">
+        <a href="resources.html" class="nav-link">
+          Resources
+        </a>
+      </li>
+            <li class="nav-item">
+        <a href="dlc.html" class="nav-link">
+          Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="dlc.html">District Leadership Conference</a>
+        </div>
+      </li>
+      <li>
+        <a href="contact.html" class="nav-link nav-cta">Contact Us</a>
+      </li>
+    </ul>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="nav-mobile" id="navMobile" role="dialog" aria-label="Mobile navigation">
+  <span class="nav-mobile-section">Navigate</span>
+  <a href="index.html">Home</a>
+  <span class="nav-mobile-section">About</span>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <span class="nav-mobile-section">Our District</span>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <span class="nav-mobile-section">Events</span>
+  <a href="dlc.html#calendar">Event Calendar</a>
+  <a href="dlc.html">District Leadership Conference</a>
+  <span class="nav-mobile-section">More</span>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<section class="hero" aria-label="Hero" id="heroSection">
+
+  <!-- 2D Parallax Scene -->
+  <div class="parallax-scene" id="parallaxScene">
+
+    <!-- Layer 0: back glow (slowest, barely moves) -->
+    <div class="parallax-layer" id="pl-glow" style="transform:translateY(0px)">
+      <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" style="position:absolute;right:-4%;top:50%;transform:translateY(-50%);width:min(560px,46vw,70vh);opacity:0.18">
+        <defs>
+          <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#C8962A" stop-opacity="1"/>
+            <stop offset="60%" stop-color="#1A3A6B" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#0A1628" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="400" cy="400" r="380" fill="url(#glowGrad)"/>
+      </svg>
+    </div>
+
+    <!-- Layer 1: far ring (slow) -->
+    <div class="parallax-layer" id="pl-ring1" style="transform:translateY(0px)">
+      <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;right:3%;top:50%;transform:translateY(-50%);width:min(480px,40vw,60vh);opacity:0.12">
+        <circle cx="300" cy="300" r="270" fill="none" stroke="#C8962A" stroke-width="1.5"/>
+        <circle cx="300" cy="300" r="240" fill="none" stroke="#F0C14B" stroke-width="0.5"/>
+      </svg>
+    </div>
+
+    <!-- Layer 2: mid ring (medium speed) -->
+    <div class="parallax-layer" id="pl-ring2" style="transform:translateY(0px)">
+      <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" style="position:absolute;right:3%;top:50%;transform:translateY(-50%);width:min(480px,40vw,60vh);opacity:0.22">
+        <circle cx="300" cy="300" r="200" fill="none" stroke="#F0C14B" stroke-width="1" stroke-dasharray="6 14"/>
+      </svg>
+    </div>
+
+    <!-- Layer 3: key shadow (medium-slow) -->
+    <div class="parallax-layer" id="pl-shadow" style="transform:translateY(0px)">
+      <div class="key-wrap" style="filter:blur(28px);opacity:0.35;transform:translateY(-50%) translateX(8px)">
+        <svg viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+          <g fill="#C8962A">
+            <!-- bow -->
+            <circle cx="100" cy="95" r="70" fill="#C8962A"/>
+            <circle cx="100" cy="95" r="42" fill="#0A1628"/>
+            <!-- shank -->
+            <rect x="86" y="155" width="28" height="260" rx="4"/>
+            <!-- teeth -->
+            <rect x="114" y="210" width="30" height="22" rx="3"/>
+            <rect x="114" y="268" width="24" height="18" rx="3"/>
+            <rect x="114" y="322" width="28" height="16" rx="3"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Layer 4: key body (main, moves most) -->
+    <div class="parallax-layer" id="pl-key" style="transform:translateY(0px)">
+      <div class="key-wrap" id="keyWrap" style="cursor:pointer;" title="Click to unlock">
+        <svg viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;filter:drop-shadow(0 8px 40px rgba(200,150,42,0.35)) drop-shadow(0 2px 8px rgba(200,150,42,0.2))">
+          <defs>
+            <linearGradient id="bowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F5D170"/>
+              <stop offset="35%" stop-color="#C8962A"/>
+              <stop offset="70%" stop-color="#A67820"/>
+              <stop offset="100%" stop-color="#E8B840"/>
+            </linearGradient>
+            <linearGradient id="shankGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#E8B840"/>
+              <stop offset="40%" stop-color="#C8962A"/>
+              <stop offset="100%" stop-color="#8A6018"/>
+            </linearGradient>
+            <linearGradient id="toothGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#D4A030"/>
+              <stop offset="100%" stop-color="#8A6018"/>
+            </linearGradient>
+            <radialGradient id="bowShine" cx="38%" cy="35%" r="55%">
+              <stop offset="0%" stop-color="#FFF0B0" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#C8962A" stop-opacity="0"/>
+            </radialGradient>
+            <!-- Shimmer sweep gradient -->
+            <linearGradient id="shimmer" x1="-100%" y1="0%" x2="200%" y2="0%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="white" stop-opacity="0"/>
+              <stop offset="45%" stop-color="white" stop-opacity="0"/>
+              <stop offset="50%" stop-color="white" stop-opacity="0.22"/>
+              <stop offset="55%" stop-color="white" stop-opacity="0"/>
+              <stop offset="100%" stop-color="white" stop-opacity="0"/>
+              <animateTransform attributeName="gradientTransform" type="translate" from="-200 0" to="400 0" dur="3.2s" repeatCount="indefinite"/>
+            </linearGradient>
+            <!-- Circular text path around the bow -->
+            <path id="bowTextPath" d="M 100,95 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"/>
+          </defs>
+
+          <!-- ── Bow ── -->
+          <circle cx="100" cy="95" r="72" fill="url(#bowGrad)"/>
+          <circle cx="100" cy="95" r="72" fill="url(#bowShine)"/>
+          <!-- Shimmer sweep over bow -->
+          <circle cx="100" cy="95" r="72" fill="url(#shimmer)"/>
+          <!-- Inner cutout -->
+          <circle cx="100" cy="95" r="46" fill="#0A1628"/>
+          <!-- Inner ring detail -->
+          <circle cx="100" cy="95" r="46" fill="none" stroke="#C8962A" stroke-width="1.5" stroke-opacity="0.4"/>
+
+          <!-- ── Text inside the bow hole ── -->
+          <!-- "MO-ARK" — big, centered -->
+          <text x="100" y="89" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif"
+                font-size="13.5" font-weight="700" letter-spacing="1.5"
+                fill="#F0C14B">
+            MO-ARK
+            <animate attributeName="opacity" values="0;1" dur="1s" begin="0.3s" fill="freeze"/>
+          </text>
+          <!-- "KEY CLUB" — smaller, below -->
+          <text x="100" y="103" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif"
+                font-size="7.5" font-weight="500" letter-spacing="2.2"
+                fill="#C8962A" fill-opacity="0.85">
+            KEY CLUB
+            <animate attributeName="opacity" values="0;1" dur="1s" begin="0.6s" fill="freeze"/>
+          </text>
+          <!-- Thin divider line between the two text lines -->
+          <line x1="72" y1="93.5" x2="128" y2="93.5" stroke="#C8962A" stroke-width="0.6" stroke-opacity="0.4">
+            <animate attributeName="opacity" values="0;1" dur="0.8s" begin="0.4s" fill="freeze"/>
+          </line>
+
+          <!-- ── Shank ── -->
+          <rect x="86" y="158" width="28" height="262" rx="5" fill="url(#shankGrad)"/>
+          <!-- Shank edge highlight -->
+          <rect x="86" y="158" width="6" height="262" rx="3" fill="#F0C14B" fill-opacity="0.3"/>
+          <!-- Shank edge shadow -->
+          <rect x="108" y="158" width="6" height="262" rx="3" fill="#5A3A08" fill-opacity="0.35"/>
+          <!-- Shimmer on shank -->
+          <rect x="86" y="158" width="28" height="262" rx="5" fill="url(#shimmer)"/>
+
+          <!-- "DISTRICT" text rotated along the shank -->
+          <text transform="rotate(-90, 100, 289)" x="100" y="293"
+                text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif"
+                font-size="6" font-weight="600" letter-spacing="3.5"
+                fill="#0A1628" fill-opacity="0.55">
+            DISTRICT
+            <animate attributeName="opacity" values="0;0.55" dur="1.2s" begin="0.9s" fill="freeze"/>
+          </text>
+
+          <!-- ── Teeth ── -->
+          <rect x="114" y="205" width="34" height="24" rx="4" fill="url(#toothGrad)"/>
+          <rect x="114" y="205" width="34" height="6" rx="3" fill="#F0C14B" fill-opacity="0.25"/>
+
+          <rect x="114" y="262" width="27" height="20" rx="4" fill="url(#toothGrad)"/>
+          <rect x="114" y="262" width="27" height="6" rx="3" fill="#F0C14B" fill-opacity="0.25"/>
+
+          <rect x="114" y="316" width="32" height="18" rx="4" fill="url(#toothGrad)"/>
+          <rect x="114" y="316" width="32" height="5" rx="3" fill="#F0C14B" fill-opacity="0.22"/>
+
+          <!-- ── Tip cap ── -->
+          <rect x="86" y="408" width="28" height="12" rx="4" fill="#E8B840"/>
+
+          <!-- ── Animated gold pulse ring on the bow ── -->
+          <circle cx="100" cy="95" r="72" fill="none" stroke="#F0C14B" stroke-width="1.5" stroke-opacity="0">
+            <animate attributeName="r" values="72;90" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
+            <animate attributeName="stroke-opacity" values="0.35;0" dur="2.5s" repeatCount="indefinite" begin="0.5s"/>
+          </circle>
+          <circle cx="100" cy="95" r="72" fill="none" stroke="#F0C14B" stroke-width="1" stroke-opacity="0">
+            <animate attributeName="r" values="72;90" dur="2.5s" repeatCount="indefinite" begin="1.75s"/>
+            <animate attributeName="stroke-opacity" values="0.2;0" dur="2.5s" repeatCount="indefinite" begin="1.75s"/>
+          </circle>
+          <!-- ── Full-key transparent hit area (ensures entire key is clickable) ── -->
+          <rect x="28" y="23" width="144" height="437" rx="10" fill="transparent" pointer-events="all" style="cursor:pointer"/>
+        </svg>
+        <div class="key-click-hint">🔑 Press the Key · DLC 2026 Memories &amp; Countdown</div>
+      </div>
+    </div>
+
+    <!-- Layer 5: floating particles (fast) -->
+    <div class="parallax-layer" id="pl-particles" style="transform:translateY(0px)">
+      <canvas id="particle-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+    </div>
+
+  </div>
+
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-content">
+      <span class="hero-accent-rule" aria-hidden="true"></span>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
+        Missouri-Arkansas District
+      </div>
+      <h1 class="hero-title">
+        <span class="hero-title-line"><span class="hero-title-line-inner">Caring —</span></span>
+        <span class="hero-title-line"><span class="hero-title-line-inner"><em>Our Way</em></span></span>
+        <span class="hero-title-line"><span class="hero-title-line-inner">of Life.</span></span>
+      </h1>
+      <p class="hero-desc">
+        MO-ARK is one of 33 districts of Key Club International — the world's oldest and largest student-led service organization. 122 clubs. 10 divisions. One mission.
+      </p>
+      <div class="hero-actions">
+        <a href="about.html" class="btn btn-primary">
+          Learn About MO-ARK
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="dlc.html" class="btn btn-outline">
+          2027 DLC Info
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-value" data-count="3576" data-suffix="">3576</div>
+          <div class="hero-stat-label">Key Clubbers</div>
+        </div>
+        <div>
+          <div class="hero-stat-value" data-count="122" data-suffix="">122</div>
+          <div class="hero-stat-label">Clubs</div>
+        </div>
+        <div>
+          <div class="hero-stat-value" data-count="10" data-suffix="">10</div>
+          <div class="hero-stat-label">Divisions</div>
+        </div>
+        <div>
+          <div class="hero-stat-value" data-count="2" data-suffix="">2</div>
+          <div class="hero-stat-label">States</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-card">
+        <div class="hero-card-label">Upcoming Event</div>
+        <div class="hero-card-title">District Leadership Conference</div>
+        <div class="hero-card-sub">University Plaza Hotel · Springfield, MO</div>
+        <div class="hero-card-badge">March 4–6, 2027</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-label">DLC 2027 Theme</div>
+        <div class="hero-card-title">Patriotic</div>
+        <div class="hero-card-sub">Red, White & You — Making a Difference</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-label">Resources</div>
+        <div class="hero-card-title">Club Officer Guidebooks</div>
+        <div class="hero-card-sub">Download PDF guides for every officer role</div>
+      </div>
+    </div>
+  </div>
+  <!-- ============================================================
+       MARTY THE MEERKAT — HERO VERSION (bottom-center of hero)
+       ============================================================ -->
+</section>
+
+<!-- ============================================================
+     MARTY THE MEERKAT — STICKY CORNER VERSION
+     ============================================================ -->
+
+
+<div class="quicklinks-bg">
+  <div class="section" style="padding-top:3.5rem;padding-bottom:3.5rem;">
+    <div style="display:flex;align-items:center;gap:1.25rem;padding-left:1rem;">
+
+      <!-- MO-ARK Logo column - hides on narrow screens -->
+      <div id="marty-ql-wrap" aria-hidden="true" style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible;width:320px;max-width:30vw;">
+        <img id="moark-logo-quicklinks" src="Images/mo-ark_logo.png" alt="MO-ARK District Key Club Logo" style="display:block;width:100%;height:auto;max-height:480px;object-fit:contain;filter:drop-shadow(0 6px 20px rgba(0,0,0,0.18));">
+        <div class="marty-caption" style="margin-top:1rem;font-size:0.68rem;white-space:normal;text-align:center;max-width:280px;line-height:1.4;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M12 2L4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z"/></svg>
+          MO-ARK District of Key Club International
+        </div>
+      </div>
+
+      <!-- Cards column -->
+      <div id="marty-cards-col" style="flex:1;min-width:0;">
+        <div class="section-header" style="margin-bottom:2rem;">
+          <div class="section-label">Get Started</div>
+          <h2 class="section-title">Find what you need</h2>
+        </div>
+        <div class="quicklinks-grid">
+          <a href="about.html" class="quicklink-card fade-in">
+            <div class="quicklink-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </div>
+            <h3>About MO-ARK</h3>
+            <p>Learn about the Missouri-Arkansas district, our history, and our mission.</p>
+            <span class="quicklink-arrow">Learn more →</span>
+          </a>
+          <a href="our-district.html#board" class="quicklink-card fade-in">
+            <div class="quicklink-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h3>District Board</h3>
+            <p>Meet your ‘26–27 executive and lieutenant governors across all 10 divisions.</p>
+            <span class="quicklink-arrow">Meet the board →</span>
+          </a>
+          <a href="resources.html" class="quicklink-card fade-in">
+            <div class="quicklink-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>
+              </svg>
+            </div>
+            <h3>Resources</h3>
+            <p>Forms, officer guidebooks, monthly reports, style guides, and more.</p>
+            <span class="quicklink-arrow">Browse resources →</span>
+          </a>
+          <a href="newsletters.html" class="quicklink-card fade-in">
+            <div class="quicklink-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <h3>Newsletters</h3>
+            <p>Read division newsletters, the Key Way, and Kiwanigram publications.</p>
+            <span class="quicklink-arrow">Read newsletters →</span>
+          </a>
+          <a href="contact.html" class="quicklink-card fade-in">
+            <div class="quicklink-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <h3>Contact Us</h3>
+            <p>Reach out to the board, find individual member contact info, or ask a question.</p>
+            <span class="quicklink-arrow">Get in touch →</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="mission-strip">
+  <!-- Watermark key icon -->
+  <svg class="mission-watermark" viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="100" cy="95" r="72" fill="#C8962A"/>
+    <circle cx="100" cy="95" r="46" fill="#0A1628"/>
+    <rect x="86" y="158" width="28" height="262" rx="5" fill="#C8962A"/>
+    <rect x="114" y="205" width="34" height="24" rx="4" fill="#C8962A"/>
+    <rect x="114" y="262" width="27" height="20" rx="4" fill="#C8962A"/>
+    <rect x="114" y="316" width="32" height="18" rx="4" fill="#C8962A"/>
+    <rect x="86" y="408" width="28" height="12" rx="4" fill="#C8962A"/>
+  </svg>
+  <div class="mission-inner">
+    <div class="fade-in">
+      <div class="mission-label">Who We Are</div>
+      <h2 class="mission-heading">Built on <em>service,</em> driven by leadership.</h2>
+    </div>
+    <div class="mission-pillars fade-in">
+      <div class="mission-pillar">
+        <div class="mission-pillar-num">01</div>
+        <div class="mission-pillar-content">
+          <h4>Our Mission</h4>
+          <p>To grow members, clubs, and communities through representation and service leadership.</p>
+        </div>
+      </div>
+      <div class="mission-pillar">
+        <div class="mission-pillar-num">02</div>
+        <div class="mission-pillar-content">
+          <h4>Our Purpose</h4>
+          <p>To provide opportunities through character building and community outreach across Missouri and Arkansas.</p>
+        </div>
+      </div>
+      <div class="mission-pillar">
+        <div class="mission-pillar-num">03</div>
+        <div class="mission-pillar-content">
+          <h4>Our Scale</h4>
+          <p>One of 33 districts of Key Club International — the world's oldest and largest youth service organization.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-label">What's Happening</div>
+    <h2 class="section-title">News &amp; <em>Events</em></h2>
+  </div>
+  <div class="news-grid">
+
+    <!-- FEATURED SLIDESHOW -->
+    <div style="position:relative;border-radius:var(--radius);overflow:hidden;min-height:380px;" class="fade-in">
+
+      <!-- Slide 1: DLC (default) -->
+      <a href="dlc.html" id="news-slide-dlc" class="news-featured" aria-label="DLC 2027" style="position:absolute;inset:0;min-height:unset;opacity:1;transition:opacity 0.7s ease;z-index:2;">
+        <div class="news-featured-bg"></div>
+        <div class="news-featured-art" id="heroStars"></div>
+        <div class="news-featured-content">
+          <span class="news-tag">Featured Event</span>
+          <h3>Missouri-Arkansas District Leadership Conference 2027</h3>
+          <p>Join us March 4–6, 2027 at University Plaza Hotel in Springfield, Missouri for forums, contests, elections, and a year of celebration.</p>
+          <div class="news-featured-meta">March 4–6, 2027 · Springfield, MO · Theme: Patriotic</div>
+        </div>
+      </a>
+
+      <!-- Slide 2: ICON -->
+      <a href="https://www.keyclub.org/events/convention/" target="_blank" id="news-slide-icon" class="news-featured" aria-label="Key Club International Convention 2026" style="position:absolute;inset:0;min-height:unset;opacity:0;transition:opacity 0.7s ease;z-index:1;pointer-events:none;">
+        <div class="news-featured-bg" style="background:linear-gradient(135deg,#2A1A60 0%,#1A0A40 60%,#0A1628 100%);"></div>
+        <div class="news-featured-art" id="iconStars"></div>
+        <div class="news-featured-content">
+          <span class="news-tag" style="background:linear-gradient(90deg,#7C3AED,#A855F7);color:white;">Featured Event</span>
+          <h3>2026 Key Club International Convention</h3>
+          <p>Thousands of Key Clubbers from around the world gather in Dallas, Texas — make lifelong connections, compete, and celebrate service on an international stage.</p>
+          <div class="news-featured-meta">July 1–5, 2026 · Dallas, Texas · ICON 2026</div>
+        </div>
+      </a>
+
+      <!-- Slide dots -->
+      <div style="position:absolute;bottom:1rem;right:1rem;z-index:10;display:flex;gap:6px;">
+        <button id="dot-dlc" onclick="showSlide('dlc')" aria-label="DLC slide" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;background:var(--gold);opacity:1;transition:opacity 0.3s;"></button>
+        <button id="dot-icon" onclick="showSlide('icon')" aria-label="ICON slide" style="width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;background:white;opacity:0.4;transition:opacity 0.3s;"></button>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="news-sidebar">
+      <a href="dlc.html#calendar" class="news-item fade-in">
+        <div class="news-item-date">
+          <div class="news-item-date-month">Apr</div>
+          <div class="news-item-date-day">17</div>
+        </div>
+        <div class="news-item-body">
+          <h4>District Board Meeting</h4>
+          <p>All board members and LTGs meet to discuss district updates and upcoming events.</p>
+        </div>
+      </a>
+      <a href="https://www.keyclub.org/events/convention/" target="_blank" class="news-item fade-in">
+        <div class="news-item-date" style="background:linear-gradient(135deg,#2A1A60,#1A0A40);border-color:#7C3AED;">
+          <div class="news-item-date-month" style="color:#A855F7;">Jul</div>
+          <div class="news-item-date-day" style="color:white;">1</div>
+        </div>
+        <div class="news-item-body">
+          <h4>🌐 ICON — International Convention</h4>
+          <p>Key Club International's global convention in Dallas, TX. Compete, connect, and celebrate.</p>
+        </div>
+      </a>
+      <a href="dlc.html#calendar" class="news-item fade-in" id="news-live-date">
+        <div class="news-item-date">
+          <div class="news-item-date-month" id="live-month">Apr</div>
+          <div class="news-item-date-day" id="live-day">10</div>
+        </div>
+        <div class="news-item-body">
+          <h4>View Full Event Calendar</h4>
+          <p>Stay up to date with all district events, deadlines, and meetings.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── News Slideshow ── */
+  let currentSlide = 'dlc';
+  function showSlide(which) {
+    const dlc  = document.getElementById('news-slide-dlc');
+    const icon = document.getElementById('news-slide-icon');
+    const dotDlc  = document.getElementById('dot-dlc');
+    const dotIcon = document.getElementById('dot-icon');
+    if (which === 'dlc') {
+      dlc.style.opacity  = '1'; dlc.style.zIndex  = '2'; dlc.style.pointerEvents  = 'all';
+      icon.style.opacity = '0'; icon.style.zIndex = '1'; icon.style.pointerEvents = 'none';
+      dotDlc.style.opacity = '1'; dotIcon.style.opacity = '0.4';
+    } else {
+      icon.style.opacity = '1'; icon.style.zIndex = '2'; icon.style.pointerEvents = 'all';
+      dlc.style.opacity  = '0'; dlc.style.zIndex  = '1'; dlc.style.pointerEvents  = 'none';
+      dotIcon.style.opacity = '1'; dotDlc.style.opacity = '0.4';
+    }
+    currentSlide = which;
+  }
+  let slideTimer = setInterval(() => showSlide(currentSlide === 'dlc' ? 'icon' : 'dlc'), 6000);
+  /* Reset timer when manually clicking a dot */
+  document.getElementById('dot-dlc').addEventListener('click',  () => { clearInterval(slideTimer); slideTimer = setInterval(() => showSlide(currentSlide === 'dlc' ? 'icon' : 'dlc'), 6000); });
+  document.getElementById('dot-icon').addEventListener('click', () => { clearInterval(slideTimer); slideTimer = setInterval(() => showSlide(currentSlide === 'dlc' ? 'icon' : 'dlc'), 6000); });
+
+  /* ── Live date on calendar item ── */
+  (function() {
+    const now = new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('live-month').textContent = months[now.getMonth()];
+    document.getElementById('live-day').textContent   = now.getDate();
+  })();
+
+  /* ── ICON stars ── */
+  const iconStarsC = document.getElementById('iconStars');
+  if (iconStarsC) {
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div');
+      const sz = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:white;border-radius:50%;opacity:${Math.random()*0.5+0.1};animation:twinkle ${Math.random()*4+2}s ease-in-out infinite;animation-delay:${Math.random()*4}s;`;
+      iconStarsC.appendChild(s);
+    }
+  }
+</script>
+
+<div class="snapshot-bg section-full">
+  <div class="section-inner">
+    <div class="section-header center fade-in">
+      <div class="section-label">The District</div>
+      <h2 class="section-title">MO-ARK by the <em>numbers</em></h2>
+      <p class="section-desc">Spanning two states with a proud history dating back to 1947, MO-ARK is a powerhouse of student service.</p>
+    </div>
+    <div class="snapshot-grid">
+      <div class="snapshot-card fade-in">
+        <div class="snapshot-card-num">126<span class="snapshot-card-unit">+</span></div>
+        <h4>Member Schools</h4>
+        <p>Active Key Club chapters across Missouri and Arkansas</p>
+        <div class="snapshot-card-bar"><div class="snapshot-card-fill" style="--bar-target:84%"></div></div>
+      </div>
+      <div class="snapshot-card fade-in">
+        <div class="snapshot-card-num">10</div>
+        <h4>Divisions</h4>
+        <p>Each led by an elected lieutenant governor</p>
+        <div class="snapshot-card-bar"><div class="snapshot-card-fill" style="--bar-target:100%"></div></div>
+      </div>
+      <div class="snapshot-card fade-in">
+        <div class="snapshot-card-num">1947</div>
+        <h4>Est. Founding Year</h4>
+        <p>First organizational conference held in Hollister, Missouri</p>
+        <div class="snapshot-card-bar"><div class="snapshot-card-fill" style="--bar-target:60%"></div></div>
+      </div>
+      <div class="snapshot-card fade-in">
+        <div class="snapshot-card-num">14<span class="snapshot-card-unit">th</span></div>
+        <h4>of 33 Districts</h4>
+        <p>One district in Key Club International's global network</p>
+        <div class="snapshot-card-bar"><div class="snapshot-card-fill" style="--bar-target:50%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header fade-in">
+    <div class="section-label">What We Stand For</div>
+    <h2 class="section-title">Our Core <em>Values</em></h2>
+  </div>
+  <div class="values-grid">
+    <div class="value-card fade-in">
+      <div class="value-num">01</div>
+      <h3 class="value-title">Trust</h3>
+      <p class="value-desc">We act with integrity and transparency in every interaction — between members, clubs, and our community partners.</p>
+    </div>
+    <div class="value-card fade-in">
+      <div class="value-num">02</div>
+      <h3 class="value-title">Commitment</h3>
+      <p class="value-desc">We show up for our schools, our communities, and each other with dedication and follow-through in every service opportunity.</p>
+    </div>
+    <div class="value-card fade-in">
+      <div class="value-num">03</div>
+      <h3 class="value-title">Respect</h3>
+      <p class="value-desc">We honor every voice, uphold the dignity of all people, and lead with empathy in everything we do.</p>
+    </div>
+  </div>
+</div>
+
+<div class="resources-strip">
+  <div class="resources-inner">
+    <div class="resources-content fade-in">
+      <div class="section-label">Resources Hub</div>
+      <h2 class="section-title">Everything your<br><em>club needs</em></h2>
+      <p class="section-desc">From monthly report forms to officer guidebooks and DLC registration, it's all in one place.</p>
+      <div class="resources-links">
+        <a href="resources.html#forms" class="resource-link">
+          <div class="resource-link-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+            </svg>
+          </div>
+          <div class="resource-link-text">
+            <strong>Monthly Report Forms</strong>
+            <span>Submit your club's monthly activity reports</span>
+          </div>
+          <span class="resource-link-arrow">→</span>
+        </a>
+        <a href="resources.html#club" class="resource-link">
+          <div class="resource-link-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+          </div>
+          <div class="resource-link-text">
+            <strong>Club Officer Guidebooks</strong>
+            <span>PDF guides for every officer position</span>
+          </div>
+          <span class="resource-link-arrow">→</span>
+        </a>
+        <a href="resources.html#style-guide" class="resource-link">
+          <div class="resource-link-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="13.5" cy="6.5" r="3.5"/><circle cx="17.5" cy="13.5" r="3.5"/>
+              <circle cx="8.5" cy="14.5" r="3.5"/>
+            </svg>
+          </div>
+          <div class="resource-link-text">
+            <strong>Style Guide &amp; Graphics</strong>
+            <span>Official Key Club wordmarks, seals, and branding</span>
+          </div>
+          <span class="resource-link-arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="resources-cta-box fade-in">
+      <h3>District Leadership Conference</h3>
+      <p>The 2027 DLC will be held March 4–6 at the University Plaza Hotel in Springfield, Missouri. Theme: <strong style="color:var(--gold-lt)">Patriotic</strong></p>
+      <p style="margin-top:0.5rem">Access registration forms, award applications, candidate packets, and contest entries.</p>
+      <a href="dlc.html" class="btn btn-primary" style="margin-top:0.5rem">
+        View DLC Info &amp; Forms
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     UNLOCK OVERLAY
+============================================================ -->
+<div id="unlockOverlay" role="dialog" aria-modal="true" aria-label="DLC Memories">
+
+  <!-- Close button (appears after animation) -->
+  <button id="unlockClose" aria-label="Close">✕</button>
+
+  <!-- Animation stage -->
+  <div id="animStage">
+    <div id="unlockBurst"></div>
+
+    <!-- Lock SVG -->
+    <div id="lockWrap">
+      <svg viewBox="0 0 180 220" xmlns="http://www.w3.org/2000/svg" width="180">
+        <defs>
+          <linearGradient id="lockBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2A4A8A"/>
+            <stop offset="100%" stop-color="#0A1628"/>
+          </linearGradient>
+          <linearGradient id="lockGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F5D170"/>
+            <stop offset="50%" stop-color="#C8962A"/>
+            <stop offset="100%" stop-color="#8A6018"/>
+          </linearGradient>
+        </defs>
+        <!-- Shackle -->
+        <g id="lockShackle">
+          <path d="M54 110 L54 68 Q54 28 90 28 Q126 28 126 68 L126 110"
+                fill="none" stroke="url(#lockGoldGrad)" stroke-width="18" stroke-linecap="round"/>
+          <path d="M54 110 L54 68 Q54 28 90 28 Q126 28 126 68 L126 110"
+                fill="none" stroke="#F5D170" stroke-width="5" stroke-linecap="round" stroke-opacity="0.3"/>
+        </g>
+        <!-- Body -->
+        <rect x="18" y="100" width="144" height="110" rx="14" fill="url(#lockBodyGrad)"/>
+        <rect x="18" y="100" width="144" height="110" rx="14" fill="none" stroke="url(#lockGoldGrad)" stroke-width="2" stroke-opacity="0.6"/>
+        <!-- Keyhole -->
+        <circle cx="90" cy="148" r="16" fill="#0A1628" stroke="#C8962A" stroke-width="1.5" stroke-opacity="0.5"/>
+        <rect x="84" y="156" width="12" height="20" rx="4" fill="#0A1628"/>
+        <!-- Keyhole highlight (animates when unlocked) -->
+        <circle id="keyholeGlow" cx="90" cy="148" r="16" fill="rgba(200,150,42,0)" />
+        <!-- Body sheen -->
+        <rect x="22" y="104" width="60" height="40" rx="10" fill="white" fill-opacity="0.04"/>
+      </svg>
+    </div>
+
+    <!-- Flying key clone (built by JS) -->
+    <div id="flyKey"></div>
+  </div>
+
+  <!-- Content revealed after animation -->
+  <div id="unlockContent">
+    <div class="unlock-divider"></div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown-wrap">
+      <div class="countdown-label">Next Up</div>
+      <h2 class="countdown-headline">DLC <em>2027</em> Countdown</h2>
+      <!--
+        ╔══════════════════════════════════════════════════════╗
+        ║  CHANGE THIS DATE to next year's DLC start date     ║
+        ║  Format: "Month DD, YYYY HH:MM:SS"                  ║
+        ╚══════════════════════════════════════════════════════╝
+      -->
+      <p class="countdown-sub" id="dlcDateDisplay"></p>
+      <div class="countdown-tiles">
+        <div class="countdown-tile">
+          <div class="countdown-num" id="cd-days">--</div>
+          <div class="countdown-unit">Days</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-tile">
+          <div class="countdown-num" id="cd-hours">--</div>
+          <div class="countdown-unit">Hours</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-tile">
+          <div class="countdown-num" id="cd-mins">--</div>
+          <div class="countdown-unit">Minutes</div>
+        </div>
+        <div class="countdown-sep">:</div>
+        <div class="countdown-tile">
+          <div class="countdown-num" id="cd-secs">--</div>
+          <div class="countdown-unit">Seconds</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="gallery-section">
+      <div class="gallery-header">
+        <div class="gallery-label">Memories</div>
+        <h2 class="gallery-title">DLC <em>2026</em> Highlights</h2>
+        <p class="gallery-desc">A look back at the moments that made this year unforgettable.</p>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <!--
+          ╔══════════════════════════════════════════════════════════════╗
+          ║  ADD / REMOVE images below. All images live in Images/       ║
+          ║  Just change the src filenames and optional caption text.     ║
+          ╚══════════════════════════════════════════════════════════════╝
+        -->
+        <div class="gallery-item" data-index="0">
+          <img src="Images/Key_Slideshow1.PNG" alt="DLC 2026 Photo 1" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="1">
+          <img src="Images/Key_Slideshow2.PNG" alt="DLC 2026 Photo 2" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="2">
+          <img src="Images/Key_Slideshow3.PNG" alt="DLC 2026 Photo 3" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="3">
+          <img src="Images/Key_Slideshow4.PNG" alt="DLC 2026 Photo 4" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="4">
+          <img src="Images/Key_Slideshow5.PNG" alt="DLC 2026 Photo 5" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="5">
+          <img src="Images/Key_Slideshow6.PNG" alt="DLC 2026 Photo 6" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="6">
+          <img src="Images/Key_Slideshow7.PNG" alt="DLC 2026 Photo 7" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="7">
+          <img src="Images/Key_Slideshow8.PNG" alt="DLC 2026 Photo 8" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="8">
+          <img src="Images/Key_Slideshow9.PNG" alt="DLC 2026 Photo 9" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="9">
+          <img src="Images/Key_Slideshow10.PNG" alt="DLC 2026 Photo 10" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="10">
+          <img src="Images/Key_Slideshow11.PNG" alt="DLC 2026 Photo 11" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <div class="gallery-item" data-index="11">
+          <img src="Images/Key_Slideshow12.PNG" alt="DLC 2026 Photo 12" loading="lazy">
+          <div class="gallery-item-overlay"><span>DLC 2026</span></div>
+        </div>
+        <!-- Add more gallery-item divs here following the same pattern -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+  <button id="lightboxClose" aria-label="Close lightbox">✕</button>
+  <span id="lightboxCounter">1 / 12</span>
+  <button id="lightboxPrev" aria-label="Previous">&#8249;</button>
+  <img id="lightboxImg" src="" alt="Gallery photo">
+  <button id="lightboxNext" aria-label="Next">&#8250;</button>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+  /* Nav scroll effect */
+
+  /* Mobile hamburger toggle — was missing click handler */
+  const toggle = document.querySelector('.nav-toggle');
+  const mobile = document.querySelector('.nav-mobile');
+  toggle.addEventListener('click', () => {
+    const isOpen = mobile.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  /* Close mobile menu on link click */
+  window.addEventListener('scroll', () => {
+  document.querySelector('.nav').classList.toggle('scrolled', window.scrollY > 10);
+  });
+  mobile.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      mobile.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', false);
+      document.body.style.overflow = '';
+    });
+  });
+
+  /* ── 2D PARALLAX KEY ── */
+  (function() {
+    const hero = document.getElementById('heroSection');
+    if (!hero) return;
+
+    // Dynamically fit the key to the available hero height
+    function fitKey() {
+      const heroH = hero.offsetHeight;
+      const heroW = hero.offsetWidth;
+      const keyWraps = document.querySelectorAll('.key-wrap');
+      // Key SVG is 200w × 480h → aspect ratio 200/480 = 0.4167
+      const KEY_ASPECT = 200 / 480;
+      // Max height = hero height minus nav + top/bottom padding
+      const maxH = heroH - 68 - 48;
+      // Max width = 38% of hero width (so text content has space)
+      const maxW = heroW * 0.38;
+      // Pick the smaller constraint
+      const targetH = Math.min(maxH, maxW / KEY_ASPECT);
+      const targetW = Math.min(maxW, targetH * KEY_ASPECT);
+
+      keyWraps.forEach(kw => {
+        // Only apply on screens wide enough to show the key
+        if (heroW > 768) {
+          kw.style.width = Math.round(targetW) + 'px';
+        }
+      });
+    }
+
+    fitKey();
+    window.addEventListener('resize', fitKey);
+
+    // Layer elements and their parallax speeds (px moved per 100px scrolled)
+    const layers = [
+      { el: document.getElementById('pl-glow'),      speed: 0.06 },
+      { el: document.getElementById('pl-ring1'),     speed: 0.12 },
+      { el: document.getElementById('pl-ring2'),     speed: 0.22 },
+      { el: document.getElementById('pl-particles'), speed: 0.62 },
+    ];
+
+    // Key elements moved directly (position:fixed, so layer transform won't affect them)
+    const keyLayers = [
+      { el: document.querySelector('#pl-shadow .key-wrap'), speed: 0.30 },
+      { el: document.getElementById('keyWrap'),             speed: 0.45 },
+    ];
+
+    // Scroll-driven parallax
+    function onScroll() {
+      const sy = window.scrollY;
+      const heroBottom = hero.offsetTop + hero.offsetHeight;
+      layers.forEach(({ el, speed }) => {
+        if (!el) return;
+        el.style.transform = `translateY(${-sy * speed}px)`;
+      });
+      // Key-wraps are position:fixed so we adjust their translateY directly
+      // and hide them once the hero scrolls out of view
+      keyLayers.forEach(({ el, speed }) => {
+        if (!el) return;
+        el.style.transform = `translateY(calc(-50% + ${-sy * speed}px))`;
+        el.style.visibility = sy > heroBottom ? 'hidden' : 'visible';
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // ── Auto-hide gallery items with missing images ──
+  document.querySelectorAll('.gallery-item img').forEach(img => {
+    img.addEventListener('error', () => {
+      img.closest('.gallery-item').style.display = 'none';
+    });
+  });
+
+    // ── Particle canvas ──
+    const pc = document.getElementById('particle-canvas');
+    if (!pc) return;
+
+    function resizeCanvas() {
+      pc.width  = hero.offsetWidth;
+      pc.height = hero.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const ctx = pc.getContext('2d');
+    const PARTICLE_COUNT = 90;
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x: Math.random() * 1600,
+      y: Math.random() * 900,
+      r: Math.random() * 2 + 0.5,
+      dx: (Math.random() - 0.5) * 0.35,
+      dy: (Math.random() - 0.5) * 0.22,
+      alpha: Math.random() * 0.45 + 0.1,
+      pulse: Math.random() * Math.PI * 2,
+    }));
+
+    let t = 0;
+    function drawParticles() {
+      requestAnimationFrame(drawParticles);
+      t += 0.018;
+      ctx.clearRect(0, 0, pc.width, pc.height);
+
+      const W = pc.width, H = pc.height;
+      particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+
+        const a = p.alpha * (0.7 + 0.3 * Math.sin(t + p.pulse));
+        ctx.beginPath();
+        ctx.arc(p.x * (W / 1600), p.y * (H / 900), p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(240, 193, 75, ${a})`;
+        ctx.fill();
+      });
+    }
+    drawParticles();
+  })();
+
+  /* Scroll-triggered fade-in */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  /* ── ACTIVE NAV LINK ── */
+  document.querySelectorAll('.nav-link, .nav-dropdown a').forEach(link => {
+    if (link.href === location.href) link.classList.add('active');
+  });
+
+  /* ── HERO STAT COUNT-UP ──
+     Triggered by IntersectionObserver once stats scroll into view.
+     Uses easeOutQuart so numbers slow down near the end. */
+  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+
+  function animateCounter(el, target, duration) {
+    const start = performance.now();
+    const isLarge = target >= 1000; // use comma formatting for large nums
+    function step(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const value = Math.round(easeOutQuart(progress) * target);
+      el.textContent = isLarge ? value.toLocaleString() : value;
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = isLarge ? target.toLocaleString() : target;
+    }
+    requestAnimationFrame(step);
+  }
+
+  const statEls = document.querySelectorAll('.hero-stat-value[data-count]');
+  let statsAnimated = false;
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !statsAnimated) {
+        statsAnimated = true;
+        statEls.forEach((el, i) => {
+          const target = parseInt(el.dataset.count, 10);
+          // Stagger each counter slightly
+          setTimeout(() => animateCounter(el, target, 1800), i * 120);
+        });
+        statsObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+
+  if (statEls.length) statsObserver.observe(statEls[0].closest('.hero-stats'));
+
+  /* ── SNAPSHOT PROGRESS BARS — animate on scroll ── */
+  const barFills = document.querySelectorAll('.snapshot-card-fill');
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Small delay so user sees the animation start
+        setTimeout(() => entry.target.classList.add('bar-animate'), 150);
+        barObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  barFills.forEach(bar => barObserver.observe(bar));
+
+  /* ── NEWS SLIDESHOW PAUSE ON HOVER ── */
+  const slideshowEl = document.querySelector('.news-featured')?.closest('[style]');
+  if (slideshowEl) {
+    slideshowEl.addEventListener('mouseenter', () => clearInterval(slideTimer));
+    slideshowEl.addEventListener('mouseleave', () => {
+      slideTimer = setInterval(() => showSlide(currentSlide === 'dlc' ? 'icon' : 'dlc'), 6000);
+    });
+  }
+</script>
+
+<script>
+/* ============================================================
+   UNLOCK SEQUENCE
+   ============================================================ */
+(function() {
+
+  /* ── CONFIG ─────────────────────────────────────────────── */
+  //  Change this to next year's DLC date/time (local time)
+  const DLC_DATE = new Date("March 4, 2027 08:00:00");
+  const DLC_LABEL = "March 4–6, 2027 · Springfield, MO";
+  /* ────────────────────────────────────────────────────────── */
+
+  const keyWrap   = document.getElementById('keyWrap');
+  const overlay   = document.getElementById('unlockOverlay');
+  const closeBtn  = document.getElementById('unlockClose');
+  const flyKey    = document.getElementById('flyKey');
+  const lockWrap  = document.getElementById('lockWrap');
+  const lockShackle = document.getElementById('lockShackle');
+  const burst     = document.getElementById('unlockBurst');
+  const content   = document.getElementById('unlockContent');
+  const dateDisp  = document.getElementById('dlcDateDisplay');
+  const animStage = document.getElementById('animStage');
+
+  if (dateDisp) dateDisp.textContent = DLC_LABEL;
+
+  let animDone = false;
+  let cdInterval = null;
+
+  /* Build a clone of the real key SVG into flyKey */
+  function buildFlyKey() {
+    const realSvg = keyWrap.querySelector('svg');
+    if (!realSvg) return;
+    flyKey.innerHTML = realSvg.outerHTML;
+    flyKey.querySelector('svg').style.cssText =
+      'width:140px;height:auto;filter:drop-shadow(0 12px 60px rgba(200,150,42,0.7));display:block;';
+  }
+
+  /* Get centre position of keyWrap relative to viewport */
+  function keyCenter() {
+    const r = keyWrap.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  /* Position flyKey absolutely in the animStage (which is 100vh centred) */
+  function placeFlyKeyAt(vx, vy) {
+    // animStage is position:relative; its centre is (50vw, 50vh)
+    const sx = vx - window.innerWidth / 2;
+    const sy = vy - window.innerHeight / 2;
+    flyKey.style.transform = `translate(${sx}px, ${sy}px) scale(0.9)`;
+    flyKey.style.opacity   = '1';
+  }
+
+  /* Main animation sequence */
+  function runUnlock() {
+    if (animDone) { showContent(); return; }
+    animDone = true;
+
+    buildFlyKey();
+    const kc = keyCenter();
+    flyKey.style.transition = 'none';
+    flyKey.style.opacity = '0';
+    flyKey.style.transform = `translate(${kc.x - window.innerWidth/2}px, ${kc.y - window.innerHeight/2}px) scale(0.9)`;
+
+    // Show overlay
+    overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+
+    // Step 1: fade in flyKey at key's original position
+    requestAnimationFrame(() => {
+      flyKey.style.transition = 'opacity 0.35s ease';
+      flyKey.style.opacity = '1';
+
+      // Step 2: animate key flying toward camera (scale up + move centre)
+      setTimeout(() => {
+        flyKey.style.transition = 'transform 0.65s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease';
+        flyKey.style.transform = `translate(0px, -60px) scale(1.6) perspective(800px) rotateX(18deg)`;
+
+        // Step 3: slam back to centre, key shrinks to go-into-lock size
+        setTimeout(() => {
+          flyKey.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease';
+          flyKey.style.transform = `translate(0px, -20px) scale(0.7)`;
+
+          // Step 4: fade in lock
+          setTimeout(() => {
+            lockWrap.classList.add('visible');
+
+            // Step 5: key slides down into keyhole
+            setTimeout(() => {
+              flyKey.style.transition = 'transform 0.55s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease';
+              flyKey.style.transform = `translate(0px, 48px) scale(0.38)`;
+
+              // Step 6: key twist + shackle open
+              setTimeout(() => {
+                flyKey.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease';
+                flyKey.style.transform = `translate(0px, 48px) scale(0.38) rotate(90deg)`;
+
+                setTimeout(() => {
+                  lockShackle.classList.add('open');
+
+                  // Glow the keyhole
+                  const glow = document.getElementById('keyholeGlow');
+                  if (glow) {
+                    glow.style.transition = 'fill 0.4s ease';
+                    glow.setAttribute('fill', 'rgba(200,150,42,0.45)');
+                    setTimeout(() => glow.setAttribute('fill', 'rgba(200,150,42,0)'), 800);
+                  }
+
+                  // Step 7: burst + fade out stage
+                  setTimeout(() => {
+                    burst.classList.add('pop');
+                    flyKey.style.opacity = '0';
+
+                    setTimeout(() => {
+                      // Fade out stage, slide in content
+                      animStage.style.transition = 'opacity 0.6s ease, max-height 0.8s ease';
+                      animStage.style.opacity = '0';
+                      animStage.style.maxHeight = '0';
+                      animStage.style.overflow = 'hidden';
+                      animStage.style.minHeight = '0';
+
+                      showContent();
+                      closeBtn.classList.add('visible');
+                    }, 600);
+                  }, 400);
+                }, 350);
+              }, 500);
+            }, 600);
+          }, 300);
+        }, 500);
+      }, 200);
+    });
+  }
+
+  function showContent() {
+    content.classList.add('visible');
+    startCountdown();
+  }
+
+  /* Close overlay */
+  function closeOverlay() {
+    overlay.classList.remove('visible');
+    closeBtn.classList.remove('visible');
+    document.body.style.overflow = '';
+    if (cdInterval) { clearInterval(cdInterval); cdInterval = null; }
+  }
+
+  /* Click detection: attach to the SVG so hitting the actual gold key shape
+     triggers the animation — not just the bounding box around it.
+     pointer-events on the SVG paths means only visible key pixels are clickable. */
+  const keySvg = keyWrap.querySelector('svg');
+  if (keySvg) {
+    keySvg.style.pointerEvents = 'all';
+    keySvg.style.cursor = 'pointer';
+    /* Set pointer-events:none on the SVG container, then visibleFill on child shapes
+       so only the gold parts are hot — not empty transparent areas */
+    keySvg.setAttribute('pointer-events', 'none');
+    keySvg.querySelectorAll('circle, rect, path, text').forEach(el => {
+      el.setAttribute('pointer-events', 'visibleFill');
+    });
+    keySvg.addEventListener('click', runUnlock);
+  } else {
+    keyWrap.addEventListener('click', runUnlock);
+  }
+  closeBtn.addEventListener('click', closeOverlay);
+
+  // Also close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('visible')) closeOverlay();
+  });
+
+  /* ============================================================
+     COUNTDOWN
+     ============================================================ */
+  function startCountdown() {
+    if (cdInterval) return;
+    function tick() {
+      const now  = new Date();
+      const diff = DLC_DATE - now;
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent  = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent  = '00';
+        document.getElementById('cd-secs').textContent  = '00';
+        clearInterval(cdInterval);
+        return;
+      }
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000)  / 60000);
+      const secs  = Math.floor((diff % 60000)    / 1000);
+      document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+      document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+      document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+    }
+    tick();
+    cdInterval = setInterval(tick, 1000);
+  }
+
+  /* ============================================================
+     GALLERY LIGHTBOX
+     ============================================================ */
+  const lightbox     = document.getElementById('lightbox');
+  const lightboxImg  = document.getElementById('lightboxImg');
+  const lightboxCounter = document.getElementById('lightboxCounter');
+  const lbClose      = document.getElementById('lightboxClose');
+  const lbPrev       = document.getElementById('lightboxPrev');
+  const lbNext       = document.getElementById('lightboxNext');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  let currentIdx = 0;
+
+  function updateCounter() {
+    if (lightboxCounter) lightboxCounter.textContent = `${currentIdx + 1} / ${galleryItems.length}`;
+  }
+
+  function openLightbox(idx) {
+    currentIdx = idx;
+    const imgEl = galleryItems[idx].querySelector('img');
+    lightboxImg.src = imgEl.src;
+    lightboxImg.alt = imgEl.alt;
+    updateCounter();
+    lightbox.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('visible');
+    document.body.style.overflow = 'hidden'; // overlay still open
+  }
+  function nextImg(dir) {
+    currentIdx = (currentIdx + dir + galleryItems.length) % galleryItems.length;
+    const imgEl = galleryItems[currentIdx].querySelector('img');
+    lightboxImg.src = imgEl.src;
+    lightboxImg.alt = imgEl.alt;
+    updateCounter();
+  }
+
+  galleryItems.forEach((item, i) => {
+    item.addEventListener('click', () => openLightbox(i));
+  });
+  lbClose.addEventListener('click', closeLightbox);
+  lbPrev.addEventListener('click',  () => nextImg(-1));
+  lbNext.addEventListener('click',  () => nextImg(1));
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('visible')) return;
+    if (e.key === 'ArrowRight') nextImg(1);
+    if (e.key === 'ArrowLeft')  nextImg(-1);
+    if (e.key === 'Escape')     closeLightbox();
+  });
+
+  /* ── Swipe gesture support (mobile) ── */
+  let touchStartX = 0;
+  lightbox.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].clientX;
+  }, { passive: true });
+  lightbox.addEventListener('touchend', e => {
+    const delta = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(delta) > 50) nextImg(delta < 0 ? 1 : -1);
+  }, { passive: true });
+
+})();
+</script>
+<script src="transitions.js"></script>
+
+<!-- ============================================================
+     MARTY THE MEERKAT — EYE TRACKING & SPEECH BUBBLES
+     ============================================================ -->
+<script>
+/* sizeMarty() — no-op kept for back-compat; the MO-ARK logo is now sized by CSS
+   (fixed width 320px, max-height 480px) so it occupies roughly the same footprint
+   that Marty used to, without stretching the cards column on load. */
+function sizeMarty() { /* intentionally empty */ }
+
+window.addEventListener('load', sizeMarty);
+window.addEventListener('resize', sizeMarty);
+setTimeout(sizeMarty, 80);
+setTimeout(sizeMarty, 350);
+
+(function() {
+  /* ── Speech bubble message lists ── */
+  const heroMessages = [
+    "Find all the resources you need! 🔑",
+    "Red, White & You — Making a Difference! 🇺🇸",
+    "2027 DLC — Springfield, MO! Let's go!",
+    "Serving MO-ARK since 1947 💛",
+    "Browse forms, guidebooks & more! 📄",
+    "Caring is our way of life! 🤝",
+    "Patriotism is this year's theme!",
+    "Officer guidebooks available now! →",
+    "Howdy, Key Clubber! 🤠",
+    "122 clubs. 10 divisions. One mission."
+  ];
+  const stickyMessages = [
+    "Howdy! 🤠",
+    "Go MO-ARK! 🔑",
+    "Serve boldly! 🌟",
+    "DLC 2027! 🎉",
+    "Red, White & You! 🇺🇸",
+    "122 clubs strong!",
+    "Click the key!",
+    "Caring — our way of life!"
+  ];
+
+  /* ── Cycle hero bubble ── */
+  let heroIdx = 0;
+  const heroBubble = document.getElementById('marty-bubble-hero');
+  if (heroBubble) {
+    setInterval(function() {
+      heroIdx = (heroIdx + 1) % heroMessages.length;
+      heroBubble.style.opacity = '0';
+      setTimeout(function() {
+        heroBubble.textContent = heroMessages[heroIdx];
+        heroBubble.style.opacity = '1';
+      }, 300);
+    }, 3500);
+    heroBubble.style.transition = 'opacity 0.3s ease';
+  }
+
+  /* ── Cycle sticky bubble ── */
+  let stickyIdx = 0;
+  const stickyBubble = document.getElementById('marty-bubble-sticky');
+  if (stickyBubble) {
+    setInterval(function() {
+      stickyIdx = (stickyIdx + 1) % stickyMessages.length;
+      stickyBubble.style.opacity = '0';
+      setTimeout(function() {
+        stickyBubble.textContent = stickyMessages[stickyIdx];
+        stickyBubble.style.opacity = '1';
+      }, 250);
+    }, 2800);
+    stickyBubble.style.transition = 'opacity 0.25s ease';
+  }
+
+  /* ── Show/hide sticky Marty based on scroll ── */
+  var stickyMarty = document.getElementById('marty-sticky');
+  var heroSection = document.getElementById('heroSection');
+  if (stickyMarty && heroSection) {
+    window.addEventListener('scroll', function() {
+      var heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+      if (window.scrollY > heroBottom - 100) {
+        stickyMarty.classList.add('visible');
+      } else {
+        stickyMarty.classList.remove('visible');
+      }
+    }, { passive: true });
+  }
+
+  /* ── Eye tracking helper ── */
+  function moveEyes(svgEl, mouseX, mouseY, prefix) {
+    if (!svgEl) return;
+    var rect = svgEl.getBoundingClientRect();
+    var scaleX = 180 / rect.width;
+    var svgH = (prefix === 'h-') ? 310 : 280;
+    var scaleY = svgH / rect.height;
+    var sx = (mouseX - rect.left) * scaleX;
+    var sy = (mouseY - rect.top) * scaleY;
+
+    var eyeBaseY = (prefix === 'h-') ? 112 : 113;
+    var eyes = [
+      { baseX: 74, baseY: eyeBaseY, maxR: 2.8, irisId: prefix+'iris-l', pupilId: prefix+'pupil-l', shineId: prefix+'shine-l', shineOffX: -1.5 },
+      { baseX: 106, baseY: eyeBaseY, maxR: 2.8, irisId: prefix+'iris-r', pupilId: prefix+'pupil-r', shineId: prefix+'shine-r', shineOffX: -1.5 }
+    ];
+
+    eyes.forEach(function(e) {
+      var dx = sx - e.baseX;
+      var dy = sy - e.baseY;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var r = Math.min(dist / 10, e.maxR);
+      var angle = Math.atan2(dy, dx);
+      var nx = e.baseX + Math.cos(angle) * r;
+      var ny = e.baseY + Math.sin(angle) * r;
+
+      var iris  = document.getElementById(e.irisId);
+      var pupil = document.getElementById(e.pupilId);
+      var shine = document.getElementById(e.shineId);
+      if (iris)  { iris.setAttribute('cx', nx);  iris.setAttribute('cy', ny); }
+      if (pupil) { pupil.setAttribute('cx', nx); pupil.setAttribute('cy', ny); }
+      if (shine) { shine.setAttribute('cx', nx + e.shineOffX); shine.setAttribute('cy', ny - 1.8); }
+    });
+  }
+
+  function resetEyes(prefix) {
+    var baseY = (prefix === 'h-') ? 112 : 113;
+    var shineY = (prefix === 'h-') ? 110 : 111;
+    var defaults = [
+      { irisId: prefix+'iris-l', pupilId: prefix+'pupil-l', shineId: prefix+'shine-l', bx: 74,  sx: 76  },
+      { irisId: prefix+'iris-r', pupilId: prefix+'pupil-r', shineId: prefix+'shine-r', bx: 106, sx: 108 }
+    ];
+    defaults.forEach(function(d) {
+      var iris  = document.getElementById(d.irisId);
+      var pupil = document.getElementById(d.pupilId);
+      var shine = document.getElementById(d.shineId);
+      if (iris)  { iris.setAttribute('cx',  d.bx); iris.setAttribute('cy',  baseY); }
+      if (pupil) { pupil.setAttribute('cx', d.bx); pupil.setAttribute('cy', baseY); }
+      if (shine) { shine.setAttribute('cx', d.sx); shine.setAttribute('cy', shineY); }
+    });
+  }
+
+  /* ── Attach mousemove listeners ── */
+  var heroSvg   = document.getElementById('marty-hero-svg');
+  var stickySvg = document.getElementById('marty-sticky-svg');
+  var qlSection = document.querySelector('.quicklinks-bg');
+
+  /* Quicklinks Marty tracks mouse across the whole section */
+  if (qlSection && heroSvg) {
+    qlSection.addEventListener('mousemove', function(e) {
+      moveEyes(heroSvg, e.clientX, e.clientY, 'h-');
+    });
+    qlSection.addEventListener('mouseleave', function() {
+      resetEyes('h-');
+    });
+  }
+
+  /* Sticky Marty tracks mouse globally */
+  if (stickySvg) {
+    document.addEventListener('mousemove', function(e) {
+      moveEyes(stickySvg, e.clientX, e.clientY, 's-');
+    });
+  }
+})();
+</script>
+</body>
+</html>

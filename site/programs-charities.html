@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programs, Charities & Partners | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+  :root{--navy:#0A1628;--blue:#1A3A6B;--gold:#C8962A;--gold-lt:#F0C14B;--cream:#F7F4EE;--white:#FFFFFF;--text:#1C1C1C;--muted:#5A5A6A;--border:rgba(10,22,40,0.12);--radius:14px;--radius-sm:8px;--ff-display:'DM Serif Display',Georgia,serif;--ff-body:'DM Sans',system-ui,sans-serif;--transition:0.25s cubic-bezier(0.4,0,0.2,1);--shadow-card:0 2px 12px rgba(10,22,40,0.08),0 1px 3px rgba(10,22,40,0.06);--shadow-hover:0 8px 32px rgba(10,22,40,0.14),0 2px 8px rgba(10,22,40,0.08);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;} body{font-family:var(--ff-body);color:var(--text);background:var(--white);line-height:1.6;overflow-x:hidden;}
+  img{max-width:100%;display:block;} a{color:inherit;text-decoration:none;} ul{list-style:none;}
+
+  /* NAV */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,22,40,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);transition:box-shadow var(--transition);}
+  .nav.scrolled{box-shadow:0 4px 24px rgba(0,0,0,0.3);}
+  .nav-inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .nav-logo-mark{width:40px;height:40px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-display);font-size:1.2rem;color:var(--navy);flex-shrink:0;}
+  .nav-logo-text{display:flex;flex-direction:column;line-height:1.1;}
+  .nav-logo-name{font-family:var(--ff-display);font-size:1.1rem;color:var(--white);}
+  .nav-logo-sub{font-size:0.65rem;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.12em;font-weight:500;}
+  .nav-links{display:flex;align-items:center;gap:0.25rem;}
+  .nav-item{position:relative;}
+  .nav-link{display:flex;align-items:center;gap:4px;padding:0.5rem 0.875rem;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.82);border-radius:var(--radius-sm);transition:color var(--transition),background var(--transition);white-space:nowrap;cursor:pointer;}
+  .nav-link:hover,.nav-link.active{color:var(--white);background:rgba(255,255,255,0.1);}
+  .nav-link svg{width:12px;height:12px;transition:transform var(--transition);}
+  .nav-item:hover .nav-link svg{transform:rotate(180deg);}
+  .nav-dropdown{position:absolute;top:100%;left:50%;padding-top:8px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-hover);min-width:200px;padding:0.5rem;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-6px);transition:opacity var(--transition),transform var(--transition);}
+  .nav-item:hover .nav-dropdown{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0);}
+  .nav-dropdown a{display:block;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text);border-radius:var(--radius-sm);font-weight:400;transition:background var(--transition),color var(--transition);}
+  .nav-dropdown a:hover{background:var(--cream);color:var(--blue);}
+  .nav-dropdown-divider{height:1px;background:var(--border);margin:0.375rem 0.875rem;}
+  .nav-cta{background:var(--gold);color:var(--navy)!important;font-weight:600!important;border-radius:var(--radius-sm);padding:0.5rem 1.125rem;}
+  .nav-cta:hover{background:var(--gold-lt)!important;transform:translateY(-1px);}
+  .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
+  .nav-toggle span{display:block;width:24px;height:2px;background:var(--white);border-radius:2px;transition:all var(--transition);}
+  .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-toggle.open span:nth-child(2){opacity:0;}
+  .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .nav-mobile{display:none;position:fixed;inset:68px 0 0 0;background:var(--navy);padding:1.5rem;overflow-y:auto;z-index:999;flex-direction:column;gap:0.25rem;}
+  .nav-mobile.open{display:flex;}
+  .nav-mobile a{display:block;padding:0.875rem 1rem;color:rgba(255,255,255,0.85);font-size:1rem;border-radius:var(--radius-sm);border-bottom:1px solid rgba(255,255,255,0.06);transition:background var(--transition),color var(--transition);}
+  .nav-mobile a:hover{background:rgba(255,255,255,0.08);}
+  .nav-mobile-section{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold-lt);font-weight:600;padding:1rem 1rem 0.375rem;}
+
+  /* PAGE HEADER */
+  .page-header{padding-top:68px;background:var(--navy);position:relative;overflow:hidden;}
+  .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,150,42,0.12) 0%,transparent 60%),radial-gradient(ellipse at 10% 80%,rgba(26,58,107,0.4) 0%,transparent 50%);}
+  .page-header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);}
+  .page-header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 1.5rem 3.5rem;}
+  .page-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+  .page-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.25rem);color:var(--white);line-height:1.1;margin-bottom:1rem;}
+  .page-title em{font-style:italic;color:var(--gold-lt);}
+  .page-desc{font-size:1.0625rem;color:rgba(255,255,255,0.6);line-height:1.75;max-width:55ch;}
+
+  /* BREADCRUMB */
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);transition:color var(--transition);}
+  .breadcrumb a:hover{color:var(--navy);}
+  .breadcrumb-sep{opacity:0.4;}
+
+  /* SECTION TABS (sticky) */
+  .section-tabs{background:var(--white);border-bottom:2px solid var(--border);position:sticky;top:68px;z-index:100;}
+  .section-tabs-inner{max-width:1200px;margin:0 auto;padding:0 1.5rem;display:flex;gap:0;}  .section-tab{padding:1rem 1.5rem;font-size:0.875rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;white-space:nowrap;transition:color var(--transition),border-color var(--transition);}
+  .section-tab:hover{color:var(--navy);}
+  .section-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+  /* LAYOUT */
+  .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-bg{background:var(--cream);}
+  .section-bg .section{background:transparent;}
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;color:var(--gold);margin-bottom:0.75rem;}
+  .section-title{font-family:var(--ff-display);font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1;color:var(--navy);margin-bottom:1rem;}
+  .section-title em{font-style:italic;color:var(--blue);}
+  .section-desc{font-size:1.0625rem;color:var(--muted);line-height:1.75;max-width:60ch;margin-bottom:3rem;}
+  .section-divider{border:none;border-top:2px solid var(--border);margin:0;}
+
+  /* PARTNER / CHARITY CARDS */
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
+
+  .org-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow var(--transition),transform var(--transition),border-color var(--transition);}
+  .org-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-4px);border-color:rgba(200,150,42,0.35);}
+
+  .org-card-top{padding:2rem 2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1.25rem;}
+  .org-logo{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.75rem;flex-shrink:0;}
+  .org-name{font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);line-height:1.2;}
+  .org-tag{display:inline-block;margin-top:0.3rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding:0.2rem 0.6rem;border-radius:100px;}
+  .tag-partner{background:rgba(26,58,107,0.1);color:var(--blue);}
+  .tag-charity{background:rgba(200,150,42,0.15);color:#8a6200;}
+  .tag-program{background:rgba(10,22,40,0.08);color:var(--navy);}
+
+  .org-card-body{padding:1.5rem 2rem 2rem;flex:1;display:flex;flex-direction:column;gap:1rem;}
+  .org-desc{font-size:0.9rem;color:var(--muted);line-height:1.7;flex:1;}
+  .org-link{display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.25rem;border-radius:var(--radius-sm);font-size:0.875rem;font-weight:600;transition:all var(--transition);align-self:flex-start;}
+  .org-link-primary{background:var(--gold);color:var(--navy);}
+  .org-link-primary:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 4px 14px rgba(200,150,42,0.4);}
+  .org-link-outline{background:transparent;border:2px solid var(--blue);color:var(--blue);}
+  .org-link-outline:hover{background:var(--blue);color:var(--white);transform:translateY(-2px);}
+
+  /* INTRO BANNER */
+  .intro-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);border-radius:var(--radius);padding:3rem;margin-bottom:4rem;display:flex;gap:2.5rem;align-items:center;}
+  .intro-banner-icon{font-size:4rem;flex-shrink:0;opacity:0.5;}
+  .intro-banner-text h3{font-family:var(--ff-display);font-size:1.5rem;color:var(--white);margin-bottom:0.75rem;}
+  .intro-banner-text p{font-size:0.9375rem;color:rgba(255,255,255,0.65);line-height:1.75;}
+
+  /* SECTION HEADER ROW */
+  .section-header-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin-bottom:2.5rem;flex-wrap:wrap;}
+
+  /* FOOTER */
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1200px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+
+  /* ANIMATIONS */
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+
+  /* RESPONSIVE */
+  @media(max-width:1024px){.intro-banner{flex-direction:column;gap:1.5rem;}.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}}
+  @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.cards-grid{grid-template-columns:1fr;}.section-tab{padding:0.75rem 1rem;font-size:0.8rem;}.footer-top{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link active">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="resources.html#forms">DLC Forms</a>
+        </div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-grid"></div>
+  <div class="page-header-inner">
+    <div class="page-eyebrow">Giving Back Together</div>
+    <h1 class="page-title">Programs, Charities<br>&amp; <em>Partners</em></h1>
+    <p class="page-desc">Key Club connects members to meaningful causes. Explore our service partners, preferred charities, and district programs.</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="resources.html">Resources</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Programs, Charities &amp; Partners</span>
+  </div>
+</div>
+
+<!-- STICKY TABS -->
+<div class="section-tabs">
+  <div class="section-tabs-inner">
+    <a href="#partners" class="section-tab active">Service Partners</a>
+    <a href="#charities" class="section-tab">Preferred Charities</a>
+    <a href="#programs" class="section-tab">Programs</a>
+  </div>
+</div>
+
+<!-- SERVICE PARTNERS -->
+<div id="partners" class="section">
+
+  <div class="intro-banner fade-in">
+    <div class="intro-banner-icon">🤝</div>
+    <div class="intro-banner-text">
+      <h3>Why Service Partners?</h3>
+      <p>Key Club International partners with select organizations that align with our mission of service, leadership, and community. These partnerships give your club access to resources, opportunities, and causes that extend the impact of your service work beyond your local community.</p>
+    </div>
+  </div>
+
+  <div class="section-header-row fade-in">
+    <div>
+      <div class="section-label">Endorsed Organizations</div>
+      <h2 class="section-title">Service <em>Partners</em></h2>
+      <p class="section-desc" style="margin-bottom:0;">Organizations that partner with Key Club International to support student leaders and service opportunities.</p>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+
+    <div class="org-card fade-in">
+      <div class="org-card-top">
+        <div class="org-logo" style="background:#1a1f71;">
+          <span style="font-size:1.5rem;font-weight:900;color:white;font-family:sans-serif;">CW</span>
+        </div>
+        <div>
+          <div class="org-name">CollegeWise</div>
+          <span class="org-tag tag-partner">Service Partner</span>
+        </div>
+      </div>
+      <div class="org-card-body">
+        <p class="org-desc">CollegeWise is a college admissions counseling organization that helps students navigate the college application process. As a Key Club service partner, they offer resources and guidance to help Key Club members plan for their futures while continuing to serve their communities.</p>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="org-link org-link-primary">
+          Visit CollegeWise
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="org-card fade-in">
+      <div class="org-card-top">
+        <div class="org-logo" style="background:#f4511e;">
+          <span style="font-size:1.5rem;">🏫</span>
+        </div>
+        <div>
+          <div class="org-name">Schoolhouse</div>
+          <span class="org-tag tag-partner">Service Partner</span>
+        </div>
+      </div>
+      <div class="org-card-body">
+        <p class="org-desc">Schoolhouse is a free peer-to-peer tutoring platform founded by Sal Khan. Key Club members can both receive tutoring and serve as tutors, directly connecting service with education. It's a great way to log service hours while making a real difference in students' learning.</p>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="org-link org-link-primary">
+          Visit Schoolhouse
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="org-card fade-in">
+      <div class="org-card-top">
+        <div class="org-logo" style="background:#e8f4f8;">
+          <span style="font-size:1.75rem;">🏠</span>
+        </div>
+        <div>
+          <div class="org-name">Erika's Lighthouse</div>
+          <span class="org-tag tag-partner">Service Partner</span>
+        </div>
+      </div>
+      <div class="org-card-body">
+        <p class="org-desc">Erika's Lighthouse is a nonprofit dedicated to adolescent depression awareness and mental health education. They provide free classroom curriculum and resources for teens. Key Club members can bring mental health awareness to their schools through Erika's Lighthouse programming.</p>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="org-link org-link-primary">
+          Visit Erika's Lighthouse
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- PREFERRED CHARITIES -->
+<div id="charities" class="section-bg">
+  <div class="section">
+
+    <div class="section-header-row fade-in">
+      <div>
+        <div class="section-label">Causes We Champion</div>
+        <h2 class="section-title">Preferred <em>Charities</em></h2>
+        <p class="section-desc" style="margin-bottom:0;">Key Club International has designated these organizations as preferred charities — causes that align with our global commitment to service and youth leadership.</p>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+
+      <div class="org-card fade-in">
+        <div class="org-card-top">
+          <div class="org-logo" style="background:#003087;">
+            <span style="font-size:1.5rem;color:white;font-weight:900;font-family:sans-serif;">thirst</span>
+          </div>
+          <div>
+            <div class="org-name">Thirst Project</div>
+            <span class="org-tag tag-charity">Preferred Charity</span>
+          </div>
+        </div>
+        <div class="org-card-body">
+          <p class="org-desc">The Thirst Project is the world's largest youth water activism organization. They empower students to build freshwater wells in developing nations for communities who lack access to safe, clean drinking water. Key Club members can fundraise to directly fund wells and change lives.</p>
+          <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="org-link org-link-primary">
+            Visit Thirst Project
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="org-card fade-in">
+        <div class="org-card-top">
+          <div class="org-logo" style="background:#009edb;">
+            <span style="font-size:1.75rem;">🌐</span>
+          </div>
+          <div>
+            <div class="org-name">UNICEF</div>
+            <span class="org-tag tag-charity">Preferred Charity</span>
+          </div>
+        </div>
+        <div class="org-card-body">
+          <p class="org-desc">UNICEF works in over 190 countries to protect the rights of every child. Key Club's partnership with UNICEF focuses on Trick-or-Treat for UNICEF and other campaigns that help provide vaccines, clean water, nutrition, and education to children in need around the world.</p>
+          <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="org-link org-link-primary">
+            Visit UNICEF USA
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- PROGRAMS -->
+<div id="programs" class="section">
+
+  <div class="section-header-row fade-in">
+    <div>
+      <div class="section-label">Grow as a Leader</div>
+      <h2 class="section-title">Key Club <em>Programs</em></h2>
+      <p class="section-desc" style="margin-bottom:0;">Key Club International offers programs that recognize achievement, fund service projects, and develop leadership skills in members across the globe.</p>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+
+    <div class="org-card fade-in">
+      <div class="org-card-top">
+        <div class="org-logo" style="background:var(--navy);">
+          <span style="font-size:1.75rem;">🎓</span>
+        </div>
+        <div>
+          <div class="org-name">Youth Opportunities Fund</div>
+          <span class="org-tag tag-program">Program</span>
+        </div>
+      </div>
+      <div class="org-card-body">
+        <p class="org-desc">The Youth Opportunities Fund (YOF) provides grants to Key Clubs to fund service projects and leadership development activities. Clubs can apply for funding to execute their signature projects, community initiatives, and programs that make a direct impact in their communities.</p>
+        <a href="https://www.keyclub.org/resources/youth-opportunities-fund/" target="_blank" rel="noopener" class="org-link org-link-outline">
+          Learn About YOF
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="org-card fade-in">
+      <div class="org-card-top">
+        <div class="org-logo" style="background:var(--navy);">
+          <span style="font-size:1.75rem;">🏅</span>
+        </div>
+        <div>
+          <div class="org-name">Global Leadership Certificate</div>
+          <span class="org-tag tag-program">Program</span>
+        </div>
+      </div>
+      <div class="org-card-body">
+        <p class="org-desc">The Global Leadership Certificate (GLC) is an online program that allows Key Club members to develop leadership skills at their own pace. By completing modules focused on character, service, and leadership, members earn a certificate recognized by Key Club International.</p>
+        <a href="https://www.keyclub.org/resources/global-leadership-certificate/" target="_blank" rel="noopener" class="org-link org-link-outline">
+          Learn About GLC
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 7h10M7 2l5 5-5 5"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BACK TO RESOURCES -->
+  <div style="margin-top:4rem;padding-top:3rem;border-top:1px solid var(--border);text-align:center;" class="fade-in">
+    <p style="font-size:0.9375rem;color:var(--muted);margin-bottom:1.25rem;">Looking for officer guidebooks, monthly report forms, or DLC information?</p>
+    <a href="resources.html" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:var(--navy);color:var(--white);font-weight:600;border-radius:var(--radius-sm);font-size:0.9375rem;transition:all var(--transition);" onmouseover="this.style.background='var(--blue)'" onmouseout="this.style.background='var(--navy)'">
+      ← Back to All Resources
+    </a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+
+  // Section tab active state on scroll
+  const tabs = document.querySelectorAll('.section-tab');
+  const sectionIds = ['partners', 'charities', 'programs'];
+  const sections = sectionIds.map(id => document.getElementById(id));
+  window.addEventListener('scroll', () => {
+    let current = 0;
+    sections.forEach((s, i) => { if (s && window.scrollY >= s.offsetTop - 160) current = i; });
+    tabs.forEach((t, i) => t.classList.toggle('active', i === current));
+  }, {passive: true});
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

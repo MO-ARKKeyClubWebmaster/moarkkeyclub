@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Reimbursement Form | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+<style>
+  .rf-page{max-width:760px;margin:1.5rem auto;padding:0 1rem;}
+  .rf-page-card{background:#fff;border:1px solid var(--border,#E5E8EF);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(11,27,51,.08);}
+  .rf-page-head{background:linear-gradient(135deg,#0C1E38,#0B1B33);color:#fff;padding:20px 26px;}
+  .rf-page-head .eyebrow{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;font-weight:800;color:#E8B84B;}
+  .rf-page-head h1{margin:.2rem 0 0;font-family:'DM Serif Display',Georgia,serif;font-size:22px;}
+  .rf-page-head p{margin:.35rem 0 0;font-size:13px;opacity:.85;}
+  #rfMount{padding:22px 24px;}
+  .rf-msg{padding:40px 24px;text-align:center;color:#667085;}
+  .rf-msg h3{color:#0B1B33;font-family:'DM Serif Display',Georgia,serif;font-size:20px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+<nav class="topnav"></nav>
+
+<div class="rf-page">
+  <div class="rf-page-card">
+    <div class="rf-page-head">
+      <div class="eyebrow">MO-ARK Key Club · Reimbursement</div>
+      <h1 id="rfTitle">Expense Reimbursement Form</h1>
+      <p id="rfSub">Loading your form…</p>
+    </div>
+    <div id="rfMount"><div class="rf-msg">Loading…</div></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script src="reimbursement.js"></script>
+<script>
+const session = AUTH.requireAuth();
+
+function msg(title, body) {
+  document.getElementById('rfMount').innerHTML =
+    `<div class="rf-msg"><h3>${PORTAL.escapeHTML(title)}</h3><p>${PORTAL.escapeHTML(body)}</p>
+     <p style="margin-top:16px;"><a class="btn btn-primary" href="dashboard.html">Back to dashboard</a></p></div>`;
+}
+
+(async function () {
+  const params = new URLSearchParams(location.search);
+  const rfId = params.get('rf');
+  const mount = document.getElementById('rfMount');
+
+  try {
+    let record = null;
+    if (rfId) {
+      record = await API.getReimbursement(rfId).catch(() => null);
+    }
+    // Fallback: if no id, find the officer's most urgent open form.
+    if (!record) {
+      const mine = await API.getReimbursementsForOfficer(session.email);
+      const order = { 'treasurer-denied':0, 'adult-rejected':0, 'sent':1 };
+      record = (mine || []).filter(r => r.status in order).sort((a,b)=>order[a.status]-order[b.status])[0] || null;
+    }
+
+    if (!record) { document.getElementById('rfSub').textContent = 'Nothing to fill in.'; return msg('You’re all caught up', 'There’s no reimbursement form waiting for you right now.'); }
+
+    // Guard: the form must belong to the signed-in officer.
+    if ((record.officerEmail || '').toLowerCase() !== (session.email || '').toLowerCase()) {
+      document.getElementById('rfSub').textContent = 'Not your form.';
+      return msg('This form isn’t yours', 'This reimbursement form was sent to a different officer. Please sign in with the account it was sent to.');
+    }
+
+    document.getElementById('rfSub').textContent = 'Board meeting: ' + REIMB.meetingDates(record);
+
+    // Already handled?
+    if (['pending-treasurer','pending-adult'].includes(record.status)) {
+      return msg('Already submitted', 'You’ve already submitted this form. It’s waiting for approval — you’ll be emailed if anything needs changing.');
+    }
+    if (record.status === 'archived') {
+      return msg('Approved & filed', 'This reimbursement has been approved and archived. Nothing more to do — thank you!');
+    }
+    if (record.status === 'not-attended') {
+      return msg('Marked “did not attend”', 'This form is closed because you indicated you did not attend. If that’s wrong, ask the webmaster or treasurer to re-send it.');
+    }
+
+    // Actionable: sent / treasurer-denied / adult-rejected → render the flow.
+    mount.innerHTML = '';
+    REIMB.mountPage(mount, record, () => { location.href = 'dashboard.html'; });
+  } catch (e) {
+    msg('Something went wrong', e.message || 'Could not load your reimbursement form.');
+  }
+})();
+</script>
+</body>
+</html>

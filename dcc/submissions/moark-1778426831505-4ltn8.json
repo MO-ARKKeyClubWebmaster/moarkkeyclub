@@ -1,0 +1,25 @@
+{
+  "id": "moark-1778426831505-4ltn8",
+  "division": 4,
+  "ltgEmail": "moarkeyclubltg04@gmail.com",
+  "ltgName": "Division 4 LTG",
+  "year": "2026-2027",
+  "month": "May",
+  "type": "newsletter",
+  "fileName": "Division 4 - May Monthly Newsletter.pdf",
+  "fileSize": 536564,
+  "pdfUrl": "/pdf/moark-1778426831505-4ltn8",
+  "status": "approved",
+  "submittedAt": "2026-05-10T15:27:11.505Z",
+  "updatedAt": "2026-05-12T15:41:32.036Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Division 4 LTG",
+      "to": "editor",
+      "message": "Hi, Nandu :)\nYou already confirmed this, but I'm just following with the procedure in the newsletter part of the website.",
+      "timestamp": "2026-05-10T15:27:11.505Z"
+    }
+  ]
+}

@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Division — MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+/* ── PAGE HERO ── */
+.div-hero {
+  padding-top: 68px;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.div-hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(200,150,42,0.14) 0%, transparent 60%);
+}
+.div-hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 30%, transparent 100%);
+}
+.div-hero-color-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 5px;
+}
+.div-hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 3rem 1.5rem 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* Back button */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.8125rem; font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border-radius: 100px;
+  transition: all var(--transition);
+  position: absolute; top: 1.25rem; left: 1.5rem; z-index: 10;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+  transform: translateX(-2px);
+}
+.back-btn svg { width: 14px; height: 14px; }
+
+/* LTG profile block */
+.ltg-profile-img-wrap {
+  flex-shrink: 0;
+  width: 160px; height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 3px solid var(--gold);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+}
+.ltg-profile-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+}
+.ltg-profile-avatar {
+  font-family: var(--ff-display);
+  font-size: 3.5rem;
+  color: var(--gold);
+}
+.ltg-profile-info { flex: 1; min-width: 0; }
+.ltg-profile-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,150,42,0.15);
+  border: 1px solid rgba(200,150,42,0.3);
+  border-radius: 100px;
+  padding: 0.3rem 0.875rem;
+  font-size: 0.72rem; font-weight: 600;
+  color: var(--gold-lt);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+.ltg-profile-name {
+  font-family: var(--ff-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+.ltg-profile-div {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1rem;
+}
+.ltg-profile-quote {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 1.0625rem;
+  color: var(--gold-lt);
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  max-width: 50ch;
+}
+.ltg-profile-quote::before { content: '\201C'; }
+.ltg-profile-quote::after { content: '\201D'; }
+.ltg-profile-email {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--gold-lt);
+  background: rgba(200,150,42,0.12);
+  border: 1px solid rgba(200,150,42,0.25);
+  border-radius: 6px;
+  padding: 0.35rem 0.875rem;
+  transition: background var(--transition);
+}
+.ltg-profile-email:hover { background: rgba(200,150,42,0.22); }
+.ltg-profile-email svg { width: 13px; height: 13px; }
+
+/* ── BREADCRUMB ── */
+.breadcrumb { background: var(--cream); border-bottom: 1px solid var(--border); }
+.breadcrumb-inner { max-width: 1200px; margin: 0 auto; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--muted); }
+.breadcrumb a { color: var(--blue); transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--navy); }
+.breadcrumb-sep { opacity: 0.4; }
+
+/* ── DIVISION COLOR STRIPE ── */
+.div-stripe {
+  height: 4px;
+  width: 100%;
+}
+
+/* ── CONTENT SECTIONS ── */
+.content-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.section-block { padding: 4rem 0; }
+.section-block + .section-block { border-top: 1px solid var(--border); }
+
+.section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; color: var(--gold); margin-bottom: 0.75rem; }
+.section-title { font-family: var(--ff-display); font-size: clamp(1.5rem, 3vw, 2.25rem); color: var(--navy); line-height: 1.15; margin-bottom: 1rem; }
+.section-title em { font-style: italic; color: var(--blue); }
+.section-header { margin-bottom: 2.5rem; }
+
+/* ── MAP ── */
+.map-wrap {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  height: 520px;
+}
+#divMap { width: 100%; height: 100%; }
+
+/* ── SCHOOLS LIST ── */
+.schools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.school-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.school-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.school-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.school-name { font-weight: 600; font-size: 0.9rem; color: var(--navy); margin-bottom: 0.2rem; line-height: 1.3; }
+.school-addr { font-size: 0.74rem; color: var(--muted); line-height: 1.45; }
+
+/* ── MAP LEGEND ── */
+.map-legend{background:rgba(255,255,255,0.96);border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:8px 10px;font-family:'DM Sans',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.map-legend-title{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#1a2744;margin-bottom:5px;}
+.map-legend-row{display:flex;align-items:center;gap:5px;font-size:0.67rem;color:#444;margin-bottom:2px;}
+.map-legend-sw{width:11px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,0.12);}
+
+/* County tooltip */
+.county-tooltip{font-family:'DM Sans',sans-serif;font-size:0.8rem;padding:4px 8px;background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.1);border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.popup-name{font-weight:600;font-size:0.875rem;color:#1a2744;margin-bottom:2px;}
+.popup-div{font-size:0.74rem;color:#555;}
+.popup-addr{font-size:0.69rem;color:#888;margin-top:3px;line-height:1.4;}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+.footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+.footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+.footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+.footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+.footer-col ul li a:hover{color:var(--white);}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+.footer-socials{display:flex;gap:0.75rem;}
+.footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+.footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.footer-social svg{width:16px;height:16px;}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:1024px){.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}}
+@media(max-width:768px){
+  .nav-links{display:none;}.nav-toggle{display:flex;}
+  .div-hero-inner{flex-direction:column;align-items:flex-start;gap:1.5rem;padding-top:4rem;}
+  .ltg-profile-img-wrap{width:120px;height:140px;}
+  .map-wrap{height:380px;}
+  .schools-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr;}
+}
+@media(max-width:480px){.footer-bottom{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text"><span class="nav-logo-name">MO-ARK District</span><span class="nav-logo-sub">Key Club International</span></div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="about.html">About MO-ARK</a><a href="about.html#history">Our History</a><a href="about.html#mission">Mission &amp; Values</a><div class="nav-dropdown-divider"></div><a href="contact.html">Contact Us</a></div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link active">Our District<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="our-district.html#board">District Board</a><a href="our-district.html#clubs">Club Directory</a><a href="our-district.html#bylaws">District Bylaws</a></div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="dlc.html">DLC 2027</a><a href="dlc.html#calendar">Event Calendar</a><a href="resources.html#forms">DLC Forms</a></div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div><a href="about.html">About MO-ARK</a><a href="about.html#history">Our History</a><a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div><a href="our-district.html#board">District Board</a><a href="our-district.html#clubs">Club Directory</a><a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div><a href="newsletters.html">Newsletters</a><a href="resources.html">Resources</a><a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div><a href="contact.html">Contact Us</a>
+</div>
+
+<!-- ── HERO ── -->
+<div class="div-hero" id="divHero">
+  <div class="div-hero-bg"></div>
+  <div class="div-hero-grid"></div>
+  <div class="div-hero-color-bar" id="heroColorBar"></div>
+  <a href="our-district.html#board" class="back-btn">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    Back to District Board
+  </a>
+  <div class="div-hero-inner">
+    <div class="ltg-profile-img-wrap" id="profileImgWrap">
+      <span class="ltg-profile-avatar" id="profileAvatar"></span>
+    </div>
+    <div class="ltg-profile-info">
+      <div class="ltg-profile-eyebrow" id="profileEyebrow">Lieutenant Governor</div>
+      <h1 class="ltg-profile-name" id="profileName">Loading…</h1>
+      <p class="ltg-profile-div" id="profileDiv"></p>
+      <p class="ltg-profile-quote" id="profileQuote"></p>
+      <a class="ltg-profile-email" id="profileEmail" href="#">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M1 6l7 4.5L15 6"/></svg>
+        <span id="profileEmailText"></span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Color stripe -->
+<div class="div-stripe" id="divStripe"></div>
+
+<!-- ── BREADCRUMB ── -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="our-district.html">Our District</a>
+    <span class="breadcrumb-sep">›</span>
+    <span id="breadcrumbDiv">Division</span>
+  </div>
+</div>
+
+<!-- ── MAP SECTION ── -->
+<div class="content-wrap">
+  <div class="section-block fade-in">
+    <div class="section-header">
+      <div class="section-label">Territory</div>
+      <h2 class="section-title" id="mapTitle">Division <em>Map</em></h2>
+      <p style="font-size:1rem;color:var(--muted);line-height:1.75;max-width:58ch;" id="mapDesc">
+        County shading shows each division's territory. This division is highlighted with a glowing border.
+      </p>
+    </div>
+    <div class="map-wrap">
+      <div id="divMap"></div>
+    </div>
+  </div>
+
+  <!-- ── SCHOOLS SECTION ── -->
+  <div class="section-block fade-in">
+    <div class="section-header">
+      <div class="section-label">Member Clubs</div>
+      <h2 class="section-title">Schools in This <em>Division</em></h2>
+      <p style="font-size:1rem;color:var(--muted);line-height:1.75;max-width:58ch;" id="schoolsDesc">
+        The following Key Club chapters are part of this division.
+      </p>
+    </div>
+    <div class="schools-grid" id="schoolsGrid"></div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════
+   DATA — exact mirror of our-district.html
+   ═══════════════════════════════════════════════════════ */
+
+// ── Colors: exact copy from our-district.html ──
+const DIV_COLORS = {
+  1:'#d94f4f', // Red
+  2:'#4a82c4', // Blue
+  3:'#2e7d4f', // Dark Green
+  4:'#d4b030', // Yellow/Gold
+  5:'#6b3fa0', // Plum/Dark Purple
+  6:'#9b30d0', // Bright Purple
+  7:'#d4682a', // Orange/Rust
+  8:'#20a8a0', // Teal/Cyan
+  9:'#7a9a30', // Olive Green
+  10:'#e060a0', // Pink
+};
+
+const DIV_NAMES = {
+  1:'Division 1 — Western Missouri',
+  2:'Division 2 — North/Central Missouri',
+  3:'Division 3 — Central & Southwest Missouri',
+  4:'Division 4 — St. Charles Corridor',
+  5:'Division 5 — Southeast Missouri',
+  6:'Division 6 — Northwest Arkansas',
+  7:'Division 7 — Southwest Arkansas',
+  8:'Division 8 — Northeast Arkansas',
+  9:'Division 9 — Central & South Arkansas',
+  10:'Division 10 — St. Louis Metro'
+};
+
+const LTG_DATA = {
+  1:  { name:'Savanna Scruggs',         img:'Board Photos/ltg1.jpeg',  email:'ltg.01@moarkkeyclub.com', slogan:'Be The Key That Opens Doors For Others' },
+  2:  { name:'Pritam Avuthu',           img:'Board Photos/ltg2.jpeg',  email:'ltg.02@moarkkeyclub.com', slogan:'Service And Success' },
+  3:  { name:'Mary Ann Gingerich',      img:'Board Photos/ltg3.jpeg',  email:'ltg.03@moarkkeyclub.com', slogan:'Learn, Lead, Serve' },
+  4:  { name:'Bethany Liao',          img:'Board Photos/ltg4.jpeg',  email:'ltg.04@moarkkeyclub.com', slogan:'Service Above Self' },
+  5:  { name:'Makenlei Shafferkoetter', img:'Board Photos/ltg5.jpeg',  email:'ltg.05@moarkkeyclub.com', slogan:'Lead With Service, Serve With Heart' },
+  6:  { name:'Ava Long',               img:'Board Photos/ltg6.jpeg',  email:'ltg.06@moarkkeyclub.com', slogan:'Turning Vision Into Action' },
+  7:  { name:'[OPEN APPLICATIONS]',    img:'',                        email:'ltg.07@moarkkeyclub.com', slogan:'Applications welcome until August 21, 2026!' },
+  8:  { name:'Andy Santizo',           img:'Board Photos/ltg8.jpeg',  email:'ltg.08@moarkkeyclub.com', slogan:'Vini Vidi Vici' },
+  9:  { name:'Amara Miles',            img:'Board Photos/ltg9.jpeg',  email:'ltg.09@moarkkeyclub.com', slogan:'Everyone Can Be Great Because Everyone Can Serve' },
+  10: { name:'Tanvi Narendhula',       img:'Board Photos/ltg10.jpeg', email:'ltg.10@moarkkeyclub.com', slogan:'Service Is The Key' }
+};
+
+/* ── COUNTY → DIVISION: exact copy from our-district.html ── */
+const CD = {
+  // ══════════════════════════════════════════════════════════════
+  // MISSOURI
+  // ══════════════════════════════════════════════════════════════
+
+  // ── DIV 1: Western MO border strip + KC Metro ──
+  '29005':1,'29147':1,'29227':1,'29081':1,'29129':1,'29171':1,
+  '29087':1,'29003':1,'29075':1,'29061':1,'29079':1,'29211':1,
+  '29021':1,'29063':1,'29049':1,'29025':1,'29117':1,'29115':1,
+  '29033':1,'29041':1,'29165':1,'29047':1,'29177':1,'29095':1,
+  '29107':1,'29195':1,'29037':1,'29101':1,
+
+  // ── DIV 2: North/Central Missouri ──
+  '29197':2,'29199':2,'29045':2,'29001':2,'29103':2,'29111':2,
+  '29121':2,'29205':2,'29127':2,'29175':2,'29137':2,'29173':2,
+  '29007':2,'29089':2,'29019':2,'29027':2,'29053':2,
+
+  // ── DIV 3: Central + Southwest Missouri ──
+  '29159':3,'29135':3,'29051':3,'29083':3,'29015':3,'29141':3,
+  '29131':3,'29013':3,'29185':3,'29085':3,'29029':3,'29217':3,
+  '29039':3,'29167':3,'29059':3,'29105':3,'29011':3,'29057':3,
+  '29077':3,'29225':3,'29229':3,'29097':3,'29109':3,'29043':3,
+  '29067':3,'29145':3,'29209':3,'29213':3,'29153':3,'29119':3,
+  '29009':3,
+
+  // ── DIV 4: St. Charles corridor ──
+  '29163':4,'29113':4,'29139':4,'29219':4,'29183':4,
+
+  // ── DIV 5: Southeast Missouri ──
+  '29151':5,'29073':5,'29071':5,'29125':5,'29169':5,'29161':5,
+  '29055':5,'29221':5,'29187':5,'29186':5,'29215':5,'29065':5,
+  '29093':5,'29123':5,'29179':5,'29203':5,'29223':5,'29035':5,
+  '29091':5,'29149':5,'29181':5,'29023':5,'29099':5,'29157':5,
+  '29017':5,'29031':5,'29201':5,'29207':5,'29143':5,'29133':5,
+
+  // ── DIV 10: St. Louis City + County ──
+  '29189':10,'29510':10,
+
+  // ══════════════════════════════════════════════════════════════
+  // ARKANSAS
+  // ══════════════════════════════════════════════════════════════
+
+  // ── DIV 6: Northwest Arkansas ──
+  '05007':6,'05015':6,'05009':6,'05089':6,'05005':6,'05143':6,
+  '05087':6,'05101':6,'05129':6,'05137':6,'05065':6,'05049':6,
+
+  // ── DIV 7: Southwest Arkansas ──
+  '05033':7,'05047':7,'05071':7,'05115':7,'05131':7,'05083':7,
+  '05149':7,'05127':7,'05113':7,'05097':7,'05061':7,'05109':7,
+  '05133':7,'05081':7,'05057':7,'05099':7,'05103':7,'05013':7,
+  '05091':7,'05073':7,'05027':7,'05139':7,'05011':7,'05043':7,
+  '05003':7,'05017':7,
+
+  // ── DIV 8: Northeast + East Arkansas ──
+  '05135':8,'05121':8,'05021':8,'05075':8,'05055':8,'05063':8,
+  '05067':8,'05031':8,'05093':8,'05023':8,'05145':8,'05147':8,
+  '05037':8,'05111':8,'05123':8,'05035':8,'05077':8,
+  '29155':8, // Pemiscot MO — listed in our-district div8
+
+  // ── DIV 9: Central + South Arkansas ──
+  '05141':9,'05029':9,'05045':9,'05085':9,'05117':9,'05105':9,
+  '05119':9,'05125':9,'05051':9,'05095':9,'05107':9,'05053':9,
+  '05069':9,'05001':9,'05059':9,'05019':9,'05039':9,'05025':9,
+  '05079':9,'05041':9,
+
+  // Dunklin MO in our-district is div 5
+  '29069':5,
+};
+
+// Kennett (div 8 school) is in Dunklin MO — the school assignment overrides county
+// for school display; county shading follows CD above.
+
+const SCHOOLS = [
+  {name:"Académie Lafayette",div:1,addr:"3421 Madison Ave, Kansas City, MO 64111",lat:39.0670,lng:-94.5780},
+  {name:"Carrollton High School",div:1,addr:"1306 N Mason St, Carrollton, MO 64633",lat:39.3580,lng:-93.4990},
+  {name:"Center High School",div:1,addr:"8715 Holmes Rd, Kansas City, MO 64131",lat:38.9960,lng:-94.5570},
+  {name:"Chillicothe R-11 High School",div:1,addr:"1000 Trenton St, Chillicothe, MO 64601",lat:39.7940,lng:-93.5540},
+  {name:"Excelsior Springs High School",div:1,addr:"2000 Tiger Dr, Excelsior Springs, MO 64024",lat:39.3410,lng:-94.2270},
+  {name:"Harrisonville High School",div:1,addr:"503 S Lexington St, Harrisonville, MO 64701",lat:38.6530,lng:-94.3480},
+  {name:"Liberty High School",div:1,addr:"16 W Kansas St, Liberty, MO 64068",lat:39.2470,lng:-94.4190},
+  {name:"Liberty North High School",div:1,addr:"2101 NE Flintlock Rd, Kansas City, MO 64156",lat:39.3010,lng:-94.4270},
+  {name:"Lincoln College Prep High School",div:1,addr:"2111 Woodland Ave, Kansas City, MO 64108",lat:39.0820,lng:-94.5770},
+  {name:"Oak Park High School",div:1,addr:"875 NE 82nd Terrace, Kansas City, MO 64155",lat:39.2080,lng:-94.5150},
+  {name:"Trenton High School",div:1,addr:"909 Oklahoma Ave, Trenton, MO 64683",lat:40.0800,lng:-93.6150},
+  {name:"Truman High School",div:1,addr:"3301 S Noland Rd, Independence, MO 64055",lat:39.0560,lng:-94.3630},
+  {name:"Boonville High School",div:2,addr:"1600 Ashley Rd, Boonville, MO 65233",lat:38.9730,lng:-92.7430},
+  {name:"Canton R-V High School",div:2,addr:"1 Culberson Dr, Canton, MO 63435",lat:40.1260,lng:-91.5230},
+  {name:"Centralia High School",div:2,addr:"301 S Rollins St, Centralia, MO 65240",lat:39.2130,lng:-92.1380},
+  {name:"Father Tolton High School",div:2,addr:"3000 W Broadway, Columbia, MO 65203",lat:38.9620,lng:-92.3610},
+  {name:"Fulton High School",div:2,addr:"2501 S Business 54, Fulton, MO 65251",lat:38.8320,lng:-91.9480},
+  {name:"Hannibal Senior High School",div:2,addr:"4500 McMasters Ave, Hannibal, MO 63401",lat:39.7200,lng:-91.3860},
+  {name:"Hickman High School",div:2,addr:"1104 N Providence Rd, Columbia, MO 65203",lat:38.9680,lng:-92.3350},
+  {name:"Kirksville Senior High School",div:2,addr:"1901 E Illinois St, Kirksville, MO 63501",lat:40.1920,lng:-92.5670},
+  {name:"Marion County R-II High School",div:2,addr:"700 S Nichols St, Palmyra, MO 63461",lat:39.7960,lng:-91.5270},
+  {name:"Mexico High School",div:2,addr:"1 Bulldog Blvd, Mexico, MO 65265",lat:39.1680,lng:-91.8830},
+  {name:"Palmyra High School",div:2,addr:"700 S Nichols St, Palmyra, MO 63461",lat:39.7930,lng:-91.5240},
+  {name:"Rock Bridge High School",div:2,addr:"4303 S Providence Rd, Columbia, MO 65203",lat:38.9050,lng:-92.3480},
+  {name:"Calvary Lutheran High School",div:3,addr:"4301 S Jefferson Ave, Springfield, MO 65807",lat:37.1700,lng:-93.2950},
+  {name:"Central Senior High School",div:3,addr:"423 E Central St, Springfield, MO 65802",lat:37.2230,lng:-93.2870},
+  {name:"Gloria Deo Academy",div:3,addr:"3300 W Sunshine St, Springfield, MO 65807",lat:37.1990,lng:-93.3260},
+  {name:"Joplin High School",div:3,addr:"2104 Indiana Ave, Joplin, MO 64804",lat:37.0580,lng:-94.5130},
+  {name:"Kickapoo High School",div:3,addr:"3710 S Jefferson Ave, Springfield, MO 65807",lat:37.1540,lng:-93.2950},
+  {name:"Monett High School",div:3,addr:"900 E Scott St, Monett, MO 65708",lat:36.9270,lng:-93.9220},
+  {name:"Mountain Grove High School",div:3,addr:"200 N Elm St, Mountain Grove, MO 65711",lat:37.1290,lng:-92.2680},
+  {name:"Neosho High School",div:3,addr:"511 Neosho Blvd, Neosho, MO 64850",lat:36.8680,lng:-94.3710},
+  {name:"Ozark High School",div:3,addr:"1350 W South St, Ozark, MO 65721",lat:37.0170,lng:-93.2090},
+  {name:"Republic High School",div:3,addr:"518 N Hampton Ave, Republic, MO 65738",lat:37.1200,lng:-93.4790},
+  {name:"Sacred Heart School",div:3,addr:"1200 N Weller Ave, Springfield, MO 65802",lat:37.2270,lng:-93.2720},
+  {name:"Fort Zumwalt West High School",div:4,addr:"555 Fort Zumwalt W Blvd, O'Fallon, MO 63368",lat:38.7570,lng:-90.7200},
+  {name:"Francis Howell High School",div:4,addr:"1 Harvester School Rd, St. Peters, MO 63376",lat:38.8040,lng:-90.6290},
+  {name:"Liberty High School (Wentzville)",div:4,addr:"11 Liberty High School Dr, Wentzville, MO 63385",lat:38.8240,lng:-90.8660},
+  {name:"Lutheran High St. Charles County",div:4,addr:"1 Warriors Ln, Lake St. Louis, MO 63367",lat:38.7960,lng:-90.7740},
+  {name:"Saint Charles West High School",div:4,addr:"3601 Droste Rd, St. Charles, MO 63301",lat:38.7990,lng:-90.5320},
+  {name:"St. Charles High School",div:4,addr:"725 N Kingshighway, St. Charles, MO 63301",lat:38.7880,lng:-90.4850},
+  {name:"Wentzville Holt High School",div:4,addr:"100 Holt High School Dr, Wentzville, MO 63385",lat:38.8110,lng:-90.8730},
+  {name:"Wright City High School",div:4,addr:"570 Route W, Wright City, MO 63390",lat:38.8270,lng:-91.0190},
+  {name:"Charleston High School",div:5,addr:"740 E Commercial Ave, Charleston, MO 63834",lat:36.9250,lng:-89.3530},
+  {name:"Crawford County R-II High School",div:5,addr:"1 Wildcat Dr, Cuba, MO 65453",lat:38.0630,lng:-91.3950},
+  {name:"Doniphan High School",div:5,addr:"511 Pine St, Doniphan, MO 63935",lat:36.6230,lng:-90.8260},
+  {name:"Farmington High School",div:5,addr:"1 Black Knight Dr, Farmington, MO 63640",lat:37.7820,lng:-90.4150},
+  {name:"Festus Senior High School",div:10,addr:"1 Tiger Dr, Festus, MO 63028",lat:38.2120,lng:-90.4040},
+  {name:"Fox High School",div:10,addr:"745 Jeffco Blvd, Arnold, MO 63010",lat:38.4330,lng:-90.3780},
+  {name:"Rolla High School",div:5,addr:"900 Bulldog Run, Rolla, MO 65401",lat:37.9530,lng:-91.7680},
+  {name:"Seckman High School",div:10,addr:"1000 Seckman Rd, Imperial, MO 63052",lat:38.3680,lng:-90.3780},
+  {name:"Sikeston High School",div:5,addr:"110 Oriole Dr, Sikeston, MO 63801",lat:36.8780,lng:-89.5870},
+  {name:"Union High School",div:5,addr:"1 Wildcat Ln, Union, MO 63084",lat:38.4510,lng:-91.0070},
+  {name:"Pattonville Senior High School",div:10,addr:"2497 Creve Coeur Mill Rd, Maryland Heights, MO 63043",lat:38.7270,lng:-90.4700},
+  {name:"Bergman High School",div:6,addr:"12291 Hwy 65N, Bergman, AR 72615",lat:36.3760,lng:-92.6630},
+  {name:"Berryville High School",div:6,addr:"905 W Trimble Ave, Berryville, AR 72616",lat:36.3660,lng:-93.5640},
+  {name:"Fayetteville High School",div:6,addr:"1 Purple Dog Dr, Fayetteville, AR 72701",lat:36.0620,lng:-94.1710},
+  {name:"Gravette High School",div:6,addr:"1201 Tiger Dr, Gravette, AR 72736",lat:36.4250,lng:-94.4560},
+  {name:"Harrison High School",div:6,addr:"1 Goblin Dr, Harrison, AR 72601",lat:36.2280,lng:-93.0990},
+  {name:"Huntsville High School",div:6,addr:"685 W Main St, Huntsville, AR 72740",lat:36.0870,lng:-93.7430},
+  {name:"Jasper High School",div:6,addr:"800 School Dr, Jasper, AR 72641",lat:36.0040,lng:-93.1840},
+  {name:"Lincoln High School",div:6,addr:"204 W Pridemore Dr, Lincoln, AR 72744",lat:35.9500,lng:-94.4210},
+  {name:"Mountain Home High School",div:6,addr:"2000 Bomber Blvd, Mountain Home, AR 72653",lat:36.3510,lng:-92.3960},
+  {name:"Springdale High School",div:6,addr:"1103 W Emma Ave, Springdale, AR 72764",lat:36.1840,lng:-94.1380},
+  {name:"Valley Springs High School",div:6,addr:"6895 Hwy 65S, Valley Springs, AR 72682",lat:36.1630,lng:-92.9440},
+  {name:"Booneville High School (AR)",div:7,addr:"1101 W 8th St, Booneville, AR 72927",lat:35.1400,lng:-93.9250},
+  {name:"Camden Fairview High School",div:7,addr:"350 Tate Dr, Camden, AR 71701",lat:33.5860,lng:-92.8440},
+  {name:"Dover High School",div:7,addr:"1 Pirates Dr, Dover, AR 72837",lat:35.4040,lng:-93.1160},
+  {name:"Foreman Senior High School",div:7,addr:"300 School St, Foreman, AR 71836",lat:33.7190,lng:-94.3960},
+  {name:"Harmony Grove (AR)",div:9,addr:"6700 Hwy 229, Benton, AR 72019",lat:34.5840,lng:-92.5500},
+  {name:"Mountainburg High School",div:7,addr:"226 N Hwy 71, Mountainburg, AR 72946",lat:35.6380,lng:-94.1750},
+  {name:"Prescott High School",div:7,addr:"500 E Oak St, Prescott, AR 71857",lat:33.8030,lng:-93.3800},
+  {name:"Southside High School (Fort Smith)",div:7,addr:"3200 Zero St, Fort Smith, AR 72908",lat:35.3480,lng:-94.3980},
+  {name:"Midland High School",div:7,addr:"1105 Midland Blvd, Fort Smith, AR 72904",lat:35.3990,lng:-94.3830},
+  {name:"Crossett High School",div:9,addr:"1302 W 2nd Ave, Crossett, AR 71635",lat:33.1280,lng:-91.9630},
+  {name:"Batesville Senior High School",div:8,addr:"1 Pioneer Dr, Batesville, AR 72501",lat:35.7700,lng:-91.6400},
+  {name:"Cave City High School",div:8,addr:"1140 E Main St, Cave City, AR 72521",lat:35.9420,lng:-91.5490},
+  {name:"Greene County Tech High School",div:8,addr:"510 Eagle Ave, Paragould, AR 72450",lat:36.0700,lng:-90.5220},
+  {name:"Highland High School",div:8,addr:"22 Highway 62-412, Hardy, AR 72542",lat:36.3460,lng:-91.5130},
+  {name:"Jonesboro Sr High School",div:8,addr:"2609 Panthers Dr, Jonesboro, AR 72401",lat:35.8570,lng:-90.6700},
+  {name:"Kennett High School",div:8,addr:"2900 Kennett Ave, Kennett, MO 63857",lat:36.2270,lng:-90.0390},
+  {name:"Paragould High School",div:8,addr:"900 W Court St, Paragould, AR 72450",lat:36.0580,lng:-90.5020},
+  {name:"Pocahontas High School",div:8,addr:"2600 Pace Ln, Pocahontas, AR 72455",lat:36.2620,lng:-90.9770},
+  {name:"Southside High School (Batesville)",div:8,addr:"1 Southside Dr, Batesville, AR 72501",lat:35.7500,lng:-91.6120},
+  {name:"Walnut Ridge High School",div:8,addr:"1116 SW 3rd St, Walnut Ridge, AR 72476",lat:36.0660,lng:-90.9500},
+  {name:"Cabot Freshman Academy",div:9,addr:"200 N Lincoln, Cabot, AR 72023",lat:34.9770,lng:-92.0210},
+  {name:"Cabot High School",div:9,addr:"200 N Lincoln, Cabot, AR 72023",lat:34.9740,lng:-92.0230},
+  {name:"Conway High School",div:9,addr:"2300 Prince St, Conway, AR 72034",lat:35.0680,lng:-92.4430},
+  {name:"Fountain Lake High School",div:9,addr:"180 Fountain Lake Dr, Hot Springs, AR 71913",lat:34.4770,lng:-93.0810},
+  {name:"Harding Academy",div:9,addr:"1400 Cherry Rd, Searcy, AR 72143",lat:35.2370,lng:-91.7550},
+  {name:"Little Rock Central High School",div:9,addr:"1500 S Park St, Little Rock, AR 72202",lat:34.7330,lng:-92.3220},
+  {name:"Morrilton High School",div:9,addr:"400 Morrilton Dr, Morrilton, AR 72110",lat:35.1510,lng:-92.7440},
+  {name:"North Little Rock High School",div:9,addr:"2700 N Olive St, North Little Rock, AR 72114",lat:34.7770,lng:-92.2660},
+  {name:"North Point High School",div:9,addr:"25900 N Point Dr, Sherwood, AR 72120",lat:34.8390,lng:-92.1580},
+  {name:"RALI",div:9,addr:"Little Rock, AR 72201",lat:34.7460,lng:-92.2890},
+  {name:"Sacred Heart High School (AR)",div:9,addr:"2415 Lee Ave, Little Rock, AR 72206",lat:34.7420,lng:-92.3100},
+  {name:"Affton High School",div:10,addr:"8309 Mackenzie Rd, St. Louis, MO 63123",lat:38.5450,lng:-90.3330},
+  {name:"Hancock High School",div:10,addr:"9601 Tesson Ferry Rd, St. Louis, MO 63123",lat:38.5030,lng:-90.3640},
+  {name:"Lindbergh High School",div:10,addr:"5000 S Lindbergh Blvd, St. Louis, MO 63126",lat:38.5540,lng:-90.3970},
+  {name:"Lutheran High School South",div:10,addr:"9011 Tesson Ferry Rd, St. Louis, MO 63123",lat:38.5080,lng:-90.3560},
+  {name:"Maplewood Richmond Heights",div:10,addr:"7539 Manchester Rd, Maplewood, MO 63143",lat:38.6100,lng:-90.3270},
+  {name:"Marquette High School",div:10,addr:"2351 Clarkson Rd, Chesterfield, MO 63017",lat:38.6480,lng:-90.5350},
+  {name:"Mehlville High School",div:10,addr:"3200 Lemay Ferry Rd, St. Louis, MO 63125",lat:38.5290,lng:-90.3220},
+  {name:"Normandy High School",div:10,addr:"6701 Natural Bridge Ave, St. Louis, MO 63121",lat:38.7000,lng:-90.3080},
+  {name:"Oakville Senior High School",div:10,addr:"5557 Milburn Rd, St. Louis, MO 63129",lat:38.4780,lng:-90.3220},
+  {name:"Parkway North Senior High School",div:10,addr:"12860 Fee Fee Rd, Maryland Heights, MO 63043",lat:38.7400,lng:-90.4870},
+  {name:"Parkway South Senior High School",div:10,addr:"801 Hanna Rd, Manchester, MO 63021",lat:38.5930,lng:-90.5150},
+  {name:"Parkway West High School",div:10,addr:"14653 Clayton Rd, Ballwin, MO 63011",lat:38.5920,lng:-90.5480},
+  {name:"University City High School",div:10,addr:"7401 Balson Ave, University City, MO 63130",lat:38.6530,lng:-90.3290},
+];
+SCHOOLS.sort((a,b)=>a.div-b.div||a.name.localeCompare(b.name));
+
+/* ═══════════════════════════════════════════════════════
+   INIT — read ?div= from URL
+   ═══════════════════════════════════════════════════════ */
+const params = new URLSearchParams(window.location.search);
+const divNum = parseInt(params.get('div')) || 1;
+const divColor = DIV_COLORS[divNum] || '#888';
+const divName = DIV_NAMES[divNum] || `Division ${divNum}`;
+const ltg = LTG_DATA[divNum] || { name:'TBA', img:'', email:'', slogan:'' };
+
+// Update page title
+document.title = `${divName} | MO-ARK District Key Club`;
+
+// Hero color bar
+document.getElementById('heroColorBar').style.background = divColor;
+
+// Division stripe
+const stripeEl = document.getElementById('divStripe');
+stripeEl.style.background = `linear-gradient(90deg, ${divColor} 0%, transparent 100%)`;
+stripeEl.style.opacity = '0.7';
+
+// Breadcrumb
+document.getElementById('breadcrumbDiv').textContent = divName.split('—')[0].trim();
+
+// Map title & desc
+document.getElementById('mapTitle').innerHTML = `${divName.split('—')[0].trim()} <em>Map</em>`;
+document.getElementById('mapDesc').textContent =
+  `County shading shows all district divisions. Division ${divNum} counties are highlighted with a glowing border.`;
+document.getElementById('schoolsDesc').textContent =
+  `The following Key Club chapters are part of ${divName.split('—')[0].trim()}.`;
+
+// ── Profile ──
+document.getElementById('profileEyebrow').textContent = `Lieutenant Governor · Division ${divNum}`;
+document.getElementById('profileName').textContent = ltg.name;
+document.getElementById('profileDiv').textContent = divName;
+document.getElementById('profileAvatar').textContent = divNum;
+
+// Slogan
+const quoteEl = document.getElementById('profileQuote');
+if (ltg.slogan) {
+  quoteEl.textContent = ltg.slogan;
+} else {
+  quoteEl.style.display = 'none';
+}
+
+// Email
+const emailLink = document.getElementById('profileEmail');
+const emailText = document.getElementById('profileEmailText');
+if (ltg.email) {
+  emailLink.href = `mailto:${ltg.email}`;
+  emailText.textContent = ltg.email;
+} else {
+  emailLink.style.display = 'none';
+}
+
+// Try loading the LTG photo
+const imgWrap = document.getElementById('profileImgWrap');
+const avatarEl = document.getElementById('profileAvatar');
+if (ltg.img) {
+  const probe = new Image();
+  probe.onload = () => {
+    const img = document.createElement('img');
+    img.src = ltg.img;
+    img.alt = ltg.name + ' photo';
+    avatarEl.remove();
+    imgWrap.appendChild(img);
+  };
+  probe.src = ltg.img;
+}
+
+// ── Schools list ──
+const divSchools = SCHOOLS.filter(s => s.div === divNum);
+const grid = document.getElementById('schoolsGrid');
+divSchools.forEach(s => {
+  const card = document.createElement('div');
+  card.className = 'school-card';
+  card.innerHTML = `
+    <div class="school-dot" style="background:${divColor}"></div>
+    <div>
+      <div class="school-name">${s.name}</div>
+      <div class="school-addr">${s.addr}</div>
+    </div>`;
+  grid.appendChild(card);
+});
+
+/* ═══════════════════════════════════════════════════════
+   MAP — using same tile + county GeoJSON as our-district.html
+   ═══════════════════════════════════════════════════════ */
+const DIV_VIEWS = {
+  1: {center:[39.3,-94.1], zoom:7},
+  2: {center:[39.5,-92.0], zoom:7},
+  3: {center:[37.1,-93.4], zoom:7},
+  4: {center:[38.8,-90.65], zoom:9},
+  5: {center:[37.5,-90.5], zoom:7},
+  6: {center:[36.2,-93.2], zoom:7},
+  7: {center:[34.2,-93.1], zoom:6},
+  8: {center:[35.9,-91.0], zoom:7},
+  9: {center:[34.9,-92.3], zoom:7},
+  10:{center:[38.57,-90.4], zoom:10},
+};
+const view = DIV_VIEWS[divNum] || {center:[37.4,-92.3], zoom:6};
+
+const map = L.map('divMap', {center: view.center, zoom: view.zoom, zoomControl: true});
+
+// Same base tile as our-district.html (no-labels first, labels pane on top)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://carto.com/">CARTO</a>', maxZoom: 18
+}).addTo(map);
+
+fetch('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json')
+  .then(r => r.json())
+  .then(data => {
+    // Filter to MO + AR only
+    const moar = {
+      type: 'FeatureCollection',
+      features: data.features.filter(f => f.properties.STATE === '29' || f.properties.STATE === '05')
+    };
+
+    // ── Base county fill layer (same style logic as our-district.html) ──
+    L.geoJSON(moar, {
+      style(feature) {
+        const fips = feature.properties.GEO_ID.replace('0500000US', '');
+        const div = CD[fips];
+        return {
+          fillColor: div ? DIV_COLORS[div] : '#e0e0e0',
+          fillOpacity: div === divNum ? 0.65 : 0.35,
+          color: 'rgba(255,255,255,0.85)',
+          weight: 1.0,
+          interactive: true
+        };
+      },
+      onEachFeature(feature, layer) {
+        const fips = feature.properties.GEO_ID.replace('0500000US', '');
+        const div = CD[fips];
+        const isThis = div === divNum;
+        layer.bindTooltip(
+          `<strong>${feature.properties.NAME} Co.</strong><br>${div ? DIV_NAMES[div] : '—'}`,
+          {sticky: true, className: 'county-tooltip'}
+        );
+        layer.on('mouseover', function() {
+          this.setStyle({fillOpacity: isThis ? 0.85 : (div ? 0.55 : 0.45)});
+        });
+        layer.on('mouseout', function() {
+          this.setStyle({fillOpacity: isThis ? 0.65 : 0.35});
+        });
+      }
+    }).addTo(map);
+
+    // ── Glow outline for the active division ──
+    // Pull only the features that belong to this division
+    const thisDivFeatures = moar.features.filter(f => {
+      const fips = f.properties.GEO_ID.replace('0500000US', '');
+      return CD[fips] === divNum;
+    });
+
+    if (thisDivFeatures.length > 0) {
+      const thisDivGeoJSON = {type: 'FeatureCollection', features: thisDivFeatures};
+
+      // Outer soft glow (wide, low opacity)
+      L.geoJSON(thisDivGeoJSON, {
+        style: {
+          fillOpacity: 0,
+          color: divColor,
+          weight: 10,
+          opacity: 0.22,
+          interactive: false,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }
+      }).addTo(map);
+
+      // Middle glow
+      L.geoJSON(thisDivGeoJSON, {
+        style: {
+          fillOpacity: 0,
+          color: divColor,
+          weight: 5,
+          opacity: 0.45,
+          interactive: false,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }
+      }).addTo(map);
+
+      // Sharp inner border
+      L.geoJSON(thisDivGeoJSON, {
+        style: {
+          fillOpacity: 0,
+          color: divColor,
+          weight: 2.5,
+          opacity: 1.0,
+          interactive: false,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }
+      }).addTo(map);
+    }
+
+    // City/road labels on top (same pane trick as our-district.html)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+      maxZoom: 18, pane: 'shadowPane'
+    }).addTo(map);
+  })
+  .catch(() => {
+    // Fallback: full label tile
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 18}).addTo(map);
+  });
+
+// ── School markers ──
+function makeIcon(div) {
+  const c = DIV_COLORS[div] || '#888';
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:11px;height:11px;border-radius:50%;background:${c};border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [11,11], iconAnchor: [5.5,5.5], popupAnchor: [0,-8]
+  });
+}
+SCHOOLS.forEach(s => {
+  L.marker([s.lat, s.lng], {icon: makeIcon(s.div)})
+    .addTo(map)
+    .bindPopup(`<div class="popup-name">${s.name}</div><div class="popup-div">${DIV_NAMES[s.div]}</div><div class="popup-addr">${s.addr}</div>`);
+});
+
+// ── Legend ──
+const legend = L.control({position: 'bottomright'});
+legend.onAdd = () => {
+  const d = L.DomUtil.create('div', 'map-legend');
+  d.innerHTML = '<div class="map-legend-title">Divisions</div>' +
+    Object.entries(DIV_COLORS).map(([div, col]) => {
+      const active = parseInt(div) === divNum;
+      return `<div class="map-legend-row" style="${active ? 'font-weight:700;' : ''}">` +
+        `<div class="map-legend-sw" style="background:${col};${active ? `box-shadow:0 0 6px ${col};border-color:${col};` : ''}"></div>` +
+        `Div ${div}${active ? ' ◀' : ''}</div>`;
+    }).join('');
+  return d;
+};
+legend.addTo(map);
+
+/* ── NAV scroll effect ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
+}, {passive: true});
+
+/* ── Fade-in observer ── */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      obs.unobserve(e.target);
+    }
+  });
+}, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+/* ── Mobile nav ── */
+const nt = document.getElementById('navToggle'), nm = document.getElementById('navMobile');
+if (nt) nt.addEventListener('click', () => {
+  const o = nm.classList.toggle('open');
+  nt.setAttribute('aria-expanded', o);
+});
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

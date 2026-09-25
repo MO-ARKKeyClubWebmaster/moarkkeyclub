@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adult Staff | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+
+/* ── PAGE HERO — uses blue accent instead of gold bar for adults ── */
+.adult-hero {
+  padding-top: 68px;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.adult-hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(26,58,107,0.35) 0%, transparent 60%);
+}
+.adult-hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 30%, transparent 100%);
+}
+.adult-hero-blue-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: var(--blue);
+}
+.adult-hero-inner {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 3rem 1.5rem 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* Back button */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.8125rem; font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border-radius: 100px;
+  transition: all var(--transition);
+  position: absolute; top: 1.25rem; left: 1.5rem; z-index: 10;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+  transform: translateX(-2px);
+}
+.back-btn svg { width: 14px; height: 14px; }
+
+/* Profile block */
+.profile-img-wrap {
+  flex-shrink: 0;
+  width: 160px; height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 3px solid var(--blue);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  background: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+}
+.profile-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+}
+.profile-avatar {
+  font-family: var(--ff-display);
+  font-size: 3.5rem;
+  color: var(--white);
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(26,58,107,0.4);
+  border: 1px solid rgba(100,140,220,0.35);
+  border-radius: 100px;
+  padding: 0.3rem 0.875rem;
+  font-size: 0.72rem; font-weight: 600;
+  color: #90b4f0;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+.profile-name {
+  font-family: var(--ff-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+.profile-role {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1rem;
+}
+.profile-quote {
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 1.0625rem;
+  color: #90b4f0;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  max-width: 50ch;
+}
+.profile-quote::before { content: '\201C'; }
+.profile-quote::after  { content: '\201D'; }
+.profile-email {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.8125rem;
+  color: #90b4f0;
+  background: rgba(26,58,107,0.35);
+  border: 1px solid rgba(100,140,220,0.3);
+  border-radius: 6px;
+  padding: 0.35rem 0.875rem;
+  transition: background var(--transition);
+}
+.profile-email:hover { background: rgba(26,58,107,0.55); }
+.profile-email svg { width: 13px; height: 13px; }
+
+/* ── BREADCRUMB ── */
+.breadcrumb { background: var(--cream); border-bottom: 1px solid var(--border); }
+.breadcrumb-inner { max-width: 1200px; margin: 0 auto; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--muted); }
+.breadcrumb a { color: var(--blue); transition: color var(--transition); }
+.breadcrumb a:hover { color: var(--navy); }
+.breadcrumb-sep { opacity: 0.4; }
+
+/* ── CONTENT ── */
+.content-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.section-block { padding: 4rem 0; }
+.section-block + .section-block { border-top: 1px solid var(--border); }
+.section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; color: var(--blue); margin-bottom: 0.75rem; }
+.section-title { font-family: var(--ff-display); font-size: clamp(1.5rem, 3vw, 2.25rem); color: var(--navy); line-height: 1.15; margin-bottom: 1rem; }
+.section-title em { font-style: italic; color: var(--blue); }
+.section-header { margin-bottom: 2.5rem; }
+
+/* ── BIO ── */
+.bio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+.bio-text p {
+  font-size: 0.9375rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+.bio-text p:last-child { margin-bottom: 0; }
+
+/* Role responsibility card — blue variant for adults */
+.role-card {
+  background: var(--navy);
+  border-radius: var(--radius);
+  padding: 2rem;
+  border-left: 4px solid var(--blue);
+}
+.role-card-label {
+  font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: #90b4f0; font-weight: 700; margin-bottom: 1rem;
+}
+.role-card h3 {
+  font-family: var(--ff-display);
+  font-size: 1.375rem; color: var(--white); margin-bottom: 1rem;
+}
+.role-item {
+  display: flex; align-items: flex-start; gap: 0.875rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.role-item:last-child { border-bottom: none; }
+.role-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.role-item p { font-size: 0.875rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+/* Contact strip */
+.contact-strip {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  display: flex; align-items: center; gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.contact-strip-label {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+  font-weight: 600; color: var(--muted); white-space: nowrap;
+}
+.contact-strip-email {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.9375rem; font-weight: 600;
+  color: var(--blue);
+}
+.contact-strip-email svg { width: 16px; height: 16px; }
+.contact-strip-email:hover { color: var(--navy); }
+
+/* ── FOOTER ── */
+footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+.footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+.footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+.footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+.footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+.footer-col ul li a:hover{color:var(--white);}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+.footer-socials{display:flex;gap:0.75rem;}
+.footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+.footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.footer-social svg{width:16px;height:16px;}
+
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:1024px){.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}.bio-grid{grid-template-columns:1fr;}}
+@media(max-width:768px){
+  .nav-links{display:none;}.nav-toggle{display:flex;}
+  .adult-hero-inner{flex-direction:column;align-items:flex-start;gap:1.5rem;padding-top:4rem;}
+  .profile-img-wrap{width:120px;height:140px;}
+  .contact-strip{flex-direction:column;align-items:flex-start;gap:0.75rem;}
+  .footer-top{grid-template-columns:1fr;}
+}
+@media(max-width:480px){.footer-bottom{flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text"><span class="nav-logo-name">MO-ARK District</span><span class="nav-logo-sub">Key Club International</span></div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="about.html">About MO-ARK</a><a href="about.html#history">Our History</a><a href="about.html#mission">Mission &amp; Values</a><div class="nav-dropdown-divider"></div><a href="contact.html">Contact Us</a></div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link active">Our District<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="our-district.html#board">District Board</a><a href="our-district.html#clubs">Club Directory</a><a href="our-district.html#bylaws">District Bylaws</a></div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></a>
+        <div class="nav-dropdown"><a href="dlc.html">DLC 2027</a><a href="dlc.html#calendar">Event Calendar</a><a href="resources.html#forms">DLC Forms</a></div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div><a href="about.html">About MO-ARK</a><a href="about.html#history">Our History</a><a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div><a href="our-district.html#board">District Board</a><a href="our-district.html#clubs">Club Directory</a><a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div><a href="newsletters.html">Newsletters</a><a href="resources.html">Resources</a><a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div><a href="contact.html">Contact Us</a>
+</div>
+
+<!-- ── HERO ── -->
+<div class="adult-hero">
+  <div class="adult-hero-bg"></div>
+  <div class="adult-hero-grid"></div>
+  <div class="adult-hero-blue-bar"></div>
+  <a href="our-district.html#board" class="back-btn">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    Back to District Board
+  </a>
+  <div class="adult-hero-inner">
+    <div class="profile-img-wrap" id="profileImgWrap">
+      <span class="profile-avatar" id="profileAvatar"></span>
+    </div>
+    <div class="profile-info">
+      <div class="profile-eyebrow" id="profileEyebrow">Adult Staff</div>
+      <h1 class="profile-name" id="profileName">Loading…</h1>
+      <p class="profile-role" id="profileRole"></p>
+      <p class="profile-quote" id="profileQuote"></p>
+      <a class="profile-email" id="profileEmail" href="#">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M1 6l7 4.5L15 6"/></svg>
+        <span id="profileEmailText"></span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── BREADCRUMB ── -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="our-district.html">Our District</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="our-district.html#board">Board</a>
+    <span class="breadcrumb-sep">›</span>
+    <span id="breadcrumbName">Adult Staff</span>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="content-wrap">
+
+  <!-- About / Bio -->
+  <div class="section-block fade-in">
+    <div class="section-header">
+      <div class="section-label">About</div>
+      <h2 class="section-title" id="bioTitle">Staff <em>Overview</em></h2>
+    </div>
+    <div class="bio-grid">
+      <div class="bio-text" id="bioText">
+        <!-- Filled by JS -->
+      </div>
+      <div class="role-card">
+        <div class="role-card-label">Key Responsibilities</div>
+        <h3 id="roleCardTitle">Responsibilities</h3>
+        <div id="roleItems">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-strip fade-in">
+      <span class="contact-strip-label">Get in touch</span>
+      <a class="contact-strip-email" id="contactStripEmail" href="#">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="14" height="10" rx="2"/><path d="M1 6l7 4.5L15 6"/></svg>
+        <span id="contactStripEmailText"></span>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   ADULT STAFF DATA
+   ═══════════════════════════════════════════════════════ */
+const ADULT_DATA = {
+  as1: {
+    name: 'Cheryl Anderson',
+    role: 'District Administrator',
+    eyebrow: 'Adult Staff · District Administrator',
+    email: 'clanderson8247@sbcglobal.net',
+    img: 'Board Photos/AS1.jpeg',
+    avatar: 'CA',
+    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    bio: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+      'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+      'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.'
+    ],
+    responsibilities: [
+      'Oversees the day-to-day administrative operations of the MO-ARK District.',
+      'Liaises between student board members and Key Club International staff.',
+      'Manages official district correspondence and compliance documentation.',
+      'Provides continuity and institutional knowledge across board year transitions.'
+    ]
+  },
+  as2: {
+    name: 'Gaylon Lewis',
+    role: 'Adult Staff',
+    eyebrow: 'Adult Staff',
+    email: '',
+    img: 'Board Photos/AS2.jpeg',
+    avatar: 'GL',
+    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    bio: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+      'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+      'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.'
+    ],
+    responsibilities: [
+      'Mentors student board members throughout the district year.',
+      'Supports district events and ensures activities meet Kiwanis Family standards.',
+      'Advises student leaders on best practices and program execution.',
+      'Serves as a resource for clubs needing adult guidance and support.'
+    ]
+  },
+  as3: {
+    name: 'Carla OBrien',
+    role: 'Adult Staff',
+    eyebrow: 'Adult Staff',
+    email: 'carla.obrien@outlook.com',
+    img: 'Board Photos/AS3.jpeg',
+    avatar: 'CO',
+    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    bio: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+      'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+      'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.'
+    ],
+    responsibilities: [
+      'Mentors student board members throughout the district year.',
+      'Supports district events and ensures activities meet Kiwanis Family standards.',
+      'Advises student leaders on best practices and program execution.',
+      'Serves as a resource for clubs needing adult guidance and support.'
+    ]
+  },
+  as4: {
+    name: 'Miranda Young',
+    role: 'Adult Staff',
+    eyebrow: 'Adult Staff',
+    email: '',
+    img: 'Board Photos/AS4.jpeg',
+    avatar: 'MY',
+    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    bio: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+      'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+      'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.'
+    ],
+    responsibilities: [
+      'Mentors student board members throughout the district year.',
+      'Supports district events and ensures activities meet Kiwanis Family standards.',
+      'Advises student leaders on best practices and program execution.',
+      'Serves as a resource for clubs needing adult guidance and support.'
+    ]
+  },
+  as5: {
+    name: 'James Sturch',
+    role: 'Adult Staff',
+    eyebrow: 'Adult Staff',
+    email: 'james.sturch@southsideschools.org',
+    img: 'Board Photos/AS5.jpeg',
+    avatar: 'JS',
+    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    bio: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
+      'Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+      'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt.'
+    ],
+    responsibilities: [
+      'Mentors student board members throughout the district year.',
+      'Supports district events and ensures activities meet Kiwanis Family standards.',
+      'Advises student leaders on best practices and program execution.',
+      'Serves as a resource for clubs needing adult guidance and support.'
+    ]
+  }
+};
+
+/* ═══════════════════════════════════════════════════════
+   INIT — read ?id= from URL
+   ═══════════════════════════════════════════════════════ */
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id') || 'as1';
+const adult = ADULT_DATA[id] || ADULT_DATA['as1'];
+
+// Page title
+document.title = `${adult.name} — ${adult.role} | MO-ARK District Key Club`;
+
+// Hero
+document.getElementById('profileEyebrow').textContent = adult.eyebrow;
+document.getElementById('profileName').textContent = adult.name;
+document.getElementById('profileRole').textContent = adult.role;
+document.getElementById('profileAvatar').textContent = adult.avatar;
+
+// Quote
+const quoteEl = document.getElementById('profileQuote');
+if (adult.quote) {
+  quoteEl.textContent = adult.quote;
+} else {
+  quoteEl.style.display = 'none';
+}
+
+// Email
+const emailLink = document.getElementById('profileEmail');
+const emailText = document.getElementById('profileEmailText');
+if (adult.email) {
+  emailLink.href = `mailto:${adult.email}`;
+  emailText.textContent = adult.email;
+} else {
+  emailLink.style.display = 'none';
+}
+
+// Contact strip
+const stripEmail = document.getElementById('contactStripEmail');
+const stripEmailText = document.getElementById('contactStripEmailText');
+if (adult.email) {
+  stripEmail.href = `mailto:${adult.email}`;
+  stripEmailText.textContent = adult.email;
+} else {
+  stripEmail.closest('.contact-strip').style.display = 'none';
+}
+
+// Breadcrumb
+document.getElementById('breadcrumbName').textContent = adult.name;
+
+// Bio section title
+document.getElementById('bioTitle').innerHTML = `About <em>${adult.name.split(' ')[0]}</em>`;
+document.getElementById('roleCardTitle').textContent = `${adult.role} Responsibilities`;
+
+// Bio paragraphs
+const bioText = document.getElementById('bioText');
+adult.bio.forEach(para => {
+  const p = document.createElement('p');
+  p.textContent = para;
+  bioText.appendChild(p);
+});
+
+// Responsibilities
+const roleItems = document.getElementById('roleItems');
+adult.responsibilities.forEach(item => {
+  const div = document.createElement('div');
+  div.className = 'role-item';
+  div.innerHTML = `<div class="role-dot"></div><p>${item}</p>`;
+  roleItems.appendChild(div);
+});
+
+// Try loading photo
+const imgWrap = document.getElementById('profileImgWrap');
+const avatarEl = document.getElementById('profileAvatar');
+if (adult.img) {
+  const probe = new Image();
+  probe.onload = () => {
+    const img = document.createElement('img');
+    img.src = adult.img;
+    img.alt = adult.name + ' photo';
+    avatarEl.remove();
+    imgWrap.appendChild(img);
+  };
+  probe.src = adult.img;
+}
+
+/* ── NAV scroll ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
+}, {passive: true});
+
+/* ── Fade-in observer ── */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      obs.unobserve(e.target);
+    }
+  });
+}, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+/* ── Mobile nav ── */
+const nt = document.getElementById('navToggle'), nm = document.getElementById('navMobile');
+if (nt) nt.addEventListener('click', () => {
+  const o = nm.classList.toggle('open');
+  nt.setAttribute('aria-expanded', o);
+});
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

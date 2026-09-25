@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Monthly Report Form | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav">
+  <a href="dashboard.html" class="topnav-logo">
+    <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
+    <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+  </a>
+  <div class="topnav-divider"></div>
+  <div class="topnav-links">
+    <a href="dashboard.html" class="topnav-link">Dashboard</a>
+    <a href="newsletter.html" class="topnav-link">Newsletter</a>
+    <a href="dcm.html" class="topnav-link">DCMs</a>
+    <a href="mrf.html" class="topnav-link active">Monthly RF</a>
+    <a href="committee.html" class="topnav-link">Committee Reports</a>
+    <a href="calendar.html" class="topnav-link">Calendar</a>
+    <a href="review.html" class="topnav-link" id="navReview">Review Queue</a>
+    <a href="console.html" class="topnav-link topnav-console" id="navConsole">Console</a>
+  </div>
+  <div class="topnav-user">
+    <div class="topnav-avatar" id="navAvatar">?</div>
+    <span class="topnav-username" id="navName"></span>
+    <span class="role-chip" id="navRole"></span>
+    <button class="topnav-logout" onclick="AUTH.logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Monthly <em>Report Form</em></h1>
+      <p class="page-desc" id="pageDesc">Submit your monthly LTG report by the 30th of each month.</p>
+    </div>
+  </div>
+
+  <div class="section-tabs">
+    <button class="section-tab active" onclick="showTab('submit')" id="tab-submit">Submit MRF</button>
+    <button class="section-tab" onclick="showTab('archive')" id="tab-archive">Archive</button>
+  </div>
+
+  <!-- SUBMIT TAB -->
+  <div id="panel-submit">
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;">
+      <div>
+        <!-- Header info -->
+        <div class="card" style="margin-bottom:1.25rem;">
+          <div class="card-header"><div class="card-title">Report Information</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-input" id="mrfName" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Division</label>
+                <input type="text" class="form-input" id="mrfDivision" readonly>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Month</label>
+                <select class="form-select" id="mrfMonth"><option value="">Select month…</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Academic Year</label>
+                <select class="form-select" id="mrfYear"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 1: Club Reports (repeating per club) -->
+        <div id="clubReportsSection">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.875rem;">
+            <h3 style="font-family:var(--ff-display);font-size:1.125rem;color:var(--navy);">Club Reports</h3>
+            <button class="btn btn-outline btn-sm" onclick="addClubReport()">+ Add Club</button>
+          </div>
+          <div id="clubReportsList"></div>
+        </div>
+
+        <!-- Section 2: Committee Evaluation -->
+        <div class="mrf-section" style="margin-top:1.25rem;">
+          <div class="mrf-section-title">Committee Evaluation</div>
+          <p style="font-size:0.8125rem;color:var(--muted);margin-bottom:1rem;">Briefly describe what you have done for your committee.</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Committee Name *</label>
+              <input type="text" class="form-input" id="committeeName" placeholder="e.g. Membership Committee">
+            </div>
+            <div class="form-group">
+              <label class="form-label">People You Worked With *</label>
+              <input type="text" class="form-input" id="committeeWith" placeholder="Names or roles">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Committee Evaluation *</label>
+            <textarea class="form-textarea" id="committeeEval" placeholder="Describe your contributions…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Do you want more committee work? *</label>
+            <div class="mrf-radio-group">
+              <label class="mrf-radio-item"><input type="radio" name="moreCommittee" value="yes"> Yes</label>
+              <label class="mrf-radio-item"><input type="radio" name="moreCommittee" value="no"> No</label>
+              <label class="mrf-radio-item"><input type="radio" name="moreCommittee" value="busy"> I am busy, sorry</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Personal Report -->
+        <div class="mrf-section">
+          <div class="mrf-section-title">Personal Report</div>
+          <div class="form-group">
+            <label class="form-label">Have you contacted each club? *</label>
+            <div class="mrf-radio-group">
+              <label class="mrf-radio-item"><input type="radio" name="clubContact" value="never"> Never</label>
+              <label class="mrf-radio-item"><input type="radio" name="clubContact" value="once"> Once</label>
+              <label class="mrf-radio-item"><input type="radio" name="clubContact" value="twice+"> Twice or More</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Have you contacted an adult staff member about any issues? *</label>
+            <input type="text" class="form-input" id="staffContact" placeholder="Yes / No / Describe…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Any questions over newsletters? *</label>
+            <input type="text" class="form-input" id="newsletterQs" placeholder="Yes / No / Describe…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Have you held a Divisional Project? If yes, describe it. *</label>
+            <textarea class="form-textarea" id="divProject" placeholder="Describe your divisional project or write 'No'…"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Additional Notes *</label>
+            <div class="mrf-radio-group" style="margin-bottom:0.5rem;">
+              <label class="mrf-radio-item"><input type="radio" name="addNotes" value="nope" id="addNotesNope" onchange="toggleAddNotes()"> Nope</label>
+              <label class="mrf-radio-item"><input type="radio" name="addNotes" value="other" id="addNotesOther" onchange="toggleAddNotes()"> Other</label>
+            </div>
+            <textarea class="form-textarea" id="addNotesText" placeholder="Additional notes…" style="display:none;min-height:80px;"></textarea>
+          </div>
+        </div>
+
+        <div id="mrfError" style="display:none;padding:0.75rem 1rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#7f1d1d;font-size:0.875rem;margin-bottom:1rem;"></div>
+        <button class="btn btn-primary" id="mrfSubmitBtn" onclick="handleMRFSubmit()">Submit Monthly Report →</button>
+      </div>
+
+      <!-- Sidebar -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div id="mrfDeadlineSide"></div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">About the MRF</div></div>
+          <div class="card-body" style="font-size:0.875rem;color:var(--muted);line-height:1.75;">
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text);">Due by the 30th</strong> of every month - including summer months.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text);">Goes to:</strong> Governor and Webmaster.</p>
+            <p><strong style="color:var(--text);">No approval needed</strong> - it's submitted straight to the record.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHIVE TAB -->
+  <div id="panel-archive" style="display:none;">
+    <div id="mrfArchiveContent"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div id="mrfSuccess" style="display:none;position:fixed;inset:0;background:rgba(10,22,40,0.7);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--white);border-radius:var(--radius);padding:3rem;max-width:440px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;"></div>
+    <h2 style="font-family:var(--ff-display);font-size:1.5rem;color:var(--navy);margin-bottom:0.5rem;">MRF Submitted!</h2>
+    <p style="font-size:0.9375rem;color:var(--muted);line-height:1.7;margin-bottom:1.75rem;">Your monthly report has been sent to the governor and webmaster.</p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;">
+      <a href="dashboard.html" class="btn btn-primary">Dashboard →</a>
+      <button class="btn btn-outline" onclick="document.getElementById('mrfSuccess').style.display='none';">Submit Another</button>
+    </div>
+  </div>
+</div>
+
+<!-- MRF View modal -->
+<div class="modal-overlay" id="mrfModal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <div class="modal-title" id="mrfModalTitle">Monthly Report</div>
+      <button class="modal-close" onclick="closeMRFModal()">✕</button>
+    </div>
+    <div class="modal-body" id="mrfModalBody"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeMRFModal()">Close</button></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+if (!AUTH.isLTG()) {
+  document.getElementById('tab-submit').style.display = 'none';
+  setTimeout(function(){ showTab('archive'); }, 0);
+} else {
+  document.getElementById('pageDesc').textContent = `Division ${user.division} · Due the 30th of every month.`;
+}
+
+// Pre-fill readonly fields
+document.getElementById('mrfName').value = user.name;
+document.getElementById('mrfDivision').value = user.division ? `Division ${user.division}` : '-';
+
+// Populate selects
+API.getMRFMonths().forEach(m => {
+  const o = document.createElement('option'); o.value=m; o.textContent=m;
+  document.getElementById('mrfMonth').appendChild(o);
+});
+API.getCurrentYears().forEach(y => {
+  const o = document.createElement('option'); o.value=y; o.textContent=y;
+  document.getElementById('mrfYear').appendChild(o);
+});
+document.getElementById('mrfYear').value = API.getCurrentYears().at(-1);
+
+// Deadline sidebar
+const mrf = API.getNextMRFDeadline();
+const mDays = Math.max(0, Math.floor((mrf.deadline - new Date()) / 86400000));
+document.getElementById('mrfDeadlineSide').innerHTML = `
+  <div style="background:var(--navy);border-radius:var(--radius);padding:1.25rem 1.5rem;color:var(--white);">
+    <div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#93c5fd;font-weight:700;margin-bottom:0.375rem;">Next MRF Deadline</div>
+    <div style="font-family:var(--ff-display);font-size:1.375rem;margin-bottom:0.25rem;">${mrf.deadline.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</div>
+    <div style="font-size:0.875rem;color:rgba(255,255,255,0.5);">${mDays} days remaining</div>
+  </div>`;
+
+function toggleAddNotes() {
+  const v = document.querySelector('input[name="addNotes"]:checked')?.value;
+  document.getElementById('addNotesText').style.display = v==='other'?'':'none';
+}
+
+// ── CLUB REPORTS ─────────────────────────────────────────────────────
+let clubCount = 0;
+function addClubReport(data={}) {
+  clubCount++;
+  const id = `club-${clubCount}`;
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'mrf-section';
+  div.style.marginBottom = '1rem';
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+      <div class="mrf-section-title" style="margin-bottom:0;">Club ${clubCount}</div>
+      <button class="btn btn-outline btn-sm" style="color:#7f1d1d;border-color:rgba(239,68,68,0.3);" onclick="document.getElementById('${id}').remove();renumberClubs();">Remove</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name of Key Club</label>
+      <input type="text" class="form-input club-name" placeholder="Club name…" value="${data.clubName||''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Who was contacted?</label>
+      <div class="mrf-radio-group">
+        ${['President','Vice-President','Secretary','Treasurer','Advisor','Other'].map(r=>`<label class="mrf-radio-item"><input type="radio" name="contact-${id}" value="${r}" ${data.contacted===r?'checked':''}> ${r}</label>`).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">How were they contacted?</label>
+      <div class="mrf-radio-group">
+        ${['Visit','Letter','Phone Call','Email','Messaging','Other'].map(r=>`<label class="mrf-radio-item"><input type="radio" name="contactHow-${id}" value="${r}" ${data.contactHow===r?'checked':''}> ${r}</label>`).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Problems/Complaints/Comments</label>
+      <textarea class="form-textarea club-problems" style="min-height:70px;" placeholder="Issues or comments…">${data.problems||''}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Service/Fundraising Projects</label>
+      <textarea class="form-textarea club-projects" style="min-height:70px;" placeholder="Projects held this month…">${data.projects||''}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What does the club have to report?</label>
+      <textarea class="form-textarea club-report" style="min-height:70px;" placeholder="Anything notable…">${data.report||''}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Do they work with their Kiwanis club?</label>
+      <div class="mrf-radio-group">
+        ${["Yes","No","They don't have one"].map(r=>`<label class="mrf-radio-item"><input type="radio" name="kiwanis-${id}" value="${r}" ${data.kiwanis===r?'checked':''}> ${r}</label>`).join('')}
+      </div>
+    </div>`;
+  document.getElementById('clubReportsList').appendChild(div);
+}
+
+function renumberClubs() {
+  document.querySelectorAll('#clubReportsList .mrf-section').forEach((el,i) => {
+    const title = el.querySelector('.mrf-section-title');
+    if (title) title.textContent = `Club ${i+1}`;
+  });
+}
+
+// Add first club by default
+addClubReport();
+
+function collectClubData() {
+  return Array.from(document.querySelectorAll('#clubReportsList .mrf-section')).map((el,i) => ({
+    clubName:   el.querySelector('.club-name')?.value?.trim()||'',
+    contacted:  el.querySelector(`input[name^="contact-"]:checked`)?.value||'',
+    contactHow: el.querySelector(`input[name^="contactHow-"]:checked`)?.value||'',
+    problems:   el.querySelector('.club-problems')?.value?.trim()||'',
+    projects:   el.querySelector('.club-projects')?.value?.trim()||'',
+    report:     el.querySelector('.club-report')?.value?.trim()||'',
+    kiwanis:    el.querySelector(`input[name^="kiwanis-"]:checked`)?.value||'',
+  }));
+}
+
+async function handleMRFSubmit() {
+  const month = document.getElementById('mrfMonth').value;
+  const year  = document.getElementById('mrfYear').value;
+  if (!month||!year) { showMRFError('Please select a month and year.'); return; }
+
+  const clubs = collectClubData();
+  const moreCommittee = document.querySelector('input[name="moreCommittee"]:checked')?.value||'';
+  const clubContact   = document.querySelector('input[name="clubContact"]:checked')?.value||'';
+  const addNotes      = document.querySelector('input[name="addNotes"]:checked')?.value||'';
+
+  const payload = {
+    division:       user.division||0,
+    ltgEmail:       user.email,
+    ltgName:        user.name,
+    month, year,
+    submittedAt:    new Date().toISOString(),
+    clubs,
+    committee: {
+      name:          document.getElementById('committeeName').value.trim(),
+      workWith:      document.getElementById('committeeWith').value.trim(),
+      evaluation:    document.getElementById('committeeEval').value.trim(),
+      wantMore:      moreCommittee,
+    },
+    personal: {
+      clubContactFreq: clubContact,
+      staffContact:    document.getElementById('staffContact').value.trim(),
+      newsletterQs:    document.getElementById('newsletterQs').value.trim(),
+      divProject:      document.getElementById('divProject').value.trim(),
+      additionalNotes: addNotes==='other' ? document.getElementById('addNotesText').value.trim() : 'Nope',
+    },
+  };
+
+  const btn = document.getElementById('mrfSubmitBtn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting…'; btn.disabled = true;
+  try {
+    await API.createMRF(payload);
+    await LOG.record('MRF_SUBMITTED', LOG.mrfDetail({division:user.division,month,year}));
+    document.getElementById('mrfSuccess').style.display = 'flex';
+    btn.textContent = 'Submit Monthly Report →'; btn.disabled = false;
+  } catch(e) {
+    showMRFError('Submission failed: ' + e.message);
+    btn.textContent = 'Submit Monthly Report →'; btn.disabled = false;
+  }
+}
+
+function showMRFError(m){const e=document.getElementById('mrfError');e.textContent=m;e.style.display='block';}
+
+// ── ARCHIVE ───────────────────────────────────────────────────────────
+let archiveLoaded = false;
+let allMRFs = [];
+
+async function initArchive() {
+  if (archiveLoaded) return;
+  const c = document.getElementById('mrfArchiveContent');
+  try {
+    allMRFs = await API.getMRFs();
+    archiveLoaded = true;
+    if (AUTH.isLTG()) renderLTGArchive();
+    else renderAdminArchive();
+  } catch(e) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon"></div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+const ALL_MONTHS = API.getMRFMonths();
+
+function renderLTGArchive() {
+  const divMRFs = allMRFs.filter(m=>m.division===user.division && m.ltgEmail===user.email);
+  document.getElementById('mrfArchiveContent').innerHTML = `
+    <div style="display:flex;gap:0.5rem;border-bottom:2px solid var(--border);margin-bottom:1.5rem;">
+      <button class="yr-tab" id="myrytab-2025-2026" onclick="setMRFYear('2025-2026')">2025-2026</button>
+      <button class="yr-tab active" id="myrytab-2026-2027" onclick="setMRFYear('2026-2027')">2026-2027</button>
+    </div>
+    <div id="mrfMonthGrid"></div>`;
+  renderMRFMonths('2026-2027', divMRFs);
+}
+
+function setMRFYear(y) {
+  document.querySelectorAll('.yr-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`myrytab-${y}`)?.classList.add('active');
+  const divMRFs = allMRFs.filter(m=>m.division===user.division && m.ltgEmail===user.email);
+  renderMRFMonths(y, divMRFs);
+}
+
+function renderMRFMonths(year, divMRFs) {
+  const yearMRFs = divMRFs.filter(m=>m.year===year);
+  document.getElementById('mrfMonthGrid').innerHTML = `
+    <div class="mrf-month-grid">
+      ${ALL_MONTHS.map(month => {
+        const mrf = yearMRFs.find(m=>m.month===month);
+        if (!mrf) return `<div class="mrf-month-box state-grey">
+          <div class="mrf-month-name">${month}</div>
+          <div class="mrf-month-status" style="color:var(--muted);">Not submitted</div>
+        </div>`;
+        return `<div class="mrf-month-box state-green clickable" onclick="openMRFDetail('${mrf.id}')">
+          <div class="mrf-month-name">${month}</div>
+          <div class="mrf-month-status" style="color:#14532d;">✓ Submitted</div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:0.25rem;">${fmtDate(mrf.submittedAt)}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderAdminArchive() {
+  const divs = [1,2,3,4,5,6,7,8,9,10];
+  document.getElementById('mrfArchiveContent').innerHTML = `
+    <div style="display:flex;gap:0.5rem;border-bottom:2px solid var(--border);margin-bottom:1.5rem;">
+      <button class="yr-tab" id="admyrytab-2025-2026" onclick="setAdminMRFYear('2025-2026')">2025-2026</button>
+      <button class="yr-tab active" id="admyrytab-2026-2027" onclick="setAdminMRFYear('2026-2027')">2026-2027</button>
+    </div>
+    <div id="adminMRFGrid"></div>`;
+  renderAdminMRFYear('2026-2027');
+}
+
+function setAdminMRFYear(y) {
+  document.querySelectorAll('.yr-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`admyrytab-${y}`)?.classList.add('active');
+  renderAdminMRFYear(y);
+}
+
+function renderAdminMRFYear(year) {
+  const yearMRFs = allMRFs.filter(m=>m.year===year);
+  const divs = [1,2,3,4,5,6,7,8,9,10];
+  document.getElementById('adminMRFGrid').innerHTML = divs.map(div => {
+    const divMRFs = yearMRFs.filter(m=>m.division===div);
+    const submitted = divMRFs.length;
+    return `<div class="div-card" id="mrf-div-${div}">
+      <div class="div-card-hd" onclick="this.closest('.div-card').classList.toggle('open')">
+        <div class="div-num">${div}</div>
+        <div><div class="div-name">Division ${div}</div></div>
+        <div class="div-count">${submitted} / ${ALL_MONTHS.length} submitted</div>
+        <div class="div-chev">▼</div>
+      </div>
+      <div class="div-body">
+        <div class="mrf-month-grid">
+          ${ALL_MONTHS.map(month => {
+            const mrf = divMRFs.find(m=>m.month===month);
+            if (!mrf) return `<div class="mrf-month-box state-grey">
+              <div class="mrf-month-name">${month}</div>
+              <div class="mrf-month-status" style="color:var(--muted);">Not submitted</div>
+            </div>`;
+            return `<div class="mrf-month-box state-green clickable" onclick="openMRFDetail('${mrf.id}')">
+              <div class="mrf-month-name">${month}</div>
+              <div class="mrf-month-status" style="color:#14532d;">✓ Submitted</div>
+              <div style="font-size:0.7rem;color:var(--muted);margin-top:0.25rem;">${fmtDate(mrf.submittedAt)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openMRFDetail(id) {
+  const mrf = allMRFs.find(m=>m.id===id) || await API.getMRFById(id);
+  await LOG.record('MRF_VIEWED', LOG.mrfDetail(mrf));
+  document.getElementById('mrfModalTitle').textContent = `${mrf.month} ${mrf.year} - ${mrf.ltgName}`;
+  document.getElementById('mrfModalBody').innerHTML = `
+    <div style="margin-bottom:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+      <span class="badge badge-submitted">✓ Submitted</span>
+      <span style="font-size:0.8rem;color:var(--muted);">By ${mrf.ltgName} · Div ${mrf.division} · ${fmtDate(mrf.submittedAt)}</span>
+    </div>
+
+    <!-- Club Reports -->
+    <div class="mrf-display-section">
+      <div class="mrf-display-title">Club Reports (${(mrf.clubs||[]).length} clubs)</div>
+      ${(mrf.clubs||[]).map((club,i) => `
+        <div style="margin-bottom:1rem;padding:1rem;background:var(--cream);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <div style="font-weight:600;color:var(--navy);margin-bottom:0.75rem;">Club ${i+1}: ${club.clubName||'-'}</div>
+          <div class="mrf-display-grid">
+            <div class="mrf-display-item"><div class="mrf-display-label">Contacted</div><div class="mrf-display-value">${club.contacted||'-'}</div></div>
+            <div class="mrf-display-item"><div class="mrf-display-label">How</div><div class="mrf-display-value">${club.contactHow||'-'}</div></div>
+            <div class="mrf-display-item" style="grid-column:span 2;"><div class="mrf-display-label">Problems/Comments</div><div class="mrf-display-value long">${club.problems||'None'}</div></div>
+            <div class="mrf-display-item" style="grid-column:span 2;"><div class="mrf-display-label">Service/Fundraising Projects</div><div class="mrf-display-value long">${club.projects||'None'}</div></div>
+            <div class="mrf-display-item" style="grid-column:span 2;"><div class="mrf-display-label">What does the club have to report?</div><div class="mrf-display-value long">${club.report||'Nothing'}</div></div>
+            <div class="mrf-display-item"><div class="mrf-display-label">Works with Kiwanis?</div><div class="mrf-display-value">${club.kiwanis||'-'}</div></div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <!-- Committee -->
+    <div class="mrf-display-section">
+      <div class="mrf-display-title">Committee Evaluation</div>
+      <div class="mrf-display-grid">
+        <div class="mrf-display-item"><div class="mrf-display-label">Committee</div><div class="mrf-display-value">${mrf.committee?.name||'-'}</div></div>
+        <div class="mrf-display-item"><div class="mrf-display-label">Worked With</div><div class="mrf-display-value">${mrf.committee?.workWith||'-'}</div></div>
+        <div class="mrf-display-item" style="grid-column:span 2;"><div class="mrf-display-label">Evaluation</div><div class="mrf-display-value long">${mrf.committee?.evaluation||'-'}</div></div>
+        <div class="mrf-display-item"><div class="mrf-display-label">Wants more committee work?</div><div class="mrf-display-value">${mrf.committee?.wantMore||'-'}</div></div>
+      </div>
+    </div>
+
+    <!-- Personal -->
+    <div class="mrf-display-section">
+      <div class="mrf-display-title">Personal Report</div>
+      <div class="mrf-display-grid">
+        <div class="mrf-display-item"><div class="mrf-display-label">Contacted each club</div><div class="mrf-display-value">${mrf.personal?.clubContactFreq||'-'}</div></div>
+        <div class="mrf-display-item"><div class="mrf-display-label">Contacted adult staff?</div><div class="mrf-display-value">${mrf.personal?.staffContact||'-'}</div></div>
+        <div class="mrf-display-item"><div class="mrf-display-label">Newsletter questions?</div><div class="mrf-display-value">${mrf.personal?.newsletterQs||'-'}</div></div>
+        <div class="mrf-display-item" style="grid-column:span 2;"><div class="mrf-display-label">Divisional Project</div><div class="mrf-display-value long">${mrf.personal?.divProject||'-'}</div></div>
+        <div class="mrf-display-item" style="grid-column:span 2;"><div class="mrf-display-label">Additional Notes</div><div class="mrf-display-value long">${mrf.personal?.additionalNotes||'-'}</div></div>
+      </div>
+    </div>`;
+  document.getElementById('mrfModal').classList.add('open');
+}
+
+function closeMRFModal(){document.getElementById('mrfModal').classList.remove('open');}
+document.getElementById('mrfModal').addEventListener('click',function(e){if(e.target===this)closeMRFModal();});
+
+function showTab(t) {
+  document.getElementById('panel-submit').style.display = t==='submit'?'':'none';
+  document.getElementById('panel-archive').style.display = t==='archive'?'':'none';
+  document.querySelectorAll('.section-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`tab-${t}`).classList.add('active');
+  if (t==='archive') initArchive();
+}
+
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+</script>
+</body>
+</html>

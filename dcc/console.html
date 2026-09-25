@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Admin Console | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+<style>
+/* Console-specific layout - log viewer, console tabs & flags now live in portal.css */
+.compliance-section-hd{display:flex;align-items:center;gap:0.75rem;padding:1rem 1.5rem;background:var(--bg);border-bottom:1px solid var(--border);border-top:1px solid var(--border);}
+.compliance-section-hd:first-child{border-top:none;}
+.compliance-section-title{font-weight:700;font-size:0.85rem;color:var(--navy);}
+.compliance-section-count{font-size:0.75rem;color:var(--muted);margin-left:auto;}
+.sub-tab-bar{display:flex;gap:0.4rem;margin-bottom:1.25rem;flex-wrap:wrap;}
+.sub-tab{padding:0.45rem 1rem;font-size:0.82rem;font-weight:600;color:var(--muted);border:1px solid var(--border);background:var(--white);border-radius:100px;cursor:pointer;font-family:var(--ff-body);transition:all .16s;}
+.sub-tab:hover{color:var(--navy);border-color:var(--navy);}
+.sub-tab.active{color:var(--white);background:var(--navy);border-color:var(--navy);}
+
+/* ── Board Meetings ── */
+.bm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;}
+.bm-card{background:var(--white,#fff);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;cursor:pointer;transition:box-shadow .15s,transform .15s;}
+.bm-card:hover{box-shadow:0 10px 28px rgba(11,27,51,.10);transform:translateY(-2px);}
+.bm-card-date{font-family:'DM Serif Display',Georgia,serif;font-size:1.2rem;color:var(--navy);}
+.bm-card-label{font-size:0.82rem;color:var(--muted);margin-top:2px;}
+.bm-card-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;}
+.bm-pill{font-size:0.68rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:100px;}
+.bm-pill.sent{background:#E6F4EA;color:#12643A;}
+.bm-pill.nosent{background:#F1F3F8;color:#667085;}
+.bm-pill.att{background:#E8F0FF;color:#1E50A0;}
+.bm-back{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--muted);cursor:pointer;margin-bottom:1rem;}
+.bm-back:hover{color:var(--navy);}
+.bm-detail-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+.bm-detail-title{font-family:'DM Serif Display',Georgia,serif;font-size:1.6rem;color:var(--navy);}
+.bm-detail-sub{font-size:0.85rem;color:var(--muted);}
+.bm-att-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.5rem;}
+.bm-att-row{display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;border:1px solid var(--border);border-radius:10px;background:#fff;}
+.bm-att-row input{width:17px;height:17px;flex:none;}
+.bm-att-row.frozen{background:#FAFBFD;}
+.bm-att-name{font-weight:600;font-size:0.88rem;color:var(--navy);}
+.bm-att-title{font-size:0.74rem;color:var(--muted);}
+.bm-monitor-row{display:flex;align-items:center;gap:.75rem;padding:.7rem .9rem;border:1px solid var(--border);border-radius:10px;background:#fff;margin-bottom:.5rem;flex-wrap:wrap;}
+.bm-monitor-row .who{flex:1;min-width:150px;}
+.bm-monitor-name{font-weight:600;font-size:0.9rem;color:var(--navy);}
+.bm-monitor-title{font-size:0.74rem;color:var(--muted);}
+.bm-status{font-size:0.74rem;font-weight:700;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:.03em;}
+.bm-status.none{background:#F1F3F8;color:#667085;}
+.bm-status.wait{background:#FFF4E0;color:#9a6a00;}
+.bm-status.ok{background:#E6F4EA;color:#12643A;}
+.bm-status.bad{background:#FDECEC;color:#9B1C1C;}
+.bm-status.na{background:#EEF1F6;color:#475569;}
+.bm-mini-btn{font-size:0.76rem;font-weight:600;padding:.35rem .7rem;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;color:var(--navy);}
+.bm-mini-btn:hover{border-color:var(--navy);}
+.bm-mini-btn.approve{background:#12643A;color:#fff;border-color:#12643A;}
+.bm-mini-btn.deny{background:#fff;color:#9B1C1C;border-color:#f0c4c4;}
+.bm-mini-btn.pdf{background:#0B1B33;color:#fff;border-color:#0B1B33;}
+.bm-empty{padding:2.5rem 1rem;text-align:center;color:var(--muted);}
+.bm-empty .ic{font-size:2.2rem;margin-bottom:.5rem;}
+.bm-signed-tag{font-size:0.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#12643A;background:#E6F4EA;padding:3px 10px;border-radius:100px;}
+/* tiny modal for comment / signature */
+.bm-ovl{position:fixed;inset:0;z-index:9998;background:rgba(11,27,51,.55);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.bm-ovl-card{background:#fff;border-radius:14px;max-width:440px;width:100%;padding:1.4rem 1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+.bm-ovl-card h3{font-family:'DM Serif Display',Georgia,serif;color:var(--navy);font-size:1.25rem;margin-bottom:.5rem;}
+.bm-ovl-card p{font-size:0.85rem;color:var(--muted);margin-bottom:.9rem;}
+.bm-ovl-card textarea,.bm-ovl-card input{width:100%;padding:.65rem .8rem;border:1.4px solid var(--border);border-radius:9px;font-family:inherit;font-size:.9rem;margin-bottom:1rem;}
+.bm-ovl-actions{display:flex;gap:.6rem;justify-content:flex-end;}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="dashboard.html" class="topnav-logo">
+    <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
+    <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+  </a>
+  <div class="topnav-divider"></div>
+  <div class="topnav-links">
+    <a href="dashboard.html" class="topnav-link">Dashboard</a>
+    <a href="console.html" class="topnav-link topnav-console active">Console</a>
+  </div>
+  <div class="topnav-user">
+    <div class="topnav-avatar" id="navAvatar">?</div>
+    <span class="topnav-username" id="navName"></span>
+    <span class="role-chip" id="navRole"></span>
+    <button class="topnav-logout" onclick="AUTH.logout()">Sign out</button>
+  </div>
+</nav>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen" class="page fade-in">
+  <div class="console-lock">
+    <div class="console-lock-card">
+      <div class="console-lock-icon">🔐</div>
+      <div class="console-lock-title">Admin Console</div>
+      <p class="console-lock-desc">This area is restricted. Enter your console password to continue.<br>
+        <span id="lockHint" style="font-size:0.75rem;color:#aaa;">Separate from your portal login password.</span></p>
+      <div class="form-group" style="text-align:left;">
+        <label class="form-label">Console Password</label>
+        <input class="form-input" type="password" id="consolePwd" placeholder="Enter your console password…"
+          style="background:var(--cream);color:var(--text);border-color:var(--border);"
+          onkeydown="if(event.key==='Enter')verifyConsole()">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:0.5rem;" onclick="verifyConsole()">Unlock Console →</button>
+      <div id="lockError" style="display:none;margin-top:1rem;padding:0.65rem 1rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;font-size:0.875rem;color:#7f1d1d;">
+        Incorrect password. Try again.
+      </div>
+      <a href="dashboard.html" style="display:block;margin-top:1.25rem;font-size:0.8125rem;color:var(--muted);text-align:center;">← Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- CONSOLE CONTENT -->
+<div id="consoleContent" style="display:none;" class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Admin <em>Console</em></h1>
+      <p class="page-desc" id="consoleDesc">Compliance overview, activity log, board meetings and reimbursements.</p>
+    </div>
+    <button class="btn btn-outline" onclick="lockConsole()">🔒 Lock Console</button>
+  </div>
+
+  <div class="console-tabs">
+    <button class="console-tab active" id="tab-compliance" onclick="switchTab('compliance')">📊 Compliance</button>
+    <button class="console-tab tab-log" id="tab-log" onclick="switchTab('log')">🖥 Activity Log</button>
+    <button class="console-tab" id="tab-boardmeetings" onclick="switchTab('boardmeetings')">🏛 Board Meetings</button>
+  </div>
+
+  <!-- ═══════════════════════ COMPLIANCE PANEL ═══════════════════════ -->
+  <div id="panel-compliance">
+
+    <!-- Sub-tab bar: Newsletter | MRF | DCM -->
+    <div class="sub-tab-bar">
+      <button class="sub-tab active" id="stab-nl"  onclick="switchSubTab('nl')">📰 Newsletters</button>
+      <button class="sub-tab"        id="stab-mrf" onclick="switchSubTab('mrf')">📋 Monthly Report Forms</button>
+      <button class="sub-tab"        id="stab-dcm" onclick="switchSubTab('dcm')">🏛 DCM Reports</button>
+    </div>
+
+    <!-- Filters row (shared, adapt per subtab) -->
+    <div class="filter-bar" style="margin-bottom:1.5rem;">
+      <select class="filter-select" id="fConsoleYear" onchange="renderActive()">
+        <option value="">All years</option>
+        <option value="2025-2026">2025-2026</option>
+        <option value="2026-2027" selected>2026-2027</option>
+      </select>
+      <select class="filter-select" id="fConsoleDiv" onchange="renderActive()">
+        <option value="">All divisions</option>
+        <option value="1">Division 1</option><option value="2">Division 2</option>
+        <option value="3">Division 3</option><option value="4">Division 4</option>
+        <option value="5">Division 5</option><option value="6">Division 6</option>
+        <option value="7">Division 7</option><option value="8">Division 8</option>
+        <option value="9">Division 9</option><option value="10">Division 10</option>
+      </select>
+      <select class="filter-select" id="fConsoleFlag" onchange="renderActive()">
+        <option value="">All flags</option>
+        <option value="missing">Missing / Not Filed</option>
+        <option value="late">Late Submission</option>
+        <option value="overdue">Overdue (removal risk)</option>
+        <option value="denied">Returned by Editor</option>
+      </select>
+    </div>
+
+    <!-- NEWSLETTER sub-panel -->
+    <div id="sub-nl">
+      <div class="stat-grid" id="nlSummary" style="margin-bottom:1.5rem;"></div>
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div><div class="console-section-title">Newsletter Compliance Log</div><div class="console-section-desc">All non-standard events for newsletters (due 10th of May, Sep-Mar).</div></div>
+        </div>
+        <div class="card-body" style="padding:0;" id="nlComplianceTable"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="console-section-title" style="color:#7f1d1d;">🚩 Newsletters - Flagged for Potential Removal</div><div class="console-section-desc">Divisions with 2+ weeks no submission, or recurring issues.</div></div>
+        </div>
+        <div class="card-body" style="padding:0;" id="nlRemovalTable"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+      </div>
+    </div>
+
+    <!-- MRF sub-panel -->
+    <div id="sub-mrf" style="display:none;">
+      <div class="stat-grid" id="mrfSummary" style="margin-bottom:1.5rem;"></div>
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div><div class="console-section-title">MRF Compliance Log</div><div class="console-section-desc">All non-standard events for Monthly Report Forms (due 10th of every month, all 12).</div></div>
+        </div>
+        <div class="card-body" style="padding:0;" id="mrfComplianceTable"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="console-section-title" style="color:#7f1d1d;">🚩 MRFs - Flagged for Potential Removal</div><div class="console-section-desc">LTGs with MRFs more than 1 week past the 10th.</div></div>
+        </div>
+        <div class="card-body" style="padding:0;" id="mrfRemovalTable"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+      </div>
+    </div>
+
+    <!-- DCM sub-panel -->
+    <div id="sub-dcm" style="display:none;">
+      <div class="stat-grid" id="dcmSummary" style="margin-bottom:1.5rem;"></div>
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+          <div><div class="console-section-title">DCM Report Compliance Log</div><div class="console-section-desc">DCM reports are due within 1 week after the DCM date. Late and missing reports are flagged here.</div></div>
+        </div>
+        <div class="card-body" style="padding:0;" id="dcmComplianceTable"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="console-section-title" style="color:#7f1d1d;">🚩 DCMs - Missing Reports</div><div class="console-section-desc">Scheduled DCMs where a report was never filed.</div></div>
+        </div>
+        <div class="card-body" style="padding:0;" id="dcmRemovalTable"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- /panel-compliance -->
+
+  <!-- ═══════════════════════ ACTIVITY LOG PANEL ═══════════════════════ -->
+  <div id="panel-log" style="display:none;">
+    <div class="stat-grid" id="logSummary" style="margin-bottom:1.5rem;"></div>
+    <div class="log-wrap">
+      <div class="log-toolbar">
+        <span class="log-toolbar-title">● LIVE AUDIT LOG</span>
+        <select class="log-filter" id="logFilterActor" onchange="applyLogFilters()">
+          <option value="">All users</option>
+          <option value="ltg-1">LTG 1</option><option value="ltg-2">LTG 2</option>
+          <option value="ltg-3">LTG 3</option><option value="ltg-4">LTG 4</option>
+          <option value="ltg-5">LTG 5</option><option value="ltg-6">LTG 6</option>
+          <option value="ltg-7">LTG 7</option><option value="ltg-8">LTG 8</option>
+          <option value="ltg-9">LTG 9</option><option value="ltg-10">LTG 10</option>
+          <option value="editor">Editor</option>
+          <option value="governor">Governor</option>
+          <option value="webmaster">Webmaster</option>
+          <option value="treasurer">Treasurer</option>
+          <option value="secretary">Secretary</option>
+          <option value="adult-treasurer">Adult Treasurer</option>
+          <option value="district-admin">District Administrator</option>
+        </select>
+        <select class="log-filter" id="logFilterSection" onchange="applyLogFilters()">
+          <option value="">All sections</option>
+          <option value="auth">Auth (login/logout)</option>
+          <option value="newsletter">Newsletter</option>
+          <option value="dcm">DCMs</option>
+          <option value="mrf">Monthly Report Forms</option>
+          <option value="committee">Committee Reports</option>
+          <option value="reimbursement">Board Meetings / Reimbursements</option>
+          <option value="console">Console</option>
+        </select>
+        <select class="log-filter" id="logFilterAction" onchange="applyLogFilters()">
+          <option value="">All actions</option>
+          <optgroup label="Auth">
+            <option value="LOGIN">Login</option>
+            <option value="LOGOUT">Logout</option>
+            <option value="CONSOLE_ACCESS">Console Access</option>
+          </optgroup>
+          <optgroup label="Newsletter">
+            <option value="SUBMISSION_UPLOADED">Newsletter Uploaded</option>
+            <option value="EDITOR_APPROVED">Editor Approved</option>
+            <option value="SUBMISSION_RETURNED">Returned for Revision</option>
+            <option value="WEBMASTER_APPROVED">Webmaster Approved</option>
+            <option value="PDF_VIEWED">PDF Viewed</option>
+            <option value="ARCHIVE_VIEWED">Archive Viewed</option>
+          </optgroup>
+          <optgroup label="DCMs">
+            <option value="DCM_SCHEDULED">DCM Scheduled</option>
+            <option value="DCM_REPORT_SUBMITTED">DCM Report Submitted</option>
+          </optgroup>
+          <optgroup label="Monthly Report Forms">
+            <option value="MRF_SUBMITTED">MRF Submitted</option>
+          </optgroup>
+          <optgroup label="Committee Reports">
+            <option value="COMMITTEE_SUBMITTED">Committee Report Submitted</option>
+          </optgroup>
+          <optgroup label="Board Meetings / Reimbursements">
+            <option value="BOARD_MEETING_CREATED">Board Meeting Created</option>
+            <option value="BOARD_MEETING_DELETED">Board Meeting Deleted</option>
+            <option value="REIMB_SENT">Reimbursement Sent</option>
+            <option value="REIMB_SUBMITTED">Reimbursement Submitted</option>
+            <option value="REIMB_NOT_ATTENDED">Marked Not Attended</option>
+            <option value="REIMB_TREASURER_APPROVED">Treasurer Approved</option>
+            <option value="REIMB_TREASURER_DENIED">Treasurer Denied</option>
+            <option value="REIMB_ADULT_APPROVED">Adult Treasurer Approved</option>
+            <option value="REIMB_ADULT_REJECTED">Adult Treasurer Rejected</option>
+            <option value="REIMB_RESENT">Reimbursement Re-sent</option>
+          </optgroup>
+        </select>
+        <input class="log-search" type="text" id="logSearch" placeholder="Search details, name, IP…" oninput="applyLogFilters()">
+        <button class="btn btn-outline btn-sm" onclick="refreshLogs()" style="font-size:0.75rem;color:#c9d1d9;border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);">↻ Refresh</button>
+        <span class="log-count" id="logCount">- entries</span>
+      </div>
+      <div class="log-body" id="logBody">
+        <div class="log-loading">Awaiting data…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ BOARD MEETINGS PANEL ═══════════════════════ -->
+  <div id="panel-boardmeetings" style="display:none;">
+    <div class="sub-tab-bar">
+      <button class="sub-tab active" id="bmtab-meetings"  onclick="BM.switchSub('meetings')">🗓 Meetings</button>
+      <button class="sub-tab"        id="bmtab-approvals" onclick="BM.switchSub('approvals')">✅ Approvals <span id="bmApprovalBadge"></span></button>
+      <button class="sub-tab"        id="bmtab-archive"   onclick="BM.switchSub('archive')">📁 Archive</button>
+    </div>
+    <div id="bm-meetings"></div>
+    <div id="bm-approvals" style="display:none;"></div>
+    <div id="bm-archive" style="display:none;"></div>
+  </div>
+
+</div><!-- /consoleContent -->
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script src="reimbursement.js"></script>
+<script>
+const user = AUTH.requireAuth();
+if (!AUTH.canAccessConsole()) window.location.href = 'dashboard.html';
+
+const SECTIONS = AUTH.consoleSections();   // e.g. ['compliance','log','boardmeetings'] or ['boardmeetings']
+const CAN = s => SECTIONS.includes(s);
+
+// Hide tabs this role can't see.
+if (!CAN('compliance'))    document.getElementById('tab-compliance').style.display = 'none';
+if (!CAN('log'))           document.getElementById('tab-log').style.display = 'none';
+if (!CAN('boardmeetings')) document.getElementById('tab-boardmeetings').style.display = 'none';
+
+// The board treasurer only sees reimbursements — tailor the page copy + lock hint.
+if (SECTIONS.length === 1 && SECTIONS[0] === 'boardmeetings') {
+  document.getElementById('consoleDesc').textContent = 'Board meetings and reimbursement approvals.';
+}
+if (['adult-treasurer','district-admin','treasurer','adult-member'].includes(user.role)) {
+  document.getElementById('lockHint').textContent = 'Use your portal login password.';
+}
+
+// Pick the first tab this role is allowed to see.
+const DEFAULT_TAB = CAN('compliance') ? 'compliance' : (CAN('boardmeetings') ? 'boardmeetings' : 'log');
+
+// ── LOCK / UNLOCK ────────────────────────────────────────────────────────
+const SESSION_CONSOLE_KEY = 'moark_console_unlocked';
+
+function verifyConsole() {
+  const pwd = document.getElementById('consolePwd').value;
+  if (AUTH.verifyConsolePassword(pwd)) {
+    sessionStorage.setItem(SESSION_CONSOLE_KEY, '1');
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('consoleContent').style.display = 'block';
+    switchTab(DEFAULT_TAB);
+    loadAll();
+    LOG.record('CONSOLE_ACCESS', `${user.name} unlocked admin console`);
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+    document.getElementById('consolePwd').value = '';
+    document.getElementById('consolePwd').focus();
+  }
+}
+
+function lockConsole() {
+  sessionStorage.removeItem(SESSION_CONSOLE_KEY);
+  document.getElementById('consoleContent').style.display = 'none';
+  document.getElementById('lockScreen').style.display = 'block';
+  document.getElementById('consolePwd').value = '';
+}
+
+if (sessionStorage.getItem(SESSION_CONSOLE_KEY)) {
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('consoleContent').style.display = 'block';
+  switchTab(DEFAULT_TAB);
+}
+
+// ── TAB SWITCHER ──────────────────────────────────────────────────────────
+function switchTab(tab) {
+  if (!CAN(tab)) tab = DEFAULT_TAB;
+  document.getElementById('panel-compliance').style.display    = tab === 'compliance'    ? '' : 'none';
+  document.getElementById('panel-log').style.display           = tab === 'log'           ? '' : 'none';
+  document.getElementById('panel-boardmeetings').style.display = tab === 'boardmeetings' ? '' : 'none';
+  document.getElementById('tab-compliance').classList.toggle('active', tab === 'compliance');
+  document.getElementById('tab-log').classList.toggle('active', tab === 'log');
+  document.getElementById('tab-boardmeetings').classList.toggle('active', tab === 'boardmeetings');
+  if (tab === 'log' && allLogs === null) loadLogs();
+  if (tab === 'boardmeetings') BM.ensureLoaded();
+}
+
+// Sub-tabs inside compliance
+let activeSubTab = 'nl';
+function switchSubTab(name) {
+  activeSubTab = name;
+  ['nl','mrf','dcm'].forEach(t => {
+    document.getElementById(`sub-${t}`).style.display = t === name ? '' : 'none';
+    document.getElementById(`stab-${t}`).classList.toggle('active', t === name);
+  });
+  const flagSel = document.getElementById('fConsoleFlag');
+  if (name === 'dcm') {
+    flagSel.innerHTML = `
+      <option value="">All flags</option>
+      <option value="missing">Report Not Filed</option>
+      <option value="late">Report Filed Late</option>
+      <option value="no-report-overdue">No Report (1+ wk overdue)</option>`;
+  } else if (name === 'mrf') {
+    flagSel.innerHTML = `
+      <option value="">All flags</option>
+      <option value="missing">Not Submitted</option>
+      <option value="late">Submitted Late</option>
+      <option value="overdue">Overdue (removal risk)</option>`;
+  } else {
+    flagSel.innerHTML = `
+      <option value="">All flags</option>
+      <option value="missing">Missing / Not Filed</option>
+      <option value="late">Late Submission</option>
+      <option value="overdue">Overdue (removal risk)</option>
+      <option value="denied">Returned by Editor</option>`;
+  }
+  renderActive();
+}
+
+function renderActive() {
+  if (!CAN('compliance')) return;
+  if (activeSubTab === 'nl')  renderNewsletterCompliance();
+  if (activeSubTab === 'mrf') renderMRFCompliance();
+  if (activeSubTab === 'dcm') renderDCMCompliance();
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────
+const NL_MONTHS  = ['May','September','October','November','December','January','February','March'];
+const ALL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_NUMS = {January:0,February:1,March:2,April:3,May:4,June:5,July:6,August:7,September:8,October:9,November:10,December:11};
+const YEARS      = ['2025-2026','2026-2027'];
+const DIVISIONS  = [1,2,3,4,5,6,7,8,9,10];
+const API_BASE   = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+
+let allSubs      = [];
+let allMRFs      = [];
+let allDCMs      = [];
+let allLogs      = null;
+
+async function loadAll() {
+  if (!CAN('compliance')) return;
+  try {
+    const [subsRes, mrfRes, dcmRes] = await Promise.allSettled([
+      API.getAll(),
+      API.getMRFs(),
+      API.getDCMs(),
+    ]);
+    allSubs = subsRes.status === 'fulfilled' ? subsRes.value : [];
+    allMRFs = mrfRes.status  === 'fulfilled' ? mrfRes.value  : [];
+    allDCMs = dcmRes.status  === 'fulfilled' ? dcmRes.value  : [];
+    renderActive();
+  } catch(e) {
+    const t = document.getElementById('nlComplianceTable');
+    if (t) t.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+if (sessionStorage.getItem(SESSION_CONSOLE_KEY)) loadAll();
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}); }
+function escHtml(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function flagBadge(f) {
+  if (f==='overdue'||f==='no-report-overdue') return `<span class="flag-removal">🚩 Overdue</span>`;
+  if (f==='missing')  return `<span class="flag-late">⚠ Missing</span>`;
+  if (f==='late')     return `<span class="flag-late">⏰ Late</span>`;
+  if (f==='denied')   return `<span class="flag-denied">↩ Returned</span>`;
+  return f;
+}
+
+function getFilterYear() { return document.getElementById('fConsoleYear').value; }
+function getFilterDiv()  { return parseInt(document.getElementById('fConsoleDiv').value) || null; }
+function getFilterFlag() { return document.getElementById('fConsoleFlag').value; }
+
+function nlDeadline(month, yearStr) {
+  const [startYr, endYr] = yearStr.split('-').map(Number);
+  const mNum = MONTH_NUMS[month];
+  const calYear = mNum >= 4 ? startYr : endYr;
+  return new Date(calYear, mNum, 10, 23, 59, 59);
+}
+function mrfDeadlines(yearStr) {
+  const [startYr, endYr] = yearStr.split('-').map(Number);
+  return ALL_MONTHS.map(month => {
+    const mNum = MONTH_NUMS[month];
+    const calYear = mNum >= 4 ? startYr : endYr;
+    return { month, calYear, deadline: new Date(calYear, mNum, 30, 23, 59, 59) };
+  });
+}
+function daysLate(submittedAt, deadline) {
+  const diff = new Date(submittedAt) - deadline;
+  return diff > 0 ? Math.ceil(diff / 86400000) : 0;
+}
+
+// ── NEWSLETTER COMPLIANCE ─────────────────────────────────────────────────
+function renderNewsletterCompliance() {
+  const filterYear = getFilterYear();
+  const filterDiv  = getFilterDiv();
+  const filterFlag = getFilterFlag();
+  const now = new Date();
+  const events = [], removalFlags = {};
+  const yearsToCheck = filterYear ? [filterYear] : YEARS;
+
+  for (const year of yearsToCheck) {
+    for (const div of DIVISIONS) {
+      if (filterDiv && div !== filterDiv) continue;
+      for (const month of NL_MONTHS) {
+        const deadline = nlDeadline(month, year);
+        if (deadline > now) continue;
+        const twoWkCutoff = new Date(deadline.getTime() + 14 * 86400000);
+        const subs = allSubs.filter(s => s.division === div && s.month === month && s.year === year);
+        if (!subs.length) {
+          const isOverdue = now > twoWkCutoff;
+          events.push({division:div,month,year,flag:isOverdue?'overdue':'missing',submittedAt:null,daysLateVal:null,comments:[],label:isOverdue?'Not submitted (2+ wks overdue)':'Not submitted',type:null});
+          if (isOverdue) { if(!removalFlags[div])removalFlags[div]=[]; removalFlags[div].push({month,year,reason:'No submission - 2+ weeks past deadline',deadline}); }
+        } else {
+          for (const sub of subs) {
+            const dl = daysLate(sub.submittedAt, deadline);
+            const allComments = sub.thread.map(m=>({from:m.fromName,message:m.message,date:m.timestamp}));
+            let flag=null, label='';
+            if (sub.status==='denied') { flag='denied'; label=dl>0?`Returned (submitted ${dl} days late)`:'Returned for revision'; }
+            else if (dl >= 14)         { flag='overdue'; label=`Submitted ${dl} days late`; }
+            else if (dl > 0)           { flag='late';    label=`Submitted ${dl} day${dl!==1?'s':''} late`; }
+            if (flag) {
+              events.push({division:div,month,year,flag,submittedAt:sub.submittedAt,daysLateVal:dl>0?dl:null,comments:allComments,label,type:sub.type});
+              if (dl>=14||sub.status==='denied') { if(!removalFlags[div])removalFlags[div]=[]; removalFlags[div].push({month,year,reason:sub.status==='denied'?`Returned for revision${dl>0?` (${dl}d late)`:''}`:`Submitted ${dl}d late`,deadline,submittedAt:sub.submittedAt}); }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const filtered = filterFlag ? events.filter(e=>e.flag===filterFlag) : events;
+
+  document.getElementById('nlSummary').innerHTML = [
+    ['Missing / Not Filed', events.filter(e=>e.flag==='missing'||e.flag==='overdue').length, 'no submission'],
+    ['Late Submissions',    events.filter(e=>e.flag==='late').length,    'after the 10th'],
+    ['2-Wk Overdue',        events.filter(e=>e.flag==='overdue').length, 'removal risk'],
+    ['Returned by Editor',  events.filter(e=>e.flag==='denied').length,  'needs revision'],
+  ].map(([l,v,s])=>`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-value" style="${v>0?'color:#7f1d1d;':''}">${v}</div><div class="stat-sub">${s}</div></div>`).join('');
+
+  document.getElementById('nlComplianceTable').innerHTML = renderComplianceTable(filtered, 'newsletter');
+
+  const removalDivs = Object.entries(removalFlags).filter(([,e])=>e.length>0);
+  document.getElementById('nlRemovalTable').innerHTML = renderRemovalTable(removalDivs, 'div');
+}
+
+// ── MRF COMPLIANCE ────────────────────────────────────────────────────────
+function renderMRFCompliance() {
+  const filterYear = getFilterYear();
+  const filterDiv  = getFilterDiv();
+  const filterFlag = getFilterFlag();
+  const now = new Date();
+  const events = [], removalFlags = {};
+  const yearsToCheck = filterYear ? [filterYear] : YEARS;
+
+  for (const year of yearsToCheck) {
+    const deadlines = mrfDeadlines(year);
+    for (const div of DIVISIONS) {
+      if (filterDiv && div !== filterDiv) continue;
+      for (const {month, calYear, deadline} of deadlines) {
+        if (deadline > now) continue;
+        const oneWkCutoff = new Date(deadline.getTime() + 7 * 86400000);
+        const divMRFs = allMRFs.filter(m => m.division === div && m.month === month && m.year === year);
+        if (!divMRFs.length) {
+          const isOverdue = now > oneWkCutoff;
+          events.push({division:div,month,year:`${calYear}`,flag:isOverdue?'overdue':'missing',submittedAt:null,daysLateVal:null,label:isOverdue?'Not submitted (1+ wk overdue)':'Not submitted'});
+          if (isOverdue) { if(!removalFlags[div])removalFlags[div]=[]; removalFlags[div].push({month,year:`${calYear}`,reason:'MRF not filed - 1+ week past deadline',deadline}); }
+        } else {
+          for (const mrf of divMRFs) {
+            const dl = daysLate(mrf.submittedAt, deadline);
+            let flag=null, label='';
+            if (dl >= 7)  { flag='overdue'; label=`Submitted ${dl} days late (>1 week)`; }
+            else if (dl > 0) { flag='late'; label=`Submitted ${dl} day${dl!==1?'s':''} late`; }
+            if (flag) {
+              events.push({division:div,month,year:`${calYear}`,flag,submittedAt:mrf.submittedAt,daysLateVal:dl,label});
+              if (dl>=7) { if(!removalFlags[div])removalFlags[div]=[]; removalFlags[div].push({month,year:`${calYear}`,reason:`MRF filed ${dl}d late (>1 wk)`,deadline,submittedAt:mrf.submittedAt}); }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const filtered = filterFlag ? events.filter(e=>e.flag===filterFlag) : events;
+
+  document.getElementById('mrfSummary').innerHTML = [
+    ['Missing MRFs',       events.filter(e=>e.flag==='missing'||e.flag==='overdue').length, 'not submitted'],
+    ['Late Submissions',   events.filter(e=>e.flag==='late').length,    'after the 10th'],
+    ['1-Wk+ Overdue',      events.filter(e=>e.flag==='overdue').length, 'removal risk'],
+  ].map(([l,v,s])=>`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-value" style="${v>0?'color:#7f1d1d;':''}">${v}</div><div class="stat-sub">${s}</div></div>`).join('');
+
+  document.getElementById('mrfComplianceTable').innerHTML = renderComplianceTable(filtered, 'mrf');
+  const removalDivs = Object.entries(removalFlags).filter(([,e])=>e.length>0);
+  document.getElementById('mrfRemovalTable').innerHTML = renderRemovalTable(removalDivs, 'div');
+}
+
+// ── DCM COMPLIANCE ────────────────────────────────────────────────────────
+function renderDCMCompliance() {
+  const filterYear = getFilterYear();
+  const filterDiv  = getFilterDiv();
+  const filterFlag = getFilterFlag();
+  const now = new Date();
+  const events = [], missingReports = {};
+
+  const dcmsToCheck = allDCMs.filter(dcm => {
+    if (filterDiv && dcm.division !== filterDiv) return false;
+    if (filterYear && dcm.year !== filterYear) return false;
+    return true;
+  });
+
+  for (const dcm of dcmsToCheck) {
+    if (!dcm.date) continue;
+    const dcmDate = new Date(dcm.date);
+    if (dcmDate > now) continue;
+    const reportDeadline = new Date(dcmDate.getTime() + 7 * 86400000);
+    const hasReport = dcm.reportStatus === 'submitted' || dcm.reportSubmittedAt;
+
+    if (!hasReport) {
+      const isOverdue = now > reportDeadline;
+      const daysAfterDCM = Math.floor((now - dcmDate) / 86400000);
+      const flag = isOverdue ? 'no-report-overdue' : 'missing';
+      const label = isOverdue
+        ? `Report not filed (${daysAfterDCM} days since DCM, deadline passed)`
+        : `Report not yet filed (${daysAfterDCM} day${daysAfterDCM!==1?'s':''} after DCM, due ${fmtDate(reportDeadline.toISOString())})`;
+      events.push({division:dcm.division,dcmNum:dcm.dcmNumber||'?',dcmDate:dcm.date,flag,label,reportDeadline,year:dcm.year||''});
+      if (isOverdue) {
+        const k = dcm.division;
+        if(!missingReports[k]) missingReports[k]=[];
+        missingReports[k].push({dcmNum:dcm.dcmNumber,dcmDate:dcm.date,reason:`DCM ${dcm.dcmNumber} report not filed - deadline passed`,reportDeadline});
+      }
+    } else if (dcm.reportSubmittedAt) {
+      const dl = daysLate(dcm.reportSubmittedAt, reportDeadline);
+      if (dl > 0) {
+        events.push({division:dcm.division,dcmNum:dcm.dcmNumber||'?',dcmDate:dcm.date,flag:'late',label:`Report filed ${dl} day${dl!==1?'s':''} late`,reportDeadline,submittedAt:dcm.reportSubmittedAt,daysLateVal:dl,year:dcm.year||''});
+      }
+    }
+  }
+
+  const filtered = filterFlag ? events.filter(e=>e.flag===filterFlag) : events;
+
+  document.getElementById('dcmSummary').innerHTML = [
+    ['Reports Not Filed',  events.filter(e=>e.flag==='missing'||e.flag==='no-report-overdue').length, 'past DCM date'],
+    ['Late Reports',       events.filter(e=>e.flag==='late').length,    'filed after 1-week deadline'],
+    ['Overdue (1wk+)',     events.filter(e=>e.flag==='no-report-overdue').length, 'removal risk'],
+  ].map(([l,v,s])=>`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-value" style="${v>0?'color:#7f1d1d;':''}">${v}</div><div class="stat-sub">${s}</div></div>`).join('');
+
+  document.getElementById('dcmComplianceTable').innerHTML = !filtered.length
+    ? `<div class="empty"><div class="empty-icon">✅</div><h3>No DCM compliance issues</h3><p>All DCM reports look good.</p></div>`
+    : `<table class="console-table"><thead><tr><th>Div</th><th>DCM #</th><th>DCM Date</th><th>Report Due</th><th>Event</th><th>Flag</th><th>Filed</th></tr></thead><tbody>
+      ${filtered.map(e=>`<tr>
+        <td><span class="div-pill">${e.division}</span></td>
+        <td style="font-weight:600;">DCM ${e.dcmNum}</td>
+        <td style="font-size:0.8rem;color:var(--muted);">${fmtDate(e.dcmDate)}</td>
+        <td style="font-size:0.8rem;color:var(--muted);">${fmtDate(e.reportDeadline.toISOString())}</td>
+        <td style="font-size:0.8rem;">${e.label}</td>
+        <td>${flagBadge(e.flag)}</td>
+        <td style="font-size:0.75rem;">${e.submittedAt?`<span style="color:#9a3412;font-weight:600;">${fmtDate(e.submittedAt)}</span>`:'<span style="color:var(--muted);font-style:italic;">Not filed</span>'}</td>
+      </tr>`).join('')}
+    </tbody></table>`;
+
+  const missingDivs = Object.entries(missingReports).filter(([,e])=>e.length>0);
+  document.getElementById('dcmRemovalTable').innerHTML = !missingDivs.length
+    ? `<div class="empty"><div class="empty-icon">✅</div><h3>No DCMs missing reports beyond deadline</h3></div>`
+    : `<table class="console-table"><thead><tr><th>Division</th><th>Incidents</th><th>Details</th></tr></thead><tbody>
+      ${missingDivs.map(([div,evts])=>`<tr>
+        <td><span class="div-pill">${div}</span></td>
+        <td><strong style="color:#7f1d1d;">${evts.length}</strong></td>
+        <td>${evts.map(ev=>`<div style="margin-bottom:0.4rem;font-size:0.8rem;"><strong>DCM ${ev.dcmNum}</strong> (${fmtDate(ev.dcmDate)}) - ${escHtml(ev.reason)} · Deadline: ${fmtDate(ev.reportDeadline.toISOString())}</div>`).join('')}</td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+// ── SHARED TABLE RENDERERS ────────────────────────────────────────────────
+function renderComplianceTable(events, type) {
+  if (!events.length) return `<div class="empty"><div class="empty-icon">✅</div><h3>No compliance issues found</h3><p>Everything looks good.</p></div>`;
+  const showType = type === 'newsletter';
+  return `<table class="console-table"><thead><tr><th>Div</th><th>Month</th><th>Year</th>${showType?'<th>Type</th>':''}<th>Event</th><th>Flag</th><th>Deadline</th><th>Submitted</th>${showType?'<th>Comments</th>':''}</tr></thead><tbody>
+    ${events.map(e => {
+      const dl = type === 'mrf'
+        ? new Date(new Date(e.year, MONTH_NUMS[e.month], 30, 23, 59, 59))
+        : nlDeadline(e.month, e.year+'-'+(parseInt(e.year)+1));
+      return `<tr>
+        <td><span class="div-pill">${e.division}</span></td>
+        <td><strong>${e.month}</strong></td>
+        <td>${e.year}</td>
+        ${showType?`<td style="font-size:0.75rem;color:var(--muted);">${e.type?(e.type==='newsletter'?'Newsletter':'DC Report'):'-'}</td>`:''}
+        <td style="font-size:0.8rem;">${e.label}</td>
+        <td>${flagBadge(e.flag)}</td>
+        <td style="font-size:0.75rem;color:var(--muted);white-space:nowrap;">${e.submittedAt?'':fmtDate(type==='mrf'?dl.toISOString():nlDeadline(e.month,e.year.includes('-')?e.year:e.year+'-'+(parseInt(e.year)+1)).toISOString())}</td>
+        <td style="font-size:0.75rem;white-space:nowrap;">${e.submittedAt?`<span style="color:${e.daysLateVal?'#9a3412':'var(--text)'};font-weight:${e.daysLateVal?600:400};">${fmtDate(e.submittedAt)}</span>`:'<span style="color:var(--muted);font-style:italic;">Not submitted</span>'}</td>
+        ${showType?`<td style="max-width:240px;">${(e.comments||[]).length?(e.comments||[]).map(c=>`<div class="console-comment-box"><strong style="color:var(--text);">${escHtml(c.from)}</strong> <span style="color:var(--muted);font-size:0.7rem;">${fmtDate(c.date)}</span><br>${escHtml(c.message)}</div>`).join(''):'<span style="color:var(--muted);font-size:0.75rem;">-</span>'}</td>`:''}
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+function renderRemovalTable(removalDivs, keyType) {
+  if (!removalDivs.length) return `<div class="empty"><div class="empty-icon">✅</div><h3>Nothing flagged for removal</h3><p>All LTGs are in good standing.</p></div>`;
+  return `<table class="console-table"><thead><tr><th>${keyType==='div'?'Division':'Person'}</th><th>Incidents</th><th>Details</th><th>Risk</th></tr></thead><tbody>
+    ${removalDivs.map(([key,evts])=>`<tr>
+      <td><span class="div-pill">${key}</span></td>
+      <td><strong style="color:#7f1d1d;">${evts.length}</strong></td>
+      <td style="max-width:360px;">${evts.map(ev=>`<div style="margin-bottom:0.4rem;font-size:0.8rem;"><strong>${ev.month} ${ev.year}</strong> - ${escHtml(ev.reason)}<span style="color:var(--muted);font-size:0.72rem;"> · Deadline: ${fmtDate(ev.deadline.toISOString())}${ev.submittedAt?` · Filed: ${fmtDate(ev.submittedAt)}`:''}</span></div>`).join('')}</td>
+      <td>${evts.length>=2?`<span class="flag-removal">🚩 High Risk</span>`:`<span class="flag-late">⚠ Moderate</span>`}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+// ── ACTIVITY LOG ─────────────────────────────────────────────────────────
+async function loadLogs() {
+  document.getElementById('logBody').innerHTML = '<div class="log-loading"><span class="spinner"></span> Fetching audit records from server…</div>';
+  try {
+    const res = await fetch(`${API_BASE}/logs`);
+    allLogs = await res.json();
+    renderLogSummary();
+    applyLogFilters();
+  } catch(e) {
+    document.getElementById('logBody').innerHTML = `<div class="log-empty">⚠️ Failed to load logs: ${escHtml(e.message)}</div>`;
+  }
+}
+
+async function refreshLogs() { allLogs = null; await loadLogs(); }
+
+const SECTION_ACTIONS = {
+  auth:       ['LOGIN','LOGOUT','CONSOLE_ACCESS'],
+  newsletter: ['SUBMISSION_UPLOADED','EDITOR_APPROVED','SUBMISSION_RETURNED','WEBMASTER_APPROVED','PDF_VIEWED','ARCHIVE_VIEWED','STATUS_UPDATED'],
+  dcm:        ['DCM_SCHEDULED','DCM_REPORT_SUBMITTED'],
+  mrf:        ['MRF_SUBMITTED'],
+  committee:  ['COMMITTEE_SUBMITTED'],
+  reimbursement: ['BOARD_MEETING_CREATED','BOARD_MEETING_DELETED','REIMB_SENT','REIMB_SUBMITTED','REIMB_NOT_ATTENDED','REIMB_TREASURER_APPROVED','REIMB_TREASURER_DENIED','REIMB_ADULT_APPROVED','REIMB_ADULT_REJECTED','REIMB_RESENT'],
+  console:    ['CONSOLE_ACCESS'],
+};
+
+function renderLogSummary() {
+  if (!allLogs) return;
+  document.getElementById('logSummary').innerHTML = [
+    ['Total Events',          allLogs.length, 'all time'],
+    ['Logins',                allLogs.filter(l=>l.action==='LOGIN').length, 'recorded sessions'],
+    ['Newsletters Uploaded',  allLogs.filter(l=>l.action==='SUBMISSION_UPLOADED').length, 'newsletter submissions'],
+    ['MRFs Submitted',        allLogs.filter(l=>l.action==='MRF_SUBMITTED').length, 'monthly reports'],
+    ['Reimbursements',        allLogs.filter(l=>l.action==='REIMB_SUBMITTED').length, 'forms submitted'],
+    ['Published',             allLogs.filter(l=>l.action==='WEBMASTER_APPROVED').length, 'webmaster approved'],
+  ].map(([l,v,s])=>`<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-value">${v}</div><div class="stat-sub">${s}</div></div>`).join('');
+}
+
+function applyLogFilters() {
+  if (!allLogs) return;
+  const actorFilter   = document.getElementById('logFilterActor').value;
+  const sectionFilter = document.getElementById('logFilterSection').value;
+  const actionFilter  = document.getElementById('logFilterAction').value;
+  const searchTerm    = document.getElementById('logSearch').value.toLowerCase().trim();
+
+  let logs = [...allLogs];
+  if (actorFilter) {
+    if (actorFilter.startsWith('ltg-')) {
+      const divNum = parseInt(actorFilter.split('-')[1]);
+      logs = logs.filter(l => l.actorRole === 'ltg' && l.actorDiv === divNum);
+    } else {
+      logs = logs.filter(l => l.actorRole === actorFilter);
+    }
+  }
+  if (sectionFilter && SECTION_ACTIONS[sectionFilter]) {
+    const allowed = SECTION_ACTIONS[sectionFilter];
+    logs = logs.filter(l => allowed.includes(l.action));
+  }
+  if (actionFilter) logs = logs.filter(l => l.action === actionFilter);
+  if (searchTerm)   logs = logs.filter(l =>
+    (l.detail||'').toLowerCase().includes(searchTerm) ||
+    (l.actorName||'').toLowerCase().includes(searchTerm) ||
+    (l.ip||'').includes(searchTerm)
+  );
+
+  document.getElementById('logCount').textContent = `${logs.length} entr${logs.length!==1?'ies':'y'}`;
+
+  if (!logs.length) {
+    document.getElementById('logBody').innerHTML = '<div class="log-empty">No entries match the current filters.</div>';
+    return;
+  }
+
+  document.getElementById('logBody').innerHTML = logs.map(l => {
+    const dt = new Date(l.timestamp);
+    const datePart = `${String(dt.getMonth()+1).padStart(2,'0')}/${String(dt.getDate()).padStart(2,'0')}/${dt.getFullYear()}`;
+    const timePart = `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}:${String(dt.getSeconds()).padStart(2,'0')}`;
+    const actorLabel = l.actorRole === 'ltg' ? `LTG ${l.actorDiv} - ${escHtml(l.actorName)}` : escHtml(l.actorName);
+    const roleLabel  = l.actorRole === 'ltg' ? `Division ${l.actorDiv} LTG` : (l.actorRole||'').charAt(0).toUpperCase()+(l.actorRole||'').slice(1);
+    const badgeCls   = `act-${l.action}`;
+    return `<div class="log-row">
+      <div>
+        <div class="log-time"><strong>${datePart}</strong> /// ${timePart}</div>
+        <div class="log-ip">${escHtml(l.ip||'unknown')}</div>
+      </div>
+      <div>
+        <div class="log-actor">${actorLabel}</div>
+        <div class="log-actor-role">${roleLabel}</div>
+      </div>
+      <div class="log-action-cell">
+        <span class="log-action-badge ${badgeCls}">${l.action}</span>
+      </div>
+      <div class="log-detail">${escHtml(l.detail)||'-'}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BOARD MEETINGS + REIMBURSEMENTS
+   ═══════════════════════════════════════════════════════════════════════ */
+const BM = (() => {
+  let loaded = false, meetings = [], reimb = [], sub = 'meetings', openId = null;
+  const TREASURER_KEY = 'momoarkkctreasurer@gmail.com';
+  const esc = PORTAL.escapeHTML;
+  const canManage = ['webmaster','governor','adult-treasurer','district-admin'].includes(user.role);
+  const isTreasurer = user.role === 'treasurer';
+  const isAdult = user.role === 'adult-treasurer';
+
+  const el = id => document.getElementById(id);
+  const fmt = d => { if(!d) return '—'; try { return new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'}); } catch(_){ return d; } };
+  const fmtShort = d => { if(!d) return '—'; try { return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'}); } catch(_){ return d; } };
+  const datesText = m => m.endDate ? `${fmt(m.date)} – ${fmt(m.endDate)}` : fmt(m.date);
+  const reimbFor = bmId => reimb.filter(r => r.boardMeetingId === bmId);
+
+  async function ensureLoaded(force) {
+    if (loaded && !force) { render(); return; }
+    el('bm-meetings').innerHTML = `<div class="bm-empty"><div class="ic">⏳</div>Loading board meetings…</div>`;
+    try {
+      const [ms, rs] = await Promise.allSettled([API.getBoardMeetings(), API.getReimbursements()]);
+      meetings = ms.status==='fulfilled' ? ms.value : [];
+      reimb    = rs.status==='fulfilled' ? rs.value : [];
+      loaded = true;
+      render();
+    } catch(e) {
+      el('bm-meetings').innerHTML = `<div class="bm-empty"><div class="ic">⚠️</div>Couldn't load: ${esc(e.message)}</div>`;
+    }
+  }
+  async function reload() { await ensureLoaded(true); }
+
+  function switchSub(name) {
+    sub = name; openId = null;
+    ['meetings','approvals','archive'].forEach(t => {
+      el('bm-'+t).style.display = t===name ? '' : 'none';
+      el('bmtab-'+t).classList.toggle('active', t===name);
+    });
+    render();
+  }
+
+  function render() {
+    paintApprovalBadge();
+    if (sub==='meetings')  openId ? renderDetail(openId) : renderMeetings();
+    if (sub==='approvals') renderApprovals();
+    if (sub==='archive')   renderArchive();
+  }
+
+  function paintApprovalBadge() {
+    const badge = el('bmApprovalBadge'); if (!badge) return;
+    let n = 0;
+    if (isTreasurer) n = reimb.filter(r=>r.status==='pending-treasurer').length;
+    else if (isAdult) n = reimb.filter(r=>r.status==='pending-adult').length;
+    else n = reimb.filter(r=>['pending-treasurer','pending-adult'].includes(r.status)).length;
+    badge.textContent = n>0 ? ` (${n})` : '';
+  }
+
+  // ── MEETINGS LIST ──
+  function renderMeetings() {
+    const host = el('bm-meetings');
+    const add = canManage ? `<button class="btn btn-primary" onclick="BM.newMeeting()">+ Board Meeting</button>` : '';
+    if (!meetings.length) {
+      host.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div><div class="console-section-title">Board Meetings</div><div class="console-section-desc">Set the dates, take attendance, and send reimbursement forms.</div></div>${add}</div>
+        <div class="bm-empty"><div class="ic">🏛</div>No board meetings yet.${canManage?' Click “+ Board Meeting” to add one.':''}</div>`;
+      return;
+    }
+    const cards = meetings.map(m => {
+      const rs = reimbFor(m.id);
+      const sent = m.reimb && m.reimb.sent;
+      const attN = (m.attendance && m.attendance.present || []).length;
+      return `<div class="bm-card" onclick="BM.open('${m.id}')">
+        <div class="bm-card-date">${fmt(m.date)}</div>
+        <div class="bm-card-label">${esc(m.label||'Board Meeting')}${m.endDate?` · ends ${fmtShort(m.endDate)}`:''}</div>
+        <div class="bm-card-meta">
+          <span class="bm-pill att">${attN} attending</span>
+          <span class="bm-pill ${sent?'sent':'nosent'}">${sent?`Sent · ${rs.filter(r=>r.status==='archived').length}/${rs.length} done`:'Not sent'}</span>
+        </div>
+      </div>`;
+    }).join('');
+    host.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+      <div><div class="console-section-title">Board Meetings</div><div class="console-section-desc">Set the dates, take attendance, and send reimbursement forms.</div></div>${add}</div>
+      <div class="bm-grid">${cards}</div>`;
+  }
+
+  function open(id) { openId = id; renderDetail(id); }
+
+  // ── MEETING DETAIL: attendance + reimbursement ──
+  function renderDetail(id) {
+    const m = meetings.find(x=>x.id===id);
+    if (!m) { openId=null; return renderMeetings(); }
+    const host = el('bm-meetings');
+    const frozen = m.attendance && m.attendance.frozen;
+    const members = OFFICERS.allMembers();
+    const present = new Set((m.attendance && m.attendance.present) || []);
+
+    const attRows = members.map(mem => `
+      <label class="bm-att-row ${frozen?'frozen':''}">
+        <input type="checkbox" data-email="${esc(mem.email)}" ${present.has(mem.email)?'checked':''} ${(frozen||!canManage)?'disabled':''}>
+        <div><div class="bm-att-name">${esc(mem.name)}</div><div class="bm-att-title">${esc(mem.title)}</div></div>
+      </label>`).join('');
+
+    const attActions = canManage ? (frozen
+      ? `<button class="bm-mini-btn" onclick="BM.editAttendance('${id}')">✏️ Edit attendance</button>`
+      : `<button class="btn btn-primary" onclick="BM.saveAttendance('${id}')">Save &amp; freeze attendance</button>`) : '';
+
+    // Reimbursement section
+    const rs = reimbFor(id);
+    const sent = m.reimb && m.reimb.sent;
+    let reimbHTML;
+    if (!frozen && !sent) {
+      reimbHTML = `<div class="bm-empty"><div class="ic">🔒</div>Save attendance first, then you can send reimbursement forms to whoever attended.</div>`;
+    } else if (!sent) {
+      const attendees = members.filter(mem => present.has(mem.email));
+      reimbHTML = `
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.75rem;">The reimbursement form will be sent to the <b>${attendees.length}</b> member(s) marked present. They'll get a pop-up on next login and an email with a "fill in your form" button.</p>
+        <div style="margin-bottom:1rem;">${attendees.map(a=>`<span class="bm-pill att" style="margin:.15rem;">${esc(a.name)}</span>`).join('') || '<em style="color:var(--muted);">No one marked present.</em>'}</div>
+        ${canManage && attendees.length ? `<button class="btn btn-primary" onclick="BM.confirmSend('${id}')">Confirm &amp; send reimbursement forms →</button>` : ''}`;
+    } else {
+      reimbHTML = renderMonitor(m, rs, members, present);
+    }
+
+    host.innerHTML = `
+      <div class="bm-back" onclick="BM.back()">← All board meetings</div>
+      <div class="bm-detail-hd">
+        <div>
+          <div class="bm-detail-title">${esc(m.label||'Board Meeting')}</div>
+          <div class="bm-detail-sub">${datesText(m)}</div>
+        </div>
+        <div style="display:flex;gap:.5rem;">
+          ${canManage?`<button class="bm-mini-btn" onclick="BM.editMeeting('${id}')">✏️ Edit date</button>`:''}
+          ${canManage?`<button class="bm-mini-btn deny" onclick="BM.deleteMeeting('${id}')">🗑 Remove</button>`:''}
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header"><div>
+          <div class="console-section-title">Attendance</div>
+          <div class="console-section-desc">${frozen?'Frozen — press Edit to change.':'Tick everyone who attended, then save. It freezes once saved.'}</div>
+        </div>${attActions}</div>
+        <div class="card-body">
+          <div class="bm-att-list" id="bmAttList-${id}">${attRows}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div>
+          <div class="console-section-title">Reimbursement</div>
+          <div class="console-section-desc">Send the form to attendees, then monitor responses and approvals.</div>
+        </div>${canManage && sent ? `<button class="bm-mini-btn" onclick="BM.openManualAdd('${id}')">+ Send to someone else</button>`:''}</div>
+        <div class="card-body" id="bmReimb-${id}">${reimbHTML}</div>
+      </div>`;
+  }
+
+  function back() { openId = null; renderMeetings(); }
+
+  function statusPill(r) {
+    switch (r.status) {
+      case 'sent':               return `<span class="bm-status none">No submission</span>`;
+      case 'not-attended':       return `<span class="bm-status na">Not attended</span>`;
+      case 'no-reimb':           return `<span class="bm-status ok">Present · no reimbursement</span>`;
+      case 'pending-treasurer':  return `<span class="bm-status wait">Submitted · awaiting treasurer</span>`;
+      case 'pending-adult':      return `<span class="bm-status wait">Submitted · awaiting adult treasurer</span>`;
+      case 'treasurer-denied':   return `<span class="bm-status bad">Denied by treasurer</span>`;
+      case 'adult-rejected':     return `<span class="bm-status bad">Rejected by adult treasurer</span>`;
+      case 'archived':           return `<span class="bm-status ok">Approved ✓</span>`;
+      default:                   return `<span class="bm-status none">${esc(r.status)}</span>`;
+    }
+  }
+
+  function renderMonitor(m, rs, members, present) {
+    const byEmail = {}; rs.forEach(r => byEmail[(r.officerEmail||'').toLowerCase()] = r);
+    // Show a row for everyone who has a record (sent to). Order by member order.
+    const ordered = members.filter(mem => byEmail[mem.email.toLowerCase()]).map(mem => byEmail[mem.email.toLowerCase()]);
+    // include any records whose officer isn't in the roster order (safety)
+    rs.forEach(r => { if (!ordered.includes(r)) ordered.push(r); });
+
+    if (!ordered.length) return `<div class="bm-empty"><div class="ic">📭</div>No reimbursement forms have been sent yet.</div>`;
+
+    return ordered.map(r => {
+      const submitted = ['pending-treasurer','pending-adult','treasurer-denied','adult-rejected','archived'].includes(r.status);
+      const viewPdf = submitted ? `<button class="bm-mini-btn pdf" onclick="BM.viewPdf('${r.id}')">View PDF</button>` : '';
+      const resend = (canManage && ['sent','not-attended','no-reimb','treasurer-denied','adult-rejected'].includes(r.status))
+        ? `<button class="bm-mini-btn" onclick="BM.resend('${r.id}')">Resend</button>` : '';
+      return `<div class="bm-monitor-row">
+        <div class="who"><div class="bm-monitor-name">${esc(r.officerName)}</div><div class="bm-monitor-title">${esc(r.officerTitle||'')}</div></div>
+        ${statusPill(r)}
+        ${viewPdf}${resend}
+      </div>`;
+    }).join('');
+  }
+
+  // ── APPROVALS ──
+  function renderApprovals() {
+    const host = el('bm-approvals');
+    const tRows = reimb.filter(r => r.status==='pending-treasurer');
+    const aRows = reimb.filter(r => r.status==='pending-adult');
+
+    const rowHTML = (r, kind) => {
+      const view = `<button class="bm-mini-btn pdf" onclick="BM.viewPdf('${r.id}')">View PDF</button>`;
+      let actions = '';
+      if (kind==='treasurer' && isTreasurer) {
+        actions = `<button class="bm-mini-btn approve" onclick="BM.tApprove('${r.id}')">Approve</button>
+                   <button class="bm-mini-btn deny" onclick="BM.tDeny('${r.id}')">Deny</button>`;
+      } else if (kind==='adult' && isAdult) {
+        actions = `<button class="bm-mini-btn approve" onclick="BM.aApprove('${r.id}')">Approve &amp; sign</button>
+                   <button class="bm-mini-btn deny" onclick="BM.aReject('${r.id}')">Reject</button>`;
+      }
+      return `<div class="bm-monitor-row">
+        <div class="who"><div class="bm-monitor-name">${esc(r.officerName)}</div>
+          <div class="bm-monitor-title">${esc(r.officerTitle||'')} · Board meeting ${fmtShort(r.boardMeetingDate)}</div></div>
+        ${view}${actions}
+      </div>`;
+    };
+
+    const treasSection = `
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header"><div>
+          <div class="console-section-title">Awaiting Treasurer approval</div>
+          <div class="console-section-desc">${isTreasurer?'Approve to pass to the adult treasurer, or deny with a comment.':'Waiting on the board treasurer.'}</div>
+        </div></div>
+        <div class="card-body">${tRows.length ? tRows.map(r=>rowHTML(r,'treasurer')).join('') : `<div class="bm-empty"><div class="ic">✅</div>Nothing waiting on the treasurer.</div>`}</div>
+      </div>`;
+
+    const adultSection = `
+      <div class="card">
+        <div class="card-header"><div>
+          <div class="console-section-title">Awaiting Adult Treasurer approval</div>
+          <div class="console-section-desc">${isAdult?'Approve (requires your signature) to file it, or reject with a comment.':'Waiting on the adult treasurer.'}</div>
+        </div></div>
+        <div class="card-body">${aRows.length ? aRows.map(r=>rowHTML(r,'adult')).join('') : `<div class="bm-empty"><div class="ic">✅</div>Nothing waiting on the adult treasurer.</div>`}</div>
+      </div>`;
+
+    // Board treasurer sees his own queue first; adult sees his queue. Others see both.
+    host.innerHTML = isTreasurer ? treasSection + adultSection
+                   : isAdult    ? adultSection + treasSection
+                   :              treasSection + adultSection;
+  }
+
+  // ── ARCHIVE ──
+  function renderArchive() {
+    const host = el('bm-archive');
+    const arch = reimb.filter(r => r.status==='archived')
+      .sort((a,b)=> new Date(b.archivedAt||b.boardMeetingDate) - new Date(a.archivedAt||a.boardMeetingDate));
+    if (!arch.length) { host.innerHTML = `<div class="bm-empty"><div class="ic">📁</div>No approved reimbursements yet. Approved forms are filed here permanently.</div>`; return; }
+    host.innerHTML = `
+      <div class="console-section-title" style="margin-bottom:.25rem;">Approved Reimbursements Archive</div>
+      <div class="console-section-desc" style="margin-bottom:1rem;">Every reimbursement ever approved by the adult treasurer.</div>
+      ${arch.map(r=>`<div class="bm-monitor-row">
+        <div class="who">
+          <div class="bm-monitor-name">Date: ${fmtShort(r.boardMeetingDate)}</div>
+          <div class="bm-monitor-title">${esc(r.officerName)} · ${esc(r.officerTitle||'')}${r.boardMeetingLabel?' · '+esc(r.boardMeetingLabel):''}</div>
+        </div>
+        <span class="bm-signed-tag">Signed by Adult Treasurer</span>
+        <button class="bm-mini-btn pdf" onclick="BM.viewPdf('${r.id}')">View PDF</button>
+      </div>`).join('')}`;
+  }
+
+  // ── ACTIONS ──
+  function findR(id){ return reimb.find(r=>r.id===id); }
+
+  async function viewPdf(id) {
+    const r = findR(id); if (!r) return;
+    try { await REIMB.openPdf(r); } catch(e){ alert('Could not build PDF: '+e.message); }
+  }
+
+  async function newMeeting() {
+    const res = await modalForm('New board meeting', [
+      { id:'date', label:'Meeting date', type:'date', required:true },
+      { id:'endDate', label:'End date (optional, for multi-day)', type:'date' },
+      { id:'label', label:'Label (optional)', type:'text', placeholder:'e.g. Fall Board Meeting' },
+    ], 'Create');
+    if (!res) return;
+    try {
+      await API.createBoardMeeting({ date:res.date, endDate:res.endDate||null, label:res.label||'',
+        _actor:user.email, _actorName:user.name, _actorRole:user.role });
+      await reload();
+    } catch(e){ alert('Could not create: '+e.message); }
+  }
+
+  async function editMeeting(id) {
+    const m = meetings.find(x=>x.id===id); if(!m) return;
+    const res = await modalForm('Edit board meeting', [
+      { id:'date', label:'Meeting date', type:'date', required:true, value:m.date },
+      { id:'endDate', label:'End date (optional)', type:'date', value:m.endDate||'' },
+      { id:'label', label:'Label (optional)', type:'text', value:m.label||'' },
+    ], 'Save');
+    if (!res) return;
+    try { await API.updateBoardMeeting(id, { date:res.date, endDate:res.endDate||null, label:res.label||'' }); await reload(); openId=id; renderDetail(id); }
+    catch(e){ alert('Could not save: '+e.message); }
+  }
+
+  async function deleteMeeting(id) {
+    const ok = await modalConfirm('Remove this board meeting?', 'Attendance and any un-approved reimbursement forms for it will be removed. Approved forms stay in the archive.');
+    if (!ok) return;
+    try { await API.deleteBoardMeeting(id); openId=null; await reload(); }
+    catch(e){ alert('Could not remove: '+e.message); }
+  }
+
+  async function saveAttendance(id) {
+    const list = el('bmAttList-'+id);
+    const present = [...list.querySelectorAll('input[type=checkbox]:checked')].map(c=>c.dataset.email);
+    try {
+      await API.updateBoardMeeting(id, { attendance: { frozen:true, savedAt:new Date().toISOString(), present } });
+      await reload(); openId=id; renderDetail(id);
+    } catch(e){ alert('Could not save attendance: '+e.message); }
+  }
+  async function editAttendance(id) {
+    try { await API.updateBoardMeeting(id, { attendance: { frozen:false } }); await reload(); openId=id; renderDetail(id); }
+    catch(e){ alert('Could not unlock: '+e.message); }
+  }
+
+  async function confirmSend(id) {
+    const m = meetings.find(x=>x.id===id); if(!m) return;
+    const present = new Set((m.attendance&&m.attendance.present)||[]);
+    const recipients = OFFICERS.allMembers().filter(mem=>present.has(mem.email));
+    const ok = await modalConfirm('Send reimbursement forms?', `The form will be sent to ${recipients.length} attendee(s). They'll get a login pop-up and an email.`);
+    if (!ok) return;
+    await doSend(id, m, recipients);
+  }
+
+  async function doSend(id, m, recipients) {
+    const present = new Set((m.attendance&&m.attendance.present)||[]);
+    const treasurerAttending = present.has(TREASURER_KEY);
+    try {
+      await API.sendReimbursements({
+        boardMeetingId:id, boardMeetingDate:m.date, boardMeetingEndDate:m.endDate||null, boardMeetingLabel:m.label||'',
+        treasurerAttending, treasurerEmailKey:TREASURER_KEY,
+        recipients: recipients.map(r=>({ email:r.email, name:r.name, title:r.title, role:r.role, division:r.division, contactEmail:r.contactEmail })),
+        _actor:user.email, _actorName:user.name, _actorRole:user.role,
+      });
+      await reload(); openId=id; renderDetail(id);
+      PORTAL.toast('Reimbursement forms sent.', 'success');
+    } catch(e){ alert('Could not send: '+e.message); }
+  }
+
+  async function openManualAdd(id) {
+    const m = meetings.find(x=>x.id===id); if(!m) return;
+    const already = new Set(reimbFor(id).map(r=>(r.officerEmail||'').toLowerCase()));
+    const options = OFFICERS.allMembers().filter(mem=>!already.has(mem.email.toLowerCase()));
+    if (!options.length) { alert('Everyone already has a form for this meeting.'); return; }
+    const res = await modalSelect('Send reimbursement to someone else',
+      'Pick a member to send the reimbursement form to.',
+      options.map(o=>({ value:o.email, label:`${o.name} — ${o.title}` })), 'Send');
+    if (!res) return;
+    const chosen = options.find(o=>o.email===res);
+    await doSend(id, m, [chosen]);
+  }
+
+  async function resend(id) {
+    const r = findR(id); if(!r) return;
+    try { await API.resendReimbursement(id, user.name); await reload(); if(openId) renderDetail(openId); PORTAL.toast('Form re-sent.','success'); }
+    catch(e){ alert('Could not resend: '+e.message); }
+  }
+
+  // Treasurer decisions
+  async function tApprove(id) {
+    try { await API.treasurerDecision(id,'approved','',user.name); await reload(); PORTAL.toast('Approved — sent to adult treasurer.','success'); }
+    catch(e){ alert('Could not approve: '+e.message); }
+  }
+  async function tDeny(id) {
+    const comment = await modalText('Deny reimbursement', 'Tell the officer what needs fixing. They\'ll get this comment and can resubmit.', 'Reason for denial…', 'Deny');
+    if (comment===null) return;
+    try { await API.treasurerDecision(id,'denied',comment,user.name); await reload(); PORTAL.toast('Denied and returned to officer.','info'); }
+    catch(e){ alert('Could not deny: '+e.message); }
+  }
+  // Adult treasurer decisions
+  async function aApprove(id) {
+    const sig = await modalText('Approve & sign', 'Type your signature to approve. It will appear on the archived PDF in full caps.', 'YOUR FULL NAME', 'Approve & file', true);
+    if (sig===null) return;
+    if (!sig.trim()) { alert('A signature is required to approve.'); return; }
+    try {
+      // Build the signed PDF locally and hand it off so the worker can
+      // snapshot it as its own file (safe from stale pushes).
+      let pdfData = null;
+      try {
+        const rec = await API.getReimbursement(id);
+        if (rec && !rec.error) {
+          const signed = { ...rec, status: 'archived', adult: { ...(rec.adult||{}), decision:'approved', signature: sig.trim().toUpperCase(), by: user.name, at: new Date().toISOString() } };
+          pdfData = await REIMB.pdfDataUrl(signed);
+        }
+      } catch(_) { /* keep going even if PDF fails */ }
+      await API.adultDecision(id,'approved','',sig.trim().toUpperCase(),user.name, pdfData);
+      await reload();
+      PORTAL.toast('Approved, signed and archived.','success');
+    } catch(e){ alert('Could not approve: '+e.message); }
+  }
+  async function aReject(id) {
+    const comment = await modalText('Reject reimbursement', 'Tell the officer why. They\'ll get this comment and can resubmit.', 'Reason for rejection…', 'Reject');
+    if (comment===null) return;
+    try { await API.adultDecision(id,'rejected',comment,'',user.name); await reload(); PORTAL.toast('Rejected and returned to officer.','info'); }
+    catch(e){ alert('Could not reject: '+e.message); }
+  }
+
+  // ── tiny modal helpers ──
+  function overlay(inner) {
+    const o = document.createElement('div'); o.className='bm-ovl';
+    o.innerHTML = `<div class="bm-ovl-card">${inner}</div>`;
+    document.body.appendChild(o);
+    return o;
+  }
+  function modalConfirm(title, body) {
+    return new Promise(res => {
+      const o = overlay(`<h3>${esc(title)}</h3><p>${esc(body)}</p>
+        <div class="bm-ovl-actions"><button class="btn btn-outline" id="mNo">Cancel</button><button class="btn btn-primary" id="mYes">Confirm</button></div>`);
+      o.querySelector('#mNo').onclick=()=>{o.remove();res(false);};
+      o.querySelector('#mYes').onclick=()=>{o.remove();res(true);};
+    });
+  }
+  function modalText(title, body, placeholder, confirmText, caps) {
+    return new Promise(res => {
+      const o = overlay(`<h3>${esc(title)}</h3><p>${esc(body)}</p>
+        <textarea id="mTxt" rows="3" placeholder="${esc(placeholder)}" ${caps?'style="text-transform:uppercase;"':''}></textarea>
+        <div class="bm-ovl-actions"><button class="btn btn-outline" id="mNo">Cancel</button><button class="btn btn-primary" id="mYes">${esc(confirmText)}</button></div>`);
+      const t=o.querySelector('#mTxt'); t.focus();
+      if (caps) t.addEventListener('input',()=>{const p=t.selectionStart;t.value=t.value.toUpperCase();try{t.setSelectionRange(p,p);}catch(_){}});
+      o.querySelector('#mNo').onclick=()=>{o.remove();res(null);};
+      o.querySelector('#mYes').onclick=()=>{const v=t.value;o.remove();res(v);};
+    });
+  }
+  function modalForm(title, fields, confirmText) {
+    return new Promise(res => {
+      const body = fields.map(f=>`<label class="form-label" style="display:block;margin-bottom:.3rem;">${esc(f.label)}</label>
+        <input class="form-input" id="mf_${f.id}" type="${f.type||'text'}" value="${esc(f.value||'')}" placeholder="${esc(f.placeholder||'')}" style="margin-bottom:.9rem;">`).join('');
+      const o = overlay(`<h3>${esc(title)}</h3>${body}
+        <div class="bm-ovl-actions"><button class="btn btn-outline" id="mNo">Cancel</button><button class="btn btn-primary" id="mYes">${esc(confirmText)}</button></div>`);
+      o.querySelector('#mNo').onclick=()=>{o.remove();res(null);};
+      o.querySelector('#mYes').onclick=()=>{
+        const out={}; let ok=true;
+        fields.forEach(f=>{ const v=o.querySelector('#mf_'+f.id).value.trim(); out[f.id]=v; if(f.required&&!v)ok=false; });
+        if(!ok){ alert('Please fill in the required fields.'); return; }
+        o.remove(); res(out);
+      };
+    });
+  }
+  function modalSelect(title, body, options, confirmText) {
+    return new Promise(res => {
+      const opts = options.map(o=>`<option value="${esc(o.value)}">${esc(o.label)}</option>`).join('');
+      const o = overlay(`<h3>${esc(title)}</h3><p>${esc(body)}</p>
+        <select class="form-input" id="mSel" style="margin-bottom:1rem;">${opts}</select>
+        <div class="bm-ovl-actions"><button class="btn btn-outline" id="mNo">Cancel</button><button class="btn btn-primary" id="mYes">${esc(confirmText)}</button></div>`);
+      o.querySelector('#mNo').onclick=()=>{o.remove();res(null);};
+      o.querySelector('#mYes').onclick=()=>{const v=o.querySelector('#mSel').value;o.remove();res(v);};
+    });
+  }
+
+  return { ensureLoaded, switchSub, open, back, newMeeting, editMeeting, deleteMeeting,
+    saveAttendance, editAttendance, confirmSend, openManualAdd, resend, viewPdf,
+    tApprove, tDeny, aApprove, aReject };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extended Calendar | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+  :root{
+    --navy:#0A1628;--blue:#1A3A6B;--gold:#C8962A;--gold-lt:#F0C14B;--cream:#F7F4EE;--white:#FFFFFF;
+    --text:#1C1C1C;--muted:#5A5A6A;--border:rgba(10,22,40,0.12);--radius:14px;--radius-sm:8px;
+    --ff-display:'DM Serif Display',Georgia,serif;--ff-body:'DM Sans',system-ui,sans-serif;
+    --transition:0.25s cubic-bezier(0.4,0,0.2,1);
+    --shadow-card:0 2px 12px rgba(10,22,40,0.08),0 1px 3px rgba(10,22,40,0.06);
+    --shadow-hover:0 8px 32px rgba(10,22,40,0.14),0 2px 8px rgba(10,22,40,0.08);
+
+    /* Themed category palette — navy, gold, purple, blue, teal, plum, amber */
+    --cat-board:       #0A1628;   /* Navy        — Board / Leadership */
+    --cat-promo:       #C8962A;   /* Gold        — Promotions / Campaigns */
+    --cat-training:    #1F8F75;   /* Teal        — Training / Education */
+    --cat-events:      #1A3A6B;   /* Blue        — Events / Conferences */
+    --cat-deadlines:   #E0A458;   /* Amber       — Deadlines / Applications */
+    --cat-taskforce:   #3E72B0;   /* Sky blue    — Taskforces / Operations */
+    --cat-recognition: #6C2BB0;   /* Purple      — Recognition / Wellness */
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;overflow-x:hidden;}
+  /* IMPORTANT: do NOT apply transform to <body> — it would make it the containing block for
+     position:fixed descendants (Marty chat button), breaking the sticky bottom-right behavior.
+     Use opacity-only for the entrance fade. */
+  body{font-family:var(--ff-body);color:var(--text);background:var(--white);line-height:1.6;overflow-x:hidden;opacity:0;transition:opacity 0.45s ease;}
+  body.page-ready{opacity:1;}
+  img{max-width:100%;display:block;} a{color:inherit;text-decoration:none;} ul{list-style:none;}
+
+  /* NAV */
+  .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(10,22,40,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);transition:box-shadow var(--transition);}
+  .nav.scrolled{box-shadow:0 4px 24px rgba(0,0,0,0.3);}
+  .nav-inner{max-width:1400px;margin:0 auto;padding:0 1.5rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
+  .nav-logo{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .nav-logo-text{display:flex;flex-direction:column;line-height:1.1;}
+  .nav-logo-name{font-family:var(--ff-display);font-size:1.1rem;color:var(--white);}
+  .nav-logo-sub{font-size:0.65rem;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.12em;font-weight:500;}
+  .nav-links{display:flex;align-items:center;gap:0.25rem;}
+  .nav-item{position:relative;}
+  .nav-link{display:flex;align-items:center;gap:4px;padding:0.5rem 0.875rem;font-size:0.875rem;font-weight:500;color:rgba(255,255,255,0.82);border-radius:var(--radius-sm);transition:color var(--transition),background var(--transition);white-space:nowrap;cursor:pointer;}
+  .nav-link:hover,.nav-link.active{color:var(--white);background:rgba(255,255,255,0.1);}
+  .nav-link svg{width:12px;height:12px;transition:transform var(--transition);}
+  .nav-item:hover .nav-link svg{transform:rotate(180deg);}
+  .nav-dropdown{position:absolute;top:100%;left:50%;padding-top:8px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-hover);min-width:200px;padding:0.5rem;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-6px);transition:opacity var(--transition),transform var(--transition);}
+  .nav-item:hover .nav-dropdown{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0);}
+  .nav-dropdown a{display:block;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text);border-radius:var(--radius-sm);font-weight:400;transition:background var(--transition),color var(--transition);}
+  .nav-dropdown a:hover{background:var(--cream);color:var(--blue);}
+  .nav-dropdown-divider{height:1px;background:var(--border);margin:0.375rem 0.875rem;}
+  .nav-cta{background:var(--gold);color:var(--navy)!important;font-weight:600!important;border-radius:var(--radius-sm);padding:0.5rem 1.125rem;}
+  .nav-cta:hover{background:var(--gold-lt)!important;transform:translateY(-1px);}
+  .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
+  .nav-toggle span{display:block;width:24px;height:2px;background:var(--white);border-radius:2px;transition:all var(--transition);}
+  .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-toggle.open span:nth-child(2){opacity:0;}
+  .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  .nav-mobile{display:none;position:fixed;inset:68px 0 0 0;background:var(--navy);padding:1.5rem;overflow-y:auto;z-index:999;flex-direction:column;gap:0.25rem;}
+  .nav-mobile.open{display:flex;}
+  .nav-mobile a{display:block;padding:0.875rem 1rem;color:rgba(255,255,255,0.85);font-size:1rem;border-radius:var(--radius-sm);border-bottom:1px solid rgba(255,255,255,0.06);transition:background var(--transition),color var(--transition);}
+  .nav-mobile a:hover{background:rgba(255,255,255,0.08);}
+  .nav-mobile-section{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold-lt);font-weight:600;padding:1rem 1rem 0.375rem;}
+
+  /* PAGE HEADER */
+  .page-header{padding-top:68px;background:var(--navy);position:relative;overflow:hidden;}
+  .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,150,42,0.12) 0%,transparent 60%),radial-gradient(ellipse at 10% 80%,rgba(108,43,176,0.20) 0%,transparent 50%),radial-gradient(ellipse at 90% 10%,rgba(26,58,107,0.4) 0%,transparent 50%);}
+  .page-header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);}
+  .page-header-inner{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:4rem 1.5rem 3rem;}
+  .page-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+  .page-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.25rem);color:var(--white);line-height:1.1;margin-bottom:1rem;}
+  .page-title em{font-style:italic;color:var(--gold-lt);}
+  .page-desc{font-size:1.0625rem;color:rgba(255,255,255,0.65);line-height:1.7;max-width:65ch;}
+
+  /* BREADCRUMB */
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1400px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);transition:color var(--transition);}
+  .breadcrumb a:hover{color:var(--navy);}
+  .breadcrumb-sep{opacity:0.4;}
+
+  /* TIMELINE SECTION */
+  .timeline-wrap{background:var(--cream);border-top:1px solid var(--border);padding:2rem 0 4rem;}
+  .timeline-inner{max-width:1400px;margin:0 auto;padding:0 1.5rem;}
+
+  /* LEGEND BAR (sticky-ish above grid) */
+  .legend-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem;margin-bottom:1.5rem;box-shadow:var(--shadow-card);}
+  .legend-bar h4{font-family:var(--ff-display);font-size:0.95rem;color:var(--navy);margin-right:0.5rem;}
+  .legend-chip{display:inline-flex;align-items:center;gap:0.45rem;padding:0.3rem 0.7rem;border-radius:100px;font-size:0.75rem;font-weight:600;color:var(--muted);cursor:pointer;border:1.5px solid var(--border);background:var(--white);transition:all 0.2s;user-select:none;}
+  .legend-chip:hover{border-color:var(--navy);color:var(--navy);}
+  .legend-chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+  .legend-chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+  /* MAIN LAYOUT — left sidebar + timeline */
+  .ext-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:1.25rem;align-items:start;}
+  .ext-right{min-width:0;}
+
+  /* LEFT SIDEBAR */
+  .ext-sidebar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-card);position:sticky;top:84px;max-height:calc(100vh - 100px);}
+  .ext-sidebar-header{padding:1rem 1.25rem;background:var(--navy);}
+  .ext-sidebar-title{font-family:var(--ff-display);font-size:1rem;color:var(--white);margin-bottom:0.625rem;}
+  .ext-search-wrap{position:relative;}
+  .ext-search{width:100%;padding:0.575rem 0.75rem 0.575rem 2.2rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;font-size:0.8125rem;color:var(--white);outline:none;transition:border-color 0.2s;font-family:inherit;}
+  .ext-search::placeholder{color:rgba(255,255,255,0.45);}
+  .ext-search:focus{border-color:var(--gold);}
+  .ext-search-ico{position:absolute;left:0.65rem;top:50%;transform:translateY(-50%);width:13px;height:13px;color:rgba(255,255,255,0.45);pointer-events:none;}
+  .ext-list{flex:1;overflow-y:auto;padding:0.375rem 0;}
+  .ext-list::-webkit-scrollbar{width:5px;}
+  .ext-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .ext-cat-label{padding:0.55rem 1.25rem 0.25rem;font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:0.45rem;background:var(--white);position:sticky;top:0;z-index:1;}
+  .ext-cat-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+  .ext-item{padding:0.45rem 1.25rem;cursor:pointer;transition:background 0.13s;border-left:3px solid transparent;}
+  .ext-item:hover{background:var(--cream);}
+  .ext-item.active{background:rgba(200,150,42,0.10);border-left-color:var(--gold);}
+  .ext-item-name{font-size:0.815rem;font-weight:500;color:var(--navy);line-height:1.3;}
+
+  /* DETAIL PANEL (above grid — full width of right column, NOT sticky to avoid clipping/jumps) */
+  .detail-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-card);margin-bottom:1.25rem;min-height:130px;width:100%;max-width:100%;}
+  .detail-empty{padding:1.75rem 1.75rem;display:flex;align-items:center;gap:1rem;color:var(--muted);font-size:0.9rem;font-style:italic;min-height:130px;}
+  .detail-empty .icon{font-size:2.25rem;opacity:0.4;flex-shrink:0;}
+  .detail-empty > span:last-child{flex:1;min-width:0;}
+  .detail-active{display:grid;grid-template-columns:10px minmax(0,1fr);}
+  .detail-bar{background:var(--navy);}
+  .detail-body{padding:1.4rem 1.75rem;min-width:0;}
+  .detail-tag{display:inline-flex;align-items:center;gap:0.45rem;padding:0.28rem 0.75rem;border-radius:100px;font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--white);margin-bottom:0.75rem;}
+  .detail-title{font-family:var(--ff-display);font-size:1.4rem;color:var(--navy);line-height:1.2;margin-bottom:0.4rem;word-break:break-word;}
+  .detail-months{font-size:0.8125rem;color:var(--muted);margin-bottom:0.75rem;font-weight:500;}
+  .detail-desc{font-size:0.9375rem;color:var(--text);line-height:1.65;max-width:72ch;}
+
+  /* TIMELINE / GANTT — bounded with internal scroll so sticky headers stay inside its own scroll context */
+  .timeline-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-card);width:100%;max-width:100%;}
+  .timeline-scroll{overflow:auto;max-height:min(65vh,720px);}
+  .timeline-scroll::-webkit-scrollbar{height:10px;width:10px;}
+  .timeline-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+  .timeline-scroll::-webkit-scrollbar-thumb:hover{background:var(--muted);}
+
+  .timeline-grid{display:grid;grid-template-columns:220px repeat(13, minmax(78px, 1fr));min-width:1240px;}
+  /* Header row (row 1) — sticky top inside the scroller */
+  .tl-corner{background:var(--navy);color:var(--white);padding:0.8rem 1rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;border-right:1px solid rgba(255,255,255,0.12);position:sticky;left:0;top:0;z-index:6;grid-column:1;grid-row:1;}
+  .tl-month{background:var(--navy);color:var(--white);text-align:center;padding:0.8rem 0.4rem;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;border-right:1px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:5;grid-row:1;}
+  .tl-month-yr{display:block;font-size:0.58rem;color:var(--gold-lt);font-weight:500;letter-spacing:0.06em;margin-top:2px;}
+
+  /* Row name — sticky left inside the scroller */
+  .tl-row-name{background:var(--cream);padding:0.7rem 0.85rem;font-size:0.79rem;color:var(--navy);font-weight:500;border-right:1px solid var(--border);border-top:1px solid var(--border);position:sticky;left:0;z-index:3;cursor:pointer;transition:background 0.15s,color 0.15s;display:flex;align-items:center;gap:0.5rem;line-height:1.3;grid-column:1;}
+  .tl-row-name:hover{background:#EEE9DC;}
+  .tl-row-name.active{background:var(--navy);color:var(--white);}
+  .tl-row-name .row-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+  /* Background row — keeps gridlines across all months for each event */
+  .tl-row-bg{background:var(--white);border-top:1px solid var(--border);min-height:44px;background-image:linear-gradient(90deg,rgba(10,22,40,0.06) 1px,transparent 1px);background-size:calc(100%/13) 100%;}
+
+  /* Colored span bar — placed onto the grid via grid-column for proper multi-month spans */
+  .tl-bar{align-self:center;justify-self:stretch;margin:0 5px;height:22px;border-radius:6px;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s,opacity 0.18s;box-shadow:0 1px 3px rgba(10,22,40,0.18);opacity:0.95;position:relative;z-index:2;}
+  .tl-bar:hover{transform:translateY(-1px);opacity:1;box-shadow:0 4px 12px rgba(10,22,40,0.28);}
+  .tl-bar.dim{opacity:0.15;}
+  .tl-row-name.dim{opacity:0.32;}
+  .tl-bar.selected{outline:2px solid var(--gold);outline-offset:2px;}
+
+  /* FOOTER */
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1400px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+
+  /* RESPONSIVE */
+  @media(max-width:1100px){
+    .ext-layout{grid-template-columns:1fr;}
+    .ext-sidebar{position:static;max-height:380px;}
+  }
+  @media(max-width:1024px){.footer-top{grid-template-columns:1fr 1fr;gap:2rem;}}
+  @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.footer-top{grid-template-columns:1fr;}.timeline-grid{min-width:1300px;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link active">Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="resources.html#forms">DLC Forms</a>
+        </div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-grid"></div>
+  <div class="page-header-inner">
+    <div class="page-eyebrow">2026 – 2027 District Timeline</div>
+    <h1 class="page-title">Extended <em>Calendar</em></h1>
+    <p class="page-desc">A month-by-month look at the district's year-long initiatives, promotions, training, and campaigns. Click any event in the sidebar or on the timeline to read its summary.</p>
+  </div>
+</div>
+
+<!-- BREADCRUMB (back to Event Calendar) -->
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html" data-smooth-nav>Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="dlc.html#calendar" data-smooth-nav>Event Calendar</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Extended Calendar</span>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-wrap">
+  <div class="timeline-inner">
+
+    <!-- Legend / category filter -->
+    <div class="legend-bar fade-in" id="legendBar">
+      <h4>Categories</h4>
+      <span class="legend-chip active" data-cat="all">All</span>
+      <span class="legend-chip" data-cat="board"><span class="legend-chip-dot" style="background:var(--cat-board);"></span>Board / Leadership</span>
+      <span class="legend-chip" data-cat="promo"><span class="legend-chip-dot" style="background:var(--cat-promo);"></span>Promotions / Campaigns</span>
+      <span class="legend-chip" data-cat="training"><span class="legend-chip-dot" style="background:var(--cat-training);"></span>Training / Education</span>
+      <span class="legend-chip" data-cat="events"><span class="legend-chip-dot" style="background:var(--cat-events);"></span>Events / Conferences</span>
+      <span class="legend-chip" data-cat="deadlines"><span class="legend-chip-dot" style="background:var(--cat-deadlines);"></span>Deadlines / Applications</span>
+      <span class="legend-chip" data-cat="taskforce"><span class="legend-chip-dot" style="background:var(--cat-taskforce);"></span>Taskforces / Operations</span>
+      <span class="legend-chip" data-cat="recognition"><span class="legend-chip-dot" style="background:var(--cat-recognition);"></span>Recognition / Wellness</span>
+    </div>
+
+    <div class="ext-layout fade-in">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="ext-sidebar">
+        <div class="ext-sidebar-header">
+          <div class="ext-sidebar-title">Initiative Directory</div>
+          <div class="ext-search-wrap">
+            <svg class="ext-search-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4"/><path d="M11 11l3 3"/></svg>
+            <input type="text" id="extSearch" class="ext-search" placeholder="Search initiatives…" autocomplete="off">
+          </div>
+        </div>
+        <div class="ext-list" id="extList"></div>
+      </aside>
+
+      <!-- RIGHT: DETAIL PANEL (above) + TIMELINE (below) -->
+      <div class="ext-right">
+        <!-- DETAIL PANEL — sits above the timeline -->
+        <div class="detail-panel" id="detailPanel">
+          <div class="detail-empty">
+            <span class="icon">🗓️</span>
+            <span>Select an initiative from the sidebar or the timeline to see what it's all about. Each colored bar shows when that initiative is active during the service year.</span>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline-scroll" id="timelineScroll">
+            <div class="timeline-grid" id="timelineGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ============================================================
+     EXTENDED CALENDAR DATA
+     ============================================================ */
+  const MONTHS = [
+    {short:'MAR', yr:'2026'},
+    {short:'APR', yr:'2026'},
+    {short:'MAY', yr:'2026'},
+    {short:'JUN', yr:'2026'},
+    {short:'JUL', yr:'2026'},
+    {short:'AUG', yr:'2026'},
+    {short:'SEP', yr:'2026'},
+    {short:'OCT', yr:'2026'},
+    {short:'NOV', yr:'2026'},
+    {short:'DEC', yr:'2026'},
+    {short:'JAN', yr:'2027'},
+    {short:'FEB', yr:'2027'},
+    {short:'MAR', yr:'2027'},
+  ];
+  const FULL_MONTHS = ['March 2026','April 2026','May 2026','June 2026','July 2026','August 2026','September 2026','October 2026','November 2026','December 2026','January 2027','February 2027','March 2027'];
+
+  const CAT_META = {
+    board:       {label:'Board / Leadership',       color:'#0A1628'},
+    promo:       {label:'Promotions / Campaigns',   color:'#C8962A'},
+    training:    {label:'Training / Education',     color:'#1F8F75'},
+    events:      {label:'Events / Conferences',     color:'#1A3A6B'},
+    deadlines:   {label:'Deadlines / Applications', color:'#E0A458'},
+    taskforce:   {label:'Taskforces / Operations',  color:'#3E72B0'},
+    recognition: {label:'Recognition / Wellness',   color:'#6C2BB0'},
+  };
+
+  // Events in the exact order from the xlsx — month spans match the xlsx visual bars exactly
+  const EVENTS = [
+    {id:1,  name:"Board Training",                                        cat:"board",       months:[1],                              desc:"Board Training prepares district board members for the administrative, leadership, and communication responsibilities they will manage throughout the service year."},
+    {id:2,  name:"Encourage Spring Elections",                             cat:"promo",       months:[0,1],                            desc:"This initiative encourages clubs to hold officer elections early so incoming leaders have adequate time to transition and prepare for the next Key Club year."},
+    {id:3,  name:"Key Club Walks",                                         cat:"deadlines",   months:[0,1,12],                         desc:"Key Club Walks promote fellowship, wellness, and community engagement while giving members additional opportunities to connect through service-focused events."},
+    {id:4,  name:"Promote Committee Applications",                         cat:"training",    months:[0,1,2],                          desc:"This promotion encourages members to apply for district committees where they can contribute to district operations, projects, and membership engagement."},
+    {id:5,  name:"GATC",                                                   cat:"events",      months:[1],                              desc:"GATC (Governor Administrator Training Conference) provides training and collaboration opportunities for district leaders while helping officers strengthen communication, planning, and leadership skills."},
+    {id:6,  name:"Collect New Officer Information",                        cat:"board",       months:[0,1,2],                          desc:"This process gathers contact and leadership information from newly elected club officers to support communication and district record keeping."},
+    {id:7,  name:"Promoting ICON 2027",                                    cat:"promo",       months:[0,1,2,3],                        desc:"This campaign builds awareness and excitement for the Key Club International Convention (ICON) while encouraging members to attend leadership workshops and district activities."},
+    {id:8,  name:"Board Members Complete GLC",                             cat:"deadlines",   months:[1,2,3,4,5,6],                    desc:"District board members are encouraged to complete the Global Leadership Certificate (GLC) to strengthen leadership development and professional growth skills."},
+    {id:9,  name:"Club Officer Training",                                  cat:"training",    months:[3,4,5,6],                        desc:"Club Officer Training equips club leaders with the knowledge needed to successfully manage meetings, service projects, reporting, and member engagement."},
+    {id:10, name:"Chartering / Reactivations",                             cat:"events",      months:[1,2,3,7,8,9,10,11],              desc:"This initiative focuses on establishing new Key Clubs and reactivating inactive clubs to expand service opportunities across the district."},
+    {id:11, name:"Prep Key Club Week Media",                               cat:"promo",       months:[5,6,7],                          desc:"This planning period prepares graphics, announcements, and promotional materials for Key Club Week celebrations and recognition campaigns."},
+    {id:12, name:"Promote 1st YOF Cycle",                                  cat:"deadlines",   months:[5,6,7],                          desc:"This campaign encourages clubs to apply for the first Youth Opportunities Fund (YOF) cycle to support impactful service projects and initiatives."},
+    {id:13, name:"Key Club Week",                                          cat:"events",      months:[7],                              desc:"Key Club Week celebrates the impact of Key Club members through themed activities, service projects, and membership recognition events."},
+    {id:14, name:"YOF Applications Due",                                   cat:"deadlines",   months:[7],                              desc:"This deadline marks the submission period for Youth Opportunities Fund (YOF) grant applications from clubs seeking project funding."},
+    {id:15, name:"Promote 2nd YOF Cycle",                                  cat:"deadlines",   months:[10,11],                          desc:"This initiative raises awareness about the second Youth Opportunities Fund (YOF) application cycle and encourages clubs to pursue project grants."},
+    {id:16, name:"Plan DCON",                                              cat:"training",    months:[3,4,5],                          desc:"District leaders coordinate logistics, programming, and event planning for the annual District Convention (DCON)."},
+    {id:17, name:"Host 1st DWF",                                           cat:"training",    months:[5],                              desc:"The first District Workshop Forum (DWF) provides training, networking, and leadership development opportunities for club officers and members."},
+    {id:18, name:"Host 2nd DWF",                                           cat:"training",    months:[8,9],                            desc:"The second District Workshop Forum (DWF) continues officer development and provides additional opportunities for collaboration and district updates."},
+    {id:19, name:"Kiwanis DCON Promotion",                                 cat:"events",      months:[5],                              desc:"This promotion encourages collaboration and participation between Key Club and Kiwanis members during District Convention activities."},
+    {id:20, name:"DCON Theme / Speaker / Service Project Planning",        cat:"board",       months:[3,4,5,6,7,8],                    desc:"This planning process develops convention themes, keynote programming, and service projects for District Convention (DCON) attendees."},
+    {id:21, name:"Workshops & Social Planning",                            cat:"board",       months:[6,7,8,9],                        desc:"This initiative organizes educational workshops and social activities that support leadership development and member engagement during district events."},
+    {id:22, name:"Promote DCON 2026",                                      cat:"board",       months:[8,9,10,11,12],                   desc:"This campaign builds awareness and attendance for District Convention while highlighting leadership elections, workshops, and district celebrations."},
+    {id:23, name:"DCON 2026",                                              cat:"board",       months:[12],                             desc:"District Convention is the district's largest annual event where members participate in leadership training, elections, awards, and fellowship activities."},
+    {id:24, name:"Trick-or-Treat for UNICEF Promotion",                    cat:"promo",       months:[6,7],                            desc:"This promotion encourages clubs to participate in Trick-or-Treat for UNICEF campaigns that raise funds and awareness for children worldwide."},
+    {id:25, name:"Club Dues Campaign",                                     cat:"deadlines",   months:[7,8,9],                          desc:"The Club Dues Campaign reminds clubs to submit dues on time to maintain active status and membership benefits within Key Club International."},
+    {id:26, name:"Global Engagement Rally (GER)",                          cat:"training",    months:[8],                              desc:"GER (Global Engagement Rally) promotes international awareness, cultural understanding, and global service opportunities within Key Club."},
+    {id:27, name:"Promote DCON Elections & Taskforce",                     cat:"taskforce",   months:[9,10,11],                        desc:"This initiative encourages qualified members to run for district office and participate in convention election operations."},
+    {id:28, name:"District Administrator Meeting",                         cat:"recognition", months:[10],                             desc:"District Administrator Meetings allow district leaders and advisors to coordinate operations, policies, and district-wide initiatives."},
+    {id:29, name:"Transition Taskforce",                                   cat:"deadlines",   months:[9,10],                           desc:"The Transition Taskforce supports communication and knowledge transfer between outgoing and incoming district leadership teams."},
+    {id:30, name:"Awards Taskforce",                                       cat:"training",    months:[8,9,10,11,12],                   desc:"The Awards Taskforce manages district recognition programs and helps coordinate convention awards and achievement tracking."},
+    {id:31, name:"Start Strong: Zambia Campaign",                          cat:"taskforce",   months:[2,3,4,5],                        desc:"This UNICEF partnership campaign raises awareness and support for maternal and neonatal health initiatives in Zambia."},
+    {id:32, name:"Youth Mental Health / Erika's Lighthouse Promotion",     cat:"recognition", months:[4,5,6,7,8],                      desc:"This initiative promotes youth mental health awareness and encourages clubs to participate in Erika's Lighthouse programs and advocacy efforts."},
+    {id:33, name:"UNICEF Partnership Awareness",                           cat:"events",      months:[3,4,5,6,7],                      desc:"This campaign educates members about Key Club's partnership with UNICEF and the impact of global humanitarian service projects."},
+    {id:34, name:"Preferred Charities Promotion",                          cat:"training",    months:[5,6,7,8,9],                      desc:"This promotion highlights Key Club International's preferred charities and encourages district-wide fundraising and awareness efforts."},
+    {id:35, name:"Kiwanis Family Relations Campaign",                      cat:"board",       months:[2,3,4,5,6,7,8],                  desc:"This initiative strengthens collaboration and communication between Key Club and other branches of the Kiwanis Family."},
+    {id:36, name:"Global Leadership Certificate Promotion",                cat:"deadlines",   months:[2,3,4,5,6,7],                    desc:"This campaign encourages members to complete the Global Leadership Certificate (GLC) to develop leadership and service-oriented skills."},
+    {id:37, name:"Membership Growth Initiative",                           cat:"training",    months:[1,2,3,4,5,6,7,8,9,10],           desc:"This initiative focuses on recruiting new members, retaining current members, and strengthening overall club engagement."},
+    {id:38, name:"Service Hour Reporting Push",                            cat:"taskforce",   months:[4,5,6,7,8,9,10],                 desc:"This reminder campaign encourages clubs to accurately submit service hours and track the district's overall community impact."},
+    {id:39, name:"Key Leader Promotion",                                   cat:"events",      months:[2,3,4,5,6],                      desc:"This promotion encourages members to attend Key Leader leadership weekends focused on service leadership and personal growth."},
+    {id:40, name:"ICON Delegate Registration Push",                        cat:"promo",       months:[1,2,3],                          desc:"This initiative encourages delegates to complete registration early for the Key Club International Convention (ICON)."},
+    {id:41, name:"Member Recognition Campaign",                            cat:"recognition", months:[8,9,10,11,12],                   desc:"This campaign highlights outstanding members and clubs to encourage engagement, achievement, and service excellence."},
+    {id:42, name:"March Membership Recruitment Drive",                     cat:"training",    months:[12],                             desc:"This recruitment initiative encourages clubs to grow membership before the close of the service year and prepare future leaders."},
+  ];
+
+  let activeCat = 'all';
+  let activeId  = null;
+  let search    = '';
+
+  function passesFilter(ev){
+    if (activeCat !== 'all' && ev.cat !== activeCat) return false;
+    if (search && !ev.name.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  }
+
+  // ── Build the timeline grid (rows in row order) ──
+  // Uses CSS grid-column to draw bars that span multiple consecutive months as
+  // ONE continuous bar, exactly mirroring how the xlsx visually represents spans.
+  function buildTimeline(){
+    const grid = document.getElementById('timelineGrid');
+    let html = '';
+    // Header row (row 1)
+    html += `<div class="tl-corner">Initiative</div>`;
+    MONTHS.forEach((m, i) => {
+      // grid-column for header months: col 2..14 (i+2)
+      html += `<div class="tl-month" style="grid-column:${i+2};">${m.short}<span class="tl-month-yr">${m.yr}</span></div>`;
+    });
+    // Event rows — for each event, draw the sticky name cell + a full-row background +
+    // colored span bars for each contiguous run of months.
+    EVENTS.forEach((ev, rowIdx) => {
+      const gridRow = rowIdx + 2; // row 1 is the header
+      const cssVar = `var(--cat-${ev.cat})`;
+      // Sticky name cell (col 1)
+      html += `<div class="tl-row-name" data-id="${ev.id}" style="grid-row:${gridRow};"><span class="row-dot" style="background:${cssVar};"></span>${ev.name}</div>`;
+      // Row background across all 13 month cols
+      html += `<div class="tl-row-bg" style="grid-row:${gridRow};grid-column:2 / span 13;"></div>`;
+      // Group contiguous months into spans
+      const sortedMonths = [...ev.months].sort((a,b) => a-b);
+      const spans = [];
+      let cur = null;
+      sortedMonths.forEach(m => {
+        if (cur && m === cur.end + 1) {
+          cur.end = m;
+        } else {
+          if (cur) spans.push(cur);
+          cur = {start: m, end: m};
+        }
+      });
+      if (cur) spans.push(cur);
+      // Draw each span as a single bar across the appropriate columns
+      spans.forEach(s => {
+        const colStart = s.start + 2;       // month index 0 → grid col 2
+        const colSpan  = s.end - s.start + 1;
+        const monthRange = s.start === s.end
+          ? FULL_MONTHS[s.start]
+          : `${FULL_MONTHS[s.start]} – ${FULL_MONTHS[s.end]}`;
+        html += `<div class="tl-bar" data-id="${ev.id}" style="grid-row:${gridRow};grid-column:${colStart} / span ${colSpan};background:${cssVar};" title="${ev.name} — ${monthRange}"></div>`;
+      });
+    });
+    grid.innerHTML = html;
+    bindTimelineClicks();
+    applyFilter();
+  }
+
+  function bindTimelineClicks(){
+    document.querySelectorAll('#timelineGrid .tl-bar, #timelineGrid .tl-row-name').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = parseInt(el.dataset.id);
+        selectEvent(id);
+      });
+    });
+  }
+
+  // ── Build the sidebar list (grouped by category) ──
+  function buildSidebar(){
+    const list = document.getElementById('extList');
+    const groups = {};
+    EVENTS.forEach(ev => {
+      if (!passesFilter(ev)) return;
+      if (!groups[ev.cat]) groups[ev.cat] = [];
+      groups[ev.cat].push(ev);
+    });
+    const order = ['board','promo','training','events','deadlines','taskforce','recognition'];
+    let html = '';
+    let totalShown = 0;
+    order.forEach(cat => {
+      if (!groups[cat] || !groups[cat].length) return;
+      const meta = CAT_META[cat];
+      html += `<div class="ext-cat-label"><span class="ext-cat-swatch" style="background:${meta.color};"></span>${meta.label}</div>`;
+      groups[cat].forEach(ev => {
+        const active = ev.id === activeId ? ' active' : '';
+        html += `<div class="ext-item${active}" data-id="${ev.id}"><div class="ext-item-name">${ev.name}</div></div>`;
+        totalShown++;
+      });
+    });
+    if (!totalShown){
+      html = `<div style="padding:2rem 1.25rem;text-align:center;color:var(--muted);font-size:0.85rem;">No initiatives match your search.</div>`;
+    }
+    list.innerHTML = html;
+    list.querySelectorAll('.ext-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = parseInt(el.dataset.id);
+        selectEvent(id);
+      });
+    });
+  }
+
+  // ── Selection + detail rendering ──
+  function selectEvent(id){
+    activeId = id;
+    const ev = EVENTS.find(e => e.id === id);
+    // Update sidebar highlight
+    document.querySelectorAll('.ext-item').forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.id) === id);
+    });
+    // Update timeline row name + bar highlight
+    document.querySelectorAll('.tl-row-name').forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.id) === id);
+    });
+    document.querySelectorAll('.tl-bar').forEach(el => {
+      el.classList.toggle('selected', parseInt(el.dataset.id) === id);
+    });
+    // Detail panel
+    const panel = document.getElementById('detailPanel');
+    if (!ev){
+      panel.innerHTML = `<div class="detail-empty"><span class="icon">🗓️</span><span>Select an initiative from the sidebar or the timeline to see what it's all about.</span></div>`;
+      return;
+    }
+    const meta = CAT_META[ev.cat];
+    // Render months grouped into nice spans (e.g., "Mar 2026 · Mar 2027")
+    const sortedMonths = [...ev.months].sort((a,b) => a-b);
+    const labelSpans = [];
+    let cur = null;
+    sortedMonths.forEach(m => {
+      if (cur && m === cur.end + 1) cur.end = m;
+      else { if (cur) labelSpans.push(cur); cur = {start:m,end:m}; }
+    });
+    if (cur) labelSpans.push(cur);
+    const monthLabels = labelSpans.map(s =>
+      s.start === s.end ? FULL_MONTHS[s.start] : `${FULL_MONTHS[s.start]} – ${FULL_MONTHS[s.end]}`
+    ).join(' · ');
+    panel.innerHTML = `
+      <div class="detail-active">
+        <div class="detail-bar" style="background:${meta.color};"></div>
+        <div class="detail-body">
+          <span class="detail-tag" style="background:${meta.color};">${meta.label}</span>
+          <h3 class="detail-title">${ev.name}</h3>
+          <div class="detail-months">📅 ${monthLabels}</div>
+          <p class="detail-desc">${ev.desc}</p>
+        </div>
+      </div>`;
+    // Scroll the timeline (inner scroll container) so the row is visible — only inside the scroller,
+    // never via scrollIntoView (which can drag the whole page sideways).
+    const scroller = document.getElementById('timelineScroll');
+    const row = scroller.querySelector(`.tl-row-name[data-id="${id}"]`);
+    if (row && scroller){
+      const rowRect = row.getBoundingClientRect();
+      const scRect  = scroller.getBoundingClientRect();
+      const headerH = 48; // sticky header inside scroller
+      // vertical: bring row into view inside the scroller only
+      if (rowRect.top < scRect.top + headerH + 10){
+        scroller.scrollTop -= (scRect.top + headerH + 10) - rowRect.top;
+      } else if (rowRect.bottom > scRect.bottom - 10){
+        scroller.scrollTop += rowRect.bottom - (scRect.bottom - 10);
+      }
+    }
+    // Scroll the PAGE vertically only (preserve horizontal scrollLeft) so detail comes into view.
+    const detail = document.getElementById('detailPanel');
+    if (detail){
+      const dRect = detail.getBoundingClientRect();
+      const targetY = window.scrollY + dRect.top - 80;
+      window.scrollTo({top: Math.max(0, targetY), left: window.scrollX, behavior:'smooth'});
+    }
+  }
+
+  // ── Apply category filter to timeline (dim non-matching rows) ──
+  function applyFilter(){
+    document.querySelectorAll('.tl-row-name').forEach(el => {
+      const id = parseInt(el.dataset.id);
+      const ev = EVENTS.find(e => e.id === id);
+      const ok = activeCat === 'all' || ev.cat === activeCat;
+      el.classList.toggle('dim', !ok);
+    });
+    document.querySelectorAll('.tl-bar').forEach(el => {
+      const id = parseInt(el.dataset.id);
+      const ev = EVENTS.find(e => e.id === id);
+      const ok = activeCat === 'all' || ev.cat === activeCat;
+      el.classList.toggle('dim', !ok);
+    });
+  }
+
+  // ── Bind legend chip filter ──
+  document.querySelectorAll('#legendBar .legend-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#legendBar .legend-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeCat = chip.dataset.cat;
+      buildSidebar();
+      applyFilter();
+    });
+  });
+
+  // ── Search input ──
+  document.getElementById('extSearch').addEventListener('input', (e) => {
+    search = e.target.value.trim();
+    buildSidebar();
+  });
+
+  // ── Init ──
+  buildTimeline();
+  buildSidebar();
+
+  /* ── Entrance fade-in (matches the smooth-nav transition on the prior page) ── */
+  window.scrollTo(0, 0);
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => document.body.classList.add('page-ready'));
+  });
+
+  /* ── Smooth-nav for outgoing links (matches dlc.html pattern) ── */
+  document.querySelectorAll('a[data-smooth-nav]').forEach(link => {
+    link.addEventListener('click', function(e){
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      const href = this.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http')) return;
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.32s ease';
+      document.body.style.opacity = '0';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+      setTimeout(() => { window.location.href = href; }, 320);
+    });
+  });
+
+  // ── Fade-in observer ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+    });
+  }, {threshold:0.08, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

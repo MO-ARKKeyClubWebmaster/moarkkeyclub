@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Dashboard | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav"></nav>
+
+<div class="page fade-in">
+  <!-- Greeting hero -->
+  <div class="hero">
+    <div class="hero-avatar" id="heroAvatar"></div>
+    <div class="hero-body">
+      <div class="hero-eyebrow" id="heroEyebrow">MO-ARK Officer Portal</div>
+      <h1 class="hero-greeting" id="heroGreeting">Hello.</h1>
+      <div class="hero-meta" id="heroMeta"></div>
+    </div>
+    <div class="hero-actions" id="heroActions"></div>
+  </div>
+
+  <!-- Deadlines -->
+  <div id="deadlineCircles"></div>
+
+  <!-- Stats -->
+  <div class="stat-grid" id="statGrid"></div>
+
+  <!-- Main -->
+  <div id="mainContent"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Submission Detail</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const WORKER = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+const user = AUTH.requireAuth();
+const me   = OFFICERS.forSession(user);
+
+// ── HERO GREETING ───────────────────────────────────────────────────────
+document.getElementById('heroAvatar').innerHTML = OFFICERS.avatarInner(me);
+document.getElementById('heroGreeting').innerHTML = PORTAL.greeting(me.firstName);
+(function heroMeta() {
+  const region = me.region ? ` · ${me.region}` : '';
+  let line;
+  if (AUTH.isLTG())        line = `<strong>${me.title}</strong>${region} - here’s where your division stands.`;
+  else if (AUTH.isEditor())line = `<strong>${me.title}</strong> - submissions waiting on your review.`;
+  else if (AUTH.isWebmaster()) line = `<strong>${me.title}</strong> - final approval authority across the district.`;
+  else                     line = `<strong>${me.title}</strong> - a district-wide look at reports and submissions.`;
+  document.getElementById('heroMeta').innerHTML = line;
+
+  const acts = document.getElementById('heroActions');
+  if (AUTH.isLTG()) {
+    acts.innerHTML = `
+      <a href="newsletter.html" class="btn btn-primary">Submit newsletter</a>
+      <a href="mrf.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.25);">Monthly RF</a>`;
+  } else if (AUTH.isEditor() || AUTH.isWebmaster()) {
+    acts.innerHTML = `<a href="review.html" class="btn btn-primary">Open review queue</a>`;
+  } else {
+    acts.innerHTML = `<a href="newsletter.html" class="btn btn-primary">Browse newsletters</a>`;
+  }
+})();
+
+// ── DEADLINE CARDS ──────────────────────────────────────────────────────
+function buildCircleTimer(id, pct, daysLeft, label, title, sub, kind, naText) {
+  const R = 42, C = 2 * Math.PI * R;
+  const dash = naText ? C : C - (pct * C);
+  const isMrf = kind === 'mrf';
+  return `
+  <div class="deadline-circle-card ${isMrf ? 'mrf-card' : ''} ${naText ? 'summer-card' : ''}">
+    <div class="circle-timer-wrap">
+      <svg class="circle-timer-svg" width="104" height="104" viewBox="0 0 104 104">
+        <circle class="circle-bg" cx="52" cy="52" r="${R}" stroke-width="8"/>
+        <circle class="circle-progress ${naText ? 'circle-progress-na' : isMrf ? 'circle-progress-mrf' : 'circle-progress-nl'}"
+          cx="52" cy="52" r="${R}" stroke-width="8"
+          stroke-dasharray="${C}" stroke-dashoffset="${naText ? C : dash}" id="${id}-ring"/>
+      </svg>
+      <div class="circle-inner-text">
+        <span class="circle-days-num ${isMrf ? 'mrf-num' : ''}" id="${id}-num">${naText || daysLeft}</span>
+        <span class="circle-days-label">${naText ? '' : (daysLeft === 1 ? 'day' : 'days')}</span>
+      </div>
+    </div>
+    <div class="deadline-circle-info">
+      <div class="deadline-circle-type ${isMrf ? 'mrf-type' : ''}">${label}</div>
+      <div class="deadline-circle-title">${title}</div>
+      <div class="deadline-circle-sub">${sub}</div>
+    </div>
+  </div>`;
+}
+
+(function renderDeadlines() {
+  const wrap = document.getElementById('deadlineCircles');
+  const nl = API.getNextDeadline();
+  const mrf = API.getNextMRFDeadline();
+  const now = new Date();
+  const totalNL = 30, totalMRF = 30;
+
+  let nlCard;
+  if (!nl) {
+    nlCard = buildCircleTimer('nl', 0, 0, 'Newsletter', 'Summer Break', 'No newsletter Jun-Jul', 'nl', '☀');
+  } else {
+    const days = Math.max(0, Math.ceil((nl.deadline - now) / 86400000));
+    nlCard = buildCircleTimer('nl', Math.min(1, days / totalNL), days, 'Newsletter Deadline',
+      `${nl.month} Newsletter`, `Due ${nl.deadline.toLocaleDateString('en-US',{month:'long',day:'numeric'})}`, 'nl', null);
+  }
+  const mDays = Math.max(0, Math.ceil((mrf.deadline - now) / 86400000));
+  const mrfCard = buildCircleTimer('mrf', Math.min(1, mDays / totalMRF), mDays, 'Monthly RF Deadline',
+    `${mrf.month} Report`, `Due ${mrf.deadline.toLocaleDateString('en-US',{month:'long',day:'numeric'})}`, 'mrf', null);
+
+  wrap.innerHTML = `<div class="deadline-circles-wrap">${nlCard}${mrfCard}</div>`;
+})();
+
+// ── DATA ────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const [subs, dcms, mrfs, committees] = await Promise.allSettled([
+      API.getAll(), API.getDCMs(), API.getMRFs(), API.getCommitteeReports(),
+    ]);
+    const allSubs = subs.status === 'fulfilled' ? subs.value : [];
+    const allDCMs = dcms.status === 'fulfilled' ? dcms.value : [];
+    const allMRFs = mrfs.status === 'fulfilled' ? mrfs.value : [];
+    const allComm = committees.status === 'fulfilled' ? committees.value : [];
+    renderStats(allSubs, allDCMs, allMRFs, allComm);
+    renderMain(allSubs, allDCMs, allMRFs, allComm);
+  } catch(e) {
+    document.getElementById('mainContent').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function renderStats(allSubs, allDCMs, allMRFs, allComm) {
+  let cards;
+  if (AUTH.isLTG()) {
+    const s = PORTAL.statsFor(me, { subs: allSubs, dcms: allDCMs, mrfs: allMRFs, committees: allComm });
+    cards = [
+      ['Newsletters', s.newslettersApproved, 'approved'],
+      ['DCMs Scheduled', s.dcmsScheduled, 'of 4 required'],
+      ['MRFs Submitted', s.mrfs, 'this year'],
+      ['Committee Reports', s.committeeReports, 'submitted'],
+    ];
+  } else if (AUTH.isEditor()) {
+    cards = [
+      ['Pending Review', allSubs.filter(s=>s.status==='pending-editor').length, 'awaiting you'],
+      ['Approved', allSubs.filter(s=>s.status==='approved').length, 'total published'],
+      ['Returned', allSubs.filter(s=>s.status==='denied').length, 'needing revision'],
+      ['Total Submitted', allSubs.length, 'all divisions'],
+    ];
+  } else if (AUTH.isWebmaster() || AUTH.isGovernor()) {
+    cards = [
+      ['Newsletters', allSubs.filter(s=>s.status==='approved').length, 'approved'],
+      ['DCMs Reported', allDCMs.filter(d=>d.reportStatus==='submitted').length, 'with report filed'],
+      ['MRFs Filed', allMRFs.length, 'total submissions'],
+      ['Committee Reports', allComm.length, 'total submitted'],
+    ];
+  } else {
+    cards = [
+      ['Newsletters', allSubs.filter(s=>s.status==='approved').length, 'approved'],
+      ['MRFs Filed', allMRFs.length, 'total'],
+      ['Committee Reports', allComm.length, 'total'],
+      ['DCMs', allDCMs.filter(d=>d.reportStatus==='submitted').length, 'reported'],
+    ];
+  }
+  document.getElementById('statGrid').innerHTML = cards.map(([l,v,s]) =>
+    `<div class="stat-card"><div class="stat-label">${l}</div><div class="stat-value">${v}</div><div class="stat-sub">${s}</div></div>`
+  ).join('');
+}
+
+function renderMain(allSubs, allDCMs, allMRFs, allComm) {
+  const c = document.getElementById('mainContent');
+
+  if (AUTH.isLTG()) {
+    const divSubs = allSubs.filter(s=>s.division===me.division).sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt)).slice(0,5);
+    const divDCMs = allDCMs.filter(d=>d.division===me.division).sort((a,b)=>a.dcmNumber-b.dcmNumber).slice(0,4);
+    const divMRFs = allMRFs.filter(m=>m.division===me.division).sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt)).slice(0,3);
+    c.innerHTML = `<div class="dash-grid">
+      <div>
+        <div class="section-head"><div class="section-title">Recent Newsletters</div><a href="newsletter.html" class="btn btn-ghost btn-sm">View all →</a></div>
+        <div class="card"><div class="card-body" style="padding:0;">${divSubs.length===0?emptyMini('No newsletters yet'):subTableSmall(divSubs)}</div></div>
+        <div class="section-head"><div class="section-title">Recent MRFs</div><a href="mrf.html" class="btn btn-ghost btn-sm">View all →</a></div>
+        <div class="card"><div class="card-body" style="padding:0;">${divMRFs.length===0?emptyMini('No MRFs yet'):mrfTableSmall(divMRFs)}</div></div>
+      </div>
+      <div>
+        <div class="section-head"><div class="section-title">DCM Status</div><a href="dcm.html" class="btn btn-ghost btn-sm">Manage →</a></div>
+        <div class="card"><div class="card-body">${dcmMiniGrid(divDCMs)}</div></div>
+        <div class="section-head"><div class="section-title">Reference</div></div>
+        <div class="example-card">
+          <div class="example-icon">📎</div>
+          <div><h3>Newsletter Example</h3><p>The formatting standard to match.</p>
+          <a href="https://drive.google.com/file/d/1-kh6R0U_qT-kVQeeZLwd_KnCJpUYzX-a/view?usp=sharing" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.6rem;">View example →</a></div>
+        </div>
+      </div>
+    </div>`;
+  } else if (AUTH.isEditor()) {
+    const pending = allSubs.filter(s=>s.status==='pending-editor').sort((a,b)=>new Date(a.submittedAt)-new Date(b.submittedAt));
+    const recent  = [...allSubs].sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,8);
+    c.innerHTML = `
+      <div class="section-head"><div class="section-title">Pending your review <span class="badge badge-pending-editor" style="margin-left:.4rem;">${pending.length}</span></div><a href="review.html" class="btn btn-ghost btn-sm">Full queue →</a></div>
+      <div class="card" style="margin-bottom:1.5rem;"><div class="card-body" style="padding:0;">${pending.length===0?emptyMini('All clear - nothing waiting'):subTable(pending,'Review')}</div></div>
+      <div class="section-head"><div class="section-title">Recent activity</div></div>
+      <div class="card"><div class="card-body" style="padding:0;">${subTable(recent,'View')}</div></div>`;
+  } else {
+    const pendingW = allSubs.filter(s=>s.status==='pending-webmaster').sort((a,b)=>new Date(a.submittedAt)-new Date(b.submittedAt));
+    const recentSubs = [...allSubs].sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,8);
+    const recentMRFs = [...allMRFs].sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt)).slice(0,5);
+    c.innerHTML = `<div class="dash-grid">
+      <div>
+        <div class="section-head"><div class="section-title">Awaiting final approval <span class="badge badge-pending-webmaster" style="margin-left:.4rem;">${pendingW.length}</span></div>${AUTH.canReview()?`<a href="review.html" class="btn btn-ghost btn-sm">Review →</a>`:''}</div>
+        <div class="card" style="margin-bottom:1.25rem;"><div class="card-body" style="padding:0;">${pendingW.length===0?emptyMini('Nothing pending'):subTable(pendingW,'View')}</div></div>
+        <div class="section-head"><div class="section-title">Recent Newsletters</div><a href="newsletter.html" class="btn btn-ghost btn-sm">Archive →</a></div>
+        <div class="card"><div class="card-body" style="padding:0;">${subTable(recentSubs,'View')}</div></div>
+      </div>
+      <div>
+        <div class="section-head"><div class="section-title">Recent MRFs</div><a href="mrf.html" class="btn btn-ghost btn-sm">All →</a></div>
+        <div class="card" style="margin-bottom:1.25rem;"><div class="card-body" style="padding:0;">${recentMRFs.length===0?emptyMini('None yet'):mrfTableSmall(recentMRFs)}</div></div>
+        <div class="section-head"><div class="section-title">District Overview</div></div>
+        <div class="card"><div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;">
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);text-align:center;">
+              <div style="font-family:var(--ff-display);font-size:1.9rem;color:var(--navy);">${allDCMs.filter(d=>d.reportStatus==='submitted').length}</div>
+              <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;">DCMs Reported</div>
+            </div>
+            <div style="padding:1rem;background:var(--bg);border-radius:var(--radius-sm);text-align:center;">
+              <div style="font-family:var(--ff-display);font-size:1.9rem;color:var(--navy);">${allComm.length}</div>
+              <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;">Committee Reports</div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </div>`;
+  }
+}
+
+function emptyMini(t){return `<div class="empty" style="padding:2rem;"><div class="empty-icon">🗂️</div><h3>${t}</h3></div>`;}
+
+function dcmMiniGrid(dcms) {
+  return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;">
+    ${[1,2,3,4].map(n => {
+      const d = dcms.find(x=>x.dcmNumber===n);
+      if (!d) return `<div style="border:1.5px dashed var(--border);border-radius:10px;padding:0.8rem;text-align:center;background:var(--bg);opacity:.7;">
+        <div style="font-size:0.68rem;color:var(--muted);font-weight:700;">DCM ${n}</div><div style="font-size:0.62rem;color:var(--muted);margin-top:0.25rem;">Not set</div></div>`;
+      const done = d.reportStatus==='submitted';
+      return `<div style="border:1.5px solid ${done?'var(--approved-border)':'#C3D6F1'};border-radius:10px;padding:0.8rem;text-align:center;background:${done?'var(--approved-bg)':'#F4F8FE'};">
+        <div style="font-size:0.68rem;color:var(--navy);font-weight:700;">DCM ${n}</div>
+        <div style="font-size:0.62rem;color:var(--muted);margin-top:0.2rem;">${done?'✓ Reported':'Scheduled'}</div></div>`;
+    }).join('')}</div>`;
+}
+function mrfTableSmall(mrfs){return `<table class="sub-table"><thead><tr><th>Month</th><th>Year</th><th>Div</th><th>Submitted</th></tr></thead><tbody>
+  ${mrfs.map(m=>`<tr><td><strong>${m.month}</strong></td><td>${m.year||m.calYear||''}</td><td><span class="div-pill">${m.division}</span></td><td style="color:var(--muted);font-size:0.8rem;">${fmtDate(m.submittedAt)}</td></tr>`).join('')}
+  </tbody></table>`;}
+function subTableSmall(subs){return `<table class="sub-table"><thead><tr><th>Month</th><th>Type</th><th>Status</th></tr></thead><tbody>
+  ${subs.map(s=>`<tr><td><strong>${s.month}</strong></td><td style="font-size:0.8rem;">${s.type==='newsletter'?'Newsletter':'DC Report'}</td><td>${statusBadge(s.status)}</td></tr>`).join('')}
+  </tbody></table>`;}
+function subTable(subs, btnLabel){
+  if (!subs.length) return emptyMini('No submissions yet');
+  return `<table class="sub-table"><thead><tr><th>Div</th><th>Month</th><th>Year</th><th>Type</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody>
+    ${subs.map(s=>`<tr>
+      <td><span class="div-pill">${s.division}</span></td><td><strong>${s.month}</strong></td><td>${s.year}</td>
+      <td>${s.type==='newsletter'?'Newsletter':'DC Report'}</td><td>${statusBadge(s.status)}</td>
+      <td style="color:var(--muted);font-size:0.8rem;">${fmtDate(s.updatedAt)}</td>
+      <td><button class="btn btn-${btnLabel==='View'?'outline':'primary'} btn-sm" onclick="openDetail('${s.id}')">${btnLabel}</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+async function openDetail(id) {
+  try {
+    const s = await API.getById(id);
+    document.getElementById('modalTitle').textContent = `Division ${s.division} - ${s.month} ${s.year}`;
+    const canActE = AUTH.isEditor() && s.status==='pending-editor';
+    const canActW = AUTH.isWebmaster() && s.status==='pending-webmaster';
+    const canAct  = canActE || canActW;
+    const pdfUrl  = `${WORKER}/pdf/${s.id}`;
+    document.getElementById('modalBody').innerHTML=`
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center;">${statusBadge(s.status)}
+        <span style="font-size:0.82rem;color:var(--muted);">By ${s.ltgName} · ${fmtDate(s.submittedAt)}</span></div>
+      <div style="margin-bottom:1.25rem;"><div class="form-label">File</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;padding:0.9rem 1rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);">
+          <span style="font-size:1.4rem;">📄</span>
+          <div><div style="font-size:0.9rem;font-weight:700;">${s.fileName}</div><div style="font-size:0.75rem;color:var(--muted);">${fmtSize(s.fileSize)}</div></div>
+          <div style="margin-left:auto;display:flex;gap:0.5rem;">
+            <a href="${pdfUrl}" download="${s.fileName}" class="btn btn-outline btn-sm">Download</a>
+            <a href="${pdfUrl}" target="_blank" class="btn btn-navy btn-sm">View PDF</a>
+          </div></div></div>
+      ${s.thread&&s.thread.length>0?`<div style="margin-bottom:1.25rem;"><div class="form-label" style="margin-bottom:0.6rem;">Review Thread</div>
+        <div class="thread">${s.thread.map(m=>`<div class="thread-msg from-${m.from}">
+          <div class="thread-meta"><span class="thread-from">${m.fromName}</span><span class="thread-time">${fmtDate(m.timestamp)}</span></div>
+          <div class="thread-body">${m.message}</div></div>`).join('')}</div></div>`:''}
+      ${canAct?`<div style="border-top:1px solid var(--border-lt);padding-top:1.25rem;"><div class="form-label" style="margin-bottom:0.5rem;">Comment</div>
+        <textarea class="form-textarea" id="reviewComment" placeholder="Leave a comment…"></textarea></div>`:''}`;
+    let footer = '';
+    if (canAct) {
+      footer = `${AUTH.isWebmaster()?`<button class="btn btn-deny" onclick="deleteSubmission('${s.id}')" style="margin-right:auto;">Delete</button>`:''}
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-deny" onclick="handleAction('${s.id}','deny')">↩ Return ${canActE?'to LTG':'to Editor'}</button>
+        <button class="btn btn-approve" onclick="handleAction('${s.id}','approve')">${canActE?'→ Send to Webmaster':'✓ Approve & Publish'}</button>`;
+    } else {
+      footer = `${AUTH.isWebmaster()?`<button class="btn btn-deny" onclick="deleteSubmission('${s.id}')" style="margin-right:auto;">Delete</button>`:''}
+        <button class="btn btn-outline" onclick="closeModal()">Close</button>`;
+    }
+    document.getElementById('modalFooter').innerHTML = footer;
+    document.getElementById('detailModal').classList.add('open');
+  } catch(e) { PORTAL.toast('Failed to load: '+e.message,'error'); }
+}
+function closeModal(){ document.getElementById('detailModal').classList.remove('open'); }
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+async function deleteSubmission(id) {
+  if (!AUTH.isWebmaster()) return;
+  if (!confirm('PERMANENTLY DELETE THIS SUBMISSION?\n\nThis removes it from the system and cannot be undone.')) return;
+  try {
+    await API.update(id, { deleted: true, _logActor: user.email, _logActorName: user.name, _logActorRole: user.role });
+    closeModal(); PORTAL.toast('Submission deleted.','info'); init();
+  } catch(e) { PORTAL.toast('Delete failed: ' + e.message, 'error'); }
+}
+async function handleAction(id, action) {
+  const comment = document.getElementById('reviewComment')?.value?.trim();
+  if (action==='deny' && !comment) { PORTAL.toast('Add a comment before returning.','error'); return; }
+  try {
+    const newStatus = action==='approve' ? (AUTH.isEditor()?'pending-webmaster':'approved') : 'denied';
+    const data = { status:newStatus, _logActor:user.email, _logActorName:user.name, _logActorRole:user.role };
+    if (comment) data.threadMessage = { from:user.role, fromName:user.name, to:AUTH.isEditor()?'ltg':'editor', message:comment };
+    await API.update(id, data);
+    closeModal();
+    PORTAL.toast(action==='approve'?(AUTH.isEditor()?'Sent to webmaster.':'Approved!'):'Returned with comments.', action==='approve'?'success':'info');
+    init();
+  } catch(e) { PORTAL.toast('Error: '+e.message,'error'); }
+}
+
+function statusBadge(s){const m={'pending-editor':['badge-pending-editor','Pending Editor'],'pending-webmaster':['badge-pending-webmaster','Pending Webmaster'],'approved':['badge-approved','✓ Approved'],'denied':['badge-denied','Needs Revision']};const[c,l]=m[s]||['badge-pending-editor',s];return`<span class="badge ${c}">${l}</span>`;}
+function fmtDate(iso){return iso?new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';}
+function fmtSize(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+
+init();
+</script>
+<style>
+.dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.75rem; align-items:start; }
+@media (max-width: 860px){ .dash-grid{ grid-template-columns:1fr; } }
+.section-head:first-child{ margin-top:0; }
+</style>
+</body>
+</html>

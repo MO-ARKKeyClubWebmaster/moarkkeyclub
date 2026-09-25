@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Notifications | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav"></nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Notifications</h1>
+      <p class="page-desc" id="pfDesc">Returns, approvals, deadlines, and district activity.</p>
+    </div>
+    <button class="btn btn-outline" id="markAllBtn">Mark all read</button>
+  </div>
+
+  <div class="card">
+    <div class="card-body" style="padding:0;" id="inbox">
+      <div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading your notifications…</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+let notifs = [];
+
+function render() {
+  const inbox = document.getElementById('inbox');
+  if (!notifs.length) {
+    inbox.innerHTML = `<div class="empty"><div class="empty-icon">🔔</div><h3>You're all caught up</h3><p>New returns, approvals, and deadline reminders will show up here.</p></div>`;
+    return;
+  }
+  inbox.innerHTML = `<div class="notif-list">${notifs.map(n => NOTIFY.itemHTML(user, n)).join('')}</div>`;
+  inbox.querySelectorAll('[data-nid]').forEach(el => el.addEventListener('click', () => {
+    NOTIFY.markRead(user.email, [el.dataset.nid]);
+    if (el.dataset.link) location.href = el.dataset.link;
+  }));
+}
+
+async function load() {
+  try {
+    const data = await NOTIFY.fetchData();
+    notifs = NOTIFY.compute(user, data);
+    render();
+    // Opening the inbox counts as seeing them: clear the unread badge on the
+    // NEXT page load, but keep this view's highlighting so you can spot what's new.
+    setTimeout(() => NOTIFY.markRead(user.email, notifs.map(n => n.id)), 1200);
+  } catch (e) {
+    document.getElementById('inbox').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Couldn't load notifications</h3><p>${PORTAL.escapeHTML(e.message)}</p></div>`;
+  }
+}
+
+document.getElementById('markAllBtn').addEventListener('click', () => {
+  NOTIFY.markRead(user.email, notifs.map(n => n.id));
+  document.querySelectorAll('#inbox .notif-item.unread').forEach(el => el.classList.remove('unread'));
+  document.querySelectorAll('#inbox .notif-dot').forEach(el => el.remove());
+  PORTAL.toast('All caught up.', 'success');
+});
+
+load();
+</script>
+</body>
+</html>

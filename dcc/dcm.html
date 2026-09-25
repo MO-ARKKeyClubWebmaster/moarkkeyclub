@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>DCMs | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav">
+  <a href="dashboard.html" class="topnav-logo">
+    <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
+    <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+  </a>
+  <div class="topnav-divider"></div>
+  <div class="topnav-links">
+    <a href="dashboard.html" class="topnav-link">Dashboard</a>
+    <a href="newsletter.html" class="topnav-link">Newsletter</a>
+    <a href="dcm.html" class="topnav-link active">DCMs</a>
+    <a href="mrf.html" class="topnav-link">Monthly RF</a>
+    <a href="committee.html" class="topnav-link">Committee Reports</a>
+    <a href="calendar.html" class="topnav-link">Calendar</a>    <a href="review.html" class="topnav-link" id="navReview" style="display:none">Review Queue</a>
+    <a href="console.html" class="topnav-link topnav-console" id="navConsole" style="display:none">Console</a>
+  </div>
+  <div class="topnav-user">
+    <div class="topnav-avatar" id="navAvatar">?</div>
+    <span class="topnav-username" id="navName"></span>
+    <span class="role-chip" id="navRole"></span>
+    <button class="topnav-logout" onclick="AUTH.logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Division Council <em>Meetings</em></h1>
+      <p class="page-desc" id="pageDesc">Schedule DCMs, submit reports, and view the archive.</p>
+    </div>
+  </div>
+
+  <div class="section-tabs">
+    <button class="section-tab active" onclick="showTab('schedule')" id="tab-schedule">Schedule a DCM</button>
+    <button class="section-tab" onclick="showTab('report')" id="tab-report">Submit Report</button>
+    <button class="section-tab" onclick="showTab('archive')" id="tab-archive">Archive</button>
+  </div>
+
+  <!-- SCHEDULE TAB -->
+  <div id="panel-schedule">
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Schedule a DCM</div></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">DCM Number</label>
+              <select class="form-select" id="dcmNum">
+                <option value="">Select…</option>
+                <option value="1">DCM 1 (Summer - required)</option>
+                <option value="2">DCM 2</option>
+                <option value="3">DCM 3</option>
+                <option value="4">DCM 4</option>
+                <option value="5">DCM 5</option>
+                <option value="6">DCM 6</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label>
+              <input type="date" class="form-input" id="dcmDate">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Time</label>
+              <input type="time" class="form-input" id="dcmTime">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Format</label>
+              <select class="form-select" id="dcmFormat" onchange="toggleFormatField()">
+                <option value="">Select…</option>
+                <option value="in-person">In Person</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="addressGroup" style="display:none;">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-input" id="dcmAddress" placeholder="123 Main St, City, State ZIP">
+          </div>
+          <div class="form-group" id="linkGroup" style="display:none;">
+            <label class="form-label">Meeting Link</label>
+            <input type="url" class="form-input" id="dcmLink" placeholder="https://zoom.us/j/... or meet.google.com/...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Academic Year</label>
+            <select class="form-select" id="dcmYear"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes <span style="font-weight:400;text-transform:none;font-size:0.8rem;">(optional)</span></label>
+            <textarea class="form-textarea" id="dcmNotes" placeholder="Any additional details…" style="min-height:80px;"></textarea>
+          </div>
+          <div id="scheduleError" style="display:none;padding:0.75rem 1rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#7f1d1d;font-size:0.875rem;margin-bottom:1rem;"></div>
+          <button class="btn btn-primary" id="scheduleBtn" onclick="handleSchedule()">Submit DCM Intent →</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Your DCMs</div></div>
+          <div class="card-body" id="myDCMStatus"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Requirements</div></div>
+          <div class="card-body" style="font-size:0.875rem;color:var(--muted);line-height:1.75;">
+            <p style="margin-bottom:0.75rem;">📅 <strong style="color:var(--text);">At least 4 DCMs</strong> required per year.</p>
+            <p style="margin-bottom:0.75rem;">☀️ <strong style="color:var(--text);">DCM 1 must be held over summer</strong> with club presidents present.</p>
+            <p style="margin-bottom:0.75rem;">📄 <strong style="color:var(--text);">Report due 1 week</strong> after each DCM.</p>
+            <p>✅ <strong style="color:var(--text);">Scheduling an intent</strong> sends it to the governor and webmaster for the record.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT TAB -->
+  <div id="panel-report" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Submit DCM Report</div></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Which DCM is this for?</label>
+            <select class="form-select" id="reportDCMSel" onchange="updateReportInfo()">
+              <option value="">Select DCM…</option>
+            </select>
+          </div>
+          <div id="reportDCMInfo" style="display:none;padding:0.875rem 1rem;background:rgba(30,80,160,0.06);border:1px solid rgba(30,80,160,0.15);border-radius:var(--radius-sm);font-size:0.875rem;margin-bottom:1.25rem;"></div>
+          <div class="form-group">
+            <label class="form-label">Academic Year</label>
+            <select class="form-select" id="reportYear"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">DCM Report PDF</label>
+            <div class="upload-zone" id="reportUploadZone">
+              <input type="file" id="reportFileInput" accept=".pdf">
+              <div class="upload-icon">📄</div>
+              <div class="upload-text">Click to choose or drag & drop your PDF</div>
+              <div class="upload-hint">Maximum 50MB · PDF only</div>
+              <div class="upload-selected" id="reportUploadSelected">
+                <span>✓</span><span id="reportSelectedName"></span>
+                <span id="reportSelectedSize" style="color:var(--muted);font-size:0.8rem;margin-left:auto;"></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes <span style="font-weight:400;text-transform:none;font-size:0.8rem;">(optional)</span></label>
+            <textarea class="form-textarea" id="reportNotes" placeholder="Any notes about the DCM…" style="min-height:80px;"></textarea>
+          </div>
+          <div id="reportError" style="display:none;padding:0.75rem 1rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#7f1d1d;font-size:0.875rem;margin-bottom:1rem;"></div>
+          <button class="btn btn-primary" id="reportBtn" onclick="handleReport()">Submit DCM Report →</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="example-card">
+          <div class="example-icon">📋</div>
+          <div><h3>Report Example</h3><p>View the official DCM report template before submitting.</p>
+            <a href="https://google.com" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">View Example →</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Report goes to</div></div>
+          <div class="card-body" style="font-size:0.875rem;color:var(--muted);line-height:1.75;">
+            <p>📬 Governor and Webmaster receive your DCM report directly.</p>
+            <p style="margin-top:0.75rem;">⏱ <strong style="color:var(--text);">Reports are due 1 week</strong> after your DCM date.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHIVE TAB -->
+  <div id="panel-archive" style="display:none;">
+    <div id="archiveContent"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- Success overlays -->
+<div id="scheduleSuccess" style="display:none;position:fixed;inset:0;background:rgba(10,22,40,0.7);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--white);border-radius:var(--radius);padding:3rem;max-width:440px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;">📅</div>
+    <h2 style="font-family:var(--ff-display);font-size:1.5rem;color:var(--navy);margin-bottom:0.5rem;">DCM Scheduled!</h2>
+    <p style="font-size:0.9375rem;color:var(--muted);line-height:1.7;margin-bottom:1.75rem;">Your DCM intent has been sent to the governor and webmaster for the record.</p>
+    <button class="btn btn-primary" onclick="document.getElementById('scheduleSuccess').style.display='none';init();">Done</button>
+  </div>
+</div>
+<div id="reportSuccess" style="display:none;position:fixed;inset:0;background:rgba(10,22,40,0.7);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--white);border-radius:var(--radius);padding:3rem;max-width:440px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+    <h2 style="font-family:var(--ff-display);font-size:1.5rem;color:var(--navy);margin-bottom:0.5rem;">Report Submitted!</h2>
+    <p style="font-size:0.9375rem;color:var(--muted);line-height:1.7;margin-bottom:1.75rem;">Your DCM report has been sent to the governor and webmaster.</p>
+    <button class="btn btn-primary" onclick="document.getElementById('reportSuccess').style.display='none';init();">Done</button>
+  </div>
+</div>
+
+<!-- DCM Detail modal -->
+<div class="modal-overlay" id="dcmModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="dcmModalTitle">DCM Details</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="dcmModalBody"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal()">Close</button></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+
+// Non-LTGs go straight to archive
+if (!AUTH.isLTG()) {
+  document.getElementById('tab-schedule').style.display='none';
+  document.getElementById('tab-report').style.display='none';
+  setTimeout(function(){ showTab('archive'); }, 0);
+} else {
+  document.getElementById('pageDesc').textContent = `Division ${user.division} · Schedule DCMs and submit reports.`;
+}
+
+API.getCurrentYears().forEach(y => {
+  ['dcmYear','reportYear'].forEach(id => {
+    const o = document.createElement('option'); o.value=y; o.textContent=y;
+    document.getElementById(id).appendChild(o);
+  });
+});
+document.getElementById('dcmYear').value = API.getCurrentYears().at(-1);
+document.getElementById('reportYear').value = API.getCurrentYears().at(-1);
+
+function toggleFormatField() {
+  const fmt = document.getElementById('dcmFormat').value;
+  document.getElementById('addressGroup').style.display = fmt==='in-person'?'':'none';
+  document.getElementById('linkGroup').style.display = fmt==='online'?'':'none';
+}
+
+// File upload for report
+let reportFile = null, reportFileData = null;
+const rZone = document.getElementById('reportUploadZone');
+const rInput = document.getElementById('reportFileInput');
+rZone.addEventListener('dragover', e => { e.preventDefault(); rZone.classList.add('dragover'); });
+rZone.addEventListener('dragleave', () => rZone.classList.remove('dragover'));
+rZone.addEventListener('drop', e => { e.preventDefault(); rZone.classList.remove('dragover'); if(e.dataTransfer.files[0]) handleReportFile(e.dataTransfer.files[0]); });
+rInput.addEventListener('change', () => { if(rInput.files[0]) handleReportFile(rInput.files[0]); });
+
+function handleReportFile(file) {
+  if (!file.type.includes('pdf')) { showReportError('Please upload a PDF file only.'); return; }
+  if (file.size > 50*1024*1024) { showReportError('File must be under 50MB.'); return; }
+  reportFile = file;
+  const reader = new FileReader();
+  reader.onload = e => { reportFileData = e.target.result; };
+  reader.readAsDataURL(file);
+  document.getElementById('reportSelectedName').textContent = file.name;
+  document.getElementById('reportSelectedSize').textContent = file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
+  document.getElementById('reportUploadSelected').classList.add('show');
+}
+
+let allMyDCMs = [];
+
+async function init() {
+  if (!AUTH.isLTG()) return;
+  try {
+    allMyDCMs = await API.getDCMsByDivision(user.division);
+    renderMyStatus();
+    populateReportSelect();
+  } catch(e) {
+    document.getElementById('myDCMStatus').innerHTML = `<p style="font-size:0.875rem;color:var(--muted);">Failed to load.</p>`;
+  }
+}
+
+function renderMyStatus() {
+  const slots = [1,2,3,4,5,6];
+  const scheduled = allMyDCMs.filter(d=>d.status!=='unscheduled');
+  document.getElementById('myDCMStatus').innerHTML = `
+    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.875rem;">${scheduled.length} of 4+ scheduled</p>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+      ${[1,2,3,4].map(n => {
+        const d = allMyDCMs.find(x=>x.dcmNumber===n);
+        if (!d) return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;background:var(--cream);border-radius:var(--radius-sm);border:1.5px dashed var(--border);">
+          <div style="width:28px;height:28px;background:rgba(0,0,0,0.06);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--muted);font-weight:700;">${n}</div>
+          <span style="font-size:0.8rem;color:var(--muted);">DCM ${n} - Not scheduled</span>
+        </div>`;
+        const isRep = d.reportStatus==='submitted';
+        return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;background:${isRep?'rgba(34,197,94,0.06)':'rgba(30,80,160,0.06)'};border-radius:var(--radius-sm);border:1.5px solid ${isRep?'rgba(34,197,94,0.3)':'rgba(30,80,160,0.25)'};">
+          <div style="width:28px;height:28px;background:${isRep?'rgba(34,197,94,0.15)':'rgba(30,80,160,0.15)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:${isRep?'#14532d':'var(--blue)'};font-weight:700;">${n}</div>
+          <div style="flex:1;">
+            <div style="font-size:0.8125rem;font-weight:600;color:var(--text);">DCM ${n}</div>
+            <div style="font-size:0.75rem;color:var(--muted);">${d.date} · ${d.format==='online'?'Online':'In Person'}</div>
+          </div>
+          <span style="font-size:0.7rem;font-weight:600;color:${isRep?'#14532d':'var(--blue)'};">${isRep?'✓ Reported':'Scheduled'}</span>
+        </div>`;
+      }).join('')}
+      ${allMyDCMs.filter(d=>d.dcmNumber>4).map(d => {
+        const isRep = d.reportStatus==='submitted';
+        return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;background:${isRep?'rgba(34,197,94,0.06)':'rgba(30,80,160,0.06)'};border-radius:var(--radius-sm);border:1.5px solid ${isRep?'rgba(34,197,94,0.3)':'rgba(30,80,160,0.25)'};">
+          <div style="width:28px;height:28px;background:rgba(30,80,160,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--blue);font-weight:700;">${d.dcmNumber}</div>
+          <div style="flex:1;"><div style="font-size:0.8125rem;font-weight:600;">DCM ${d.dcmNumber}</div><div style="font-size:0.75rem;color:var(--muted);">${d.date}</div></div>
+          <span style="font-size:0.7rem;font-weight:600;color:${isRep?'#14532d':'var(--blue)'};">${isRep?'✓ Reported':'Scheduled'}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function populateReportSelect() {
+  const sel = document.getElementById('reportDCMSel');
+  sel.innerHTML = '<option value="">Select DCM…</option>';
+  allMyDCMs.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.id;
+    o.textContent = `DCM ${d.dcmNumber} - ${d.date}`;
+    sel.appendChild(o);
+  });
+}
+
+function updateReportInfo() {
+  const id = document.getElementById('reportDCMSel').value;
+  const info = document.getElementById('reportDCMInfo');
+  if (!id) { info.style.display='none'; return; }
+  const d = allMyDCMs.find(x=>x.id===id);
+  if (!d) return;
+  info.style.display = '';
+  info.innerHTML = `<strong>DCM ${d.dcmNumber}</strong> · ${d.date} · ${d.format==='online'?`Online: <a href="${d.link}" target="_blank" style="color:var(--blue);">Join Link</a>`:d.address}`;
+}
+
+async function handleSchedule() {
+  const num    = document.getElementById('dcmNum').value;
+  const date   = document.getElementById('dcmDate').value;
+  const time   = document.getElementById('dcmTime').value;
+  const format = document.getElementById('dcmFormat').value;
+  const year   = document.getElementById('dcmYear').value;
+  const notes  = document.getElementById('dcmNotes').value.trim();
+  const addr   = document.getElementById('dcmAddress').value.trim();
+  const link   = document.getElementById('dcmLink').value.trim();
+  if (!num||!date||!time||!format||!year) { showSchedError('Please fill in all required fields.'); return; }
+  if (format==='in-person' && !addr) { showSchedError('Please provide the meeting address.'); return; }
+  if (format==='online' && !link) { showSchedError('Please provide the meeting link.'); return; }
+  const btn = document.getElementById('scheduleBtn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting…'; btn.disabled = true;
+  try {
+    await API.createDCM({
+      division:  user.division,
+      ltgEmail:  user.email,
+      ltgName:   user.name,
+      dcmNumber: parseInt(num),
+      date, time, format,
+      address:   addr || null,
+      link:      link || null,
+      year, notes: notes || null,
+      status:    'scheduled',
+      reportStatus: 'pending',
+    });
+    await LOG.record('DCM_SCHEDULED', `Div ${user.division} - DCM #${num} - ${date}`);
+    document.getElementById('scheduleSuccess').style.display = 'flex';
+    btn.textContent = 'Submit DCM Intent →'; btn.disabled = false;
+  } catch(e) {
+    showSchedError('Failed: ' + e.message);
+    btn.textContent = 'Submit DCM Intent →'; btn.disabled = false;
+  }
+}
+
+async function handleReport() {
+  const dcmId = document.getElementById('reportDCMSel').value;
+  const year  = document.getElementById('reportYear').value;
+  const notes = document.getElementById('reportNotes').value.trim();
+  if (!dcmId) { showReportError('Please select a DCM.'); return; }
+  if (!reportFile||!reportFileData) { showReportError('Please select a PDF report.'); return; }
+  const btn = document.getElementById('reportBtn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting…'; btn.disabled = true;
+  try {
+    const d = allMyDCMs.find(x=>x.id===dcmId);
+    await API.updateDCM(dcmId, {
+      reportStatus: 'submitted',
+      reportFileName: reportFile.name,
+      reportFileData: reportFileData,
+      reportFileSize: reportFile.size,
+      reportNotes: notes || null,
+      reportSubmittedAt: new Date().toISOString(),
+      year,
+    });
+    await LOG.record('DCM_REPORT_SUBMITTED', `Div ${user.division} - DCM #${d?.dcmNumber||''} - ${d?.date||''}`);
+    document.getElementById('reportSuccess').style.display = 'flex';
+    reportFile=null; reportFileData=null;
+    document.getElementById('reportUploadSelected').classList.remove('show');
+    btn.textContent = 'Submit DCM Report →'; btn.disabled = false;
+  } catch(e) {
+    showReportError('Failed: ' + e.message);
+    btn.textContent = 'Submit DCM Report →'; btn.disabled = false;
+  }
+}
+
+// ── ARCHIVE ───────────────────────────────────────────────────────────
+let archiveLoaded = false;
+async function initArchive() {
+  if (archiveLoaded) return;
+  const c = document.getElementById('archiveContent');
+  try {
+    const all = await API.getDCMs();
+    archiveLoaded = true;
+    if (AUTH.isLTG()) {
+      renderLTGArchive(all.filter(d=>d.division===user.division));
+    } else {
+      renderAdminArchive(all);
+    }
+  } catch(e) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function renderLTGArchive(dcms) {
+  const c = document.getElementById('archiveContent');
+  const slots = Math.max(4, dcms.length + 1);
+  c.innerHTML = `<div class="dcm-grid">
+    ${Array.from({length:slots}, (_,i)=>i+1).map(n => {
+      const d = dcms.find(x=>x.dcmNumber===n);
+      if (!d) return `<div class="dcm-box state-grey">
+        <div class="dcm-box-num">DCM ${n}</div>
+        <div style="font-size:0.75rem;color:var(--muted);">Not scheduled</div>
+        ${n===1?`<div style="font-size:0.7rem;color:var(--gold);margin-top:0.25rem;">☀ Summer required</div>`:''}
+      </div>`;
+      const stateClass = d.reportStatus==='submitted' ? 'state-green clickable' : 'state-blue clickable';
+      return `<div class="dcm-box ${stateClass}" onclick="openDCMDetail('${d.id}',${JSON.stringify(d).replace(/"/g,'&quot;')})">
+        <div class="dcm-box-num">DCM ${n}</div>
+        <div class="dcm-box-date">${d.date}</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${d.format==='online'?'Online':'In Person'}</div>
+        <div class="dcm-box-status" style="color:${d.reportStatus==='submitted'?'#14532d':'var(--blue)'};">
+          ${d.reportStatus==='submitted'?'✓ Report Filed':'● Scheduled'}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderAdminArchive(allDCMs) {
+  const c = document.getElementById('archiveContent');
+  const divs = [1,2,3,4,5,6,7,8,9,10];
+  c.innerHTML = divs.map(div => {
+    const divDCMs = allDCMs.filter(d=>d.division===div).sort((a,b)=>a.dcmNumber-b.dcmNumber);
+    const reported = divDCMs.filter(d=>d.reportStatus==='submitted').length;
+    return `<div class="div-card" id="divdcm-${div}">
+      <div class="div-card-hd" onclick="this.closest('.div-card').classList.toggle('open')">
+        <div class="div-num">${div}</div>
+        <div><div class="div-name">Division ${div}</div></div>
+        <div class="div-count">${divDCMs.filter(d=>d.status!=='unscheduled').length} scheduled · ${reported} reported</div>
+        <div class="div-chev">▼</div>
+      </div>
+      <div class="div-body">
+        <div class="dcm-grid">
+          ${[1,2,3,4].map(n => {
+            const d = divDCMs.find(x=>x.dcmNumber===n);
+            if (!d) return `<div class="dcm-box state-grey"><div class="dcm-box-num">DCM ${n}</div><div style="font-size:0.75rem;color:var(--muted);">Not scheduled</div></div>`;
+            const sc = d.reportStatus==='submitted'?'state-green clickable':'state-blue clickable';
+            return `<div class="dcm-box ${sc}" onclick="openDCMDetail('${d.id}',${JSON.stringify(d).replace(/"/g,'&quot;')})">
+              <div class="dcm-box-num">DCM ${n}</div>
+              <div class="dcm-box-date">${d.date}</div>
+              <div style="font-size:0.75rem;color:var(--muted);">${d.format==='online'?'Online':'In Person'}</div>
+              <div class="dcm-box-status" style="color:${d.reportStatus==='submitted'?'#14532d':'var(--blue)'};">${d.reportStatus==='submitted'?'✓ Reported':'Scheduled'}</div>
+            </div>`;
+          }).join('')}
+          ${divDCMs.filter(d=>d.dcmNumber>4).map(d => {
+            const sc = d.reportStatus==='submitted'?'state-green clickable':'state-blue clickable';
+            return `<div class="dcm-box ${sc}" onclick="openDCMDetail('${d.id}',${JSON.stringify(d).replace(/"/g,'&quot;')})">
+              <div class="dcm-box-num">DCM ${d.dcmNumber}</div>
+              <div class="dcm-box-date">${d.date}</div>
+              <div class="dcm-box-status" style="color:${d.reportStatus==='submitted'?'#14532d':'var(--blue)'};">${d.reportStatus==='submitted'?'✓ Reported':'Scheduled'}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openDCMDetail(id, data) {
+  const d = typeof data === 'string' ? JSON.parse(data.replace(/&quot;/g,'"')) : data;
+  document.getElementById('dcmModalTitle').textContent = `DCM ${d.dcmNumber} - Division ${d.division}`;
+  document.getElementById('dcmModalBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-bottom:1.25rem;">
+      <div><div class="form-label">Date</div><div style="font-weight:600;">${d.date}</div></div>
+      <div><div class="form-label">Time</div><div style="font-weight:600;">${d.time||'-'}</div></div>
+      <div><div class="form-label">Format</div><div style="font-weight:600;">${d.format==='online'?'Online':'In Person'}</div></div>
+      <div><div class="form-label">Year</div><div style="font-weight:600;">${d.year||'-'}</div></div>
+    </div>
+    ${d.address?`<div style="margin-bottom:1rem;"><div class="form-label">Address</div><div>${d.address}</div></div>`:''}
+    ${d.link?`<div style="margin-bottom:1rem;"><div class="form-label">Meeting Link</div><a href="${d.link}" target="_blank" class="btn btn-outline btn-sm">Join Meeting →</a></div>`:''}
+    ${d.notes?`<div style="margin-bottom:1rem;"><div class="form-label">Notes</div><div style="background:var(--cream);border-radius:var(--radius-sm);padding:0.75rem;font-size:0.875rem;">${d.notes}</div></div>`:''}
+    <div style="border-top:1px solid var(--border-lt);padding-top:1.25rem;">
+      <div class="form-label">Report Status</div>
+      ${d.reportStatus==='submitted'
+        ?`<span class="badge badge-reported">✓ Report Filed</span>
+          ${d.reportFileName?`<div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:var(--cream);border-radius:var(--radius-sm);">
+            <span>📄</span>
+            <div><div style="font-size:0.875rem;font-weight:600;">${d.reportFileName}</div></div>
+            <a href="https://raw.githubusercontent.com/MO-ARKKeyClubWebmaster/moarkkeyclub-net/main/dcm-reports/${d.id}.pdf" target="_blank" class="btn btn-navy btn-sm" style="margin-left:auto;">View PDF</a>
+          </div>`:''}
+          ${d.reportNotes?`<div style="margin-top:0.75rem;font-size:0.875rem;color:var(--muted);">${d.reportNotes}</div>`:''}`
+        :`<span class="badge badge-pending-editor">Pending Report</span>`}
+    </div>`;
+  document.getElementById('dcmModal').classList.add('open');
+}
+
+function closeModal(){document.getElementById('dcmModal').classList.remove('open');}
+document.getElementById('dcmModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function showTab(t) {
+  ['schedule','report','archive'].forEach(p => {
+    document.getElementById(`panel-${p}`).style.display = p===t?'':'none';
+    document.getElementById(`tab-${p}`)?.classList.toggle('active', p===t);
+  });
+  if (t==='archive') initArchive();
+}
+
+function showSchedError(m){const e=document.getElementById('scheduleError');e.textContent=m;e.style.display='block';}
+function showReportError(m){const e=document.getElementById('reportError');e.textContent=m;e.style.display='block';}
+
+init();
+</script>
+</body>
+</html>

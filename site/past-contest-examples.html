@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Past Contest Examples | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+
+  /* PAGE HEADER */
+  .page-header{padding-top:68px;background:var(--navy);position:relative;overflow:hidden;}
+  .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,150,42,0.12) 0%,transparent 60%);}
+  .page-header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);}
+  .page-header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 1.5rem 3.5rem;}
+  .page-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+  .page-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.25rem);color:var(--white);line-height:1.1;margin-bottom:1rem;}
+  .page-title em{font-style:italic;color:var(--gold-lt);}
+  .page-desc{font-size:1.0625rem;color:rgba(255,255,255,0.6);line-height:1.75;max-width:60ch;}
+
+  /* BREADCRUMB */
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);transition:color var(--transition);}
+  .breadcrumb a:hover{color:var(--navy);}
+  .breadcrumb-sep{opacity:0.4;}
+
+  /* SECTION */
+  .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-alt{background:var(--cream);}
+  .section-alt-inner{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;color:var(--gold);margin-bottom:0.75rem;}
+  .section-title{font-family:var(--ff-display);font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1;color:var(--navy);margin-bottom:0.5rem;}
+  .section-title em{font-style:italic;color:var(--blue);}
+  .section-desc{font-size:1rem;color:var(--muted);line-height:1.7;max-width:65ch;margin-top:0.5rem;margin-bottom:2.5rem;}
+
+  /* INTRO CARD */
+  .intro-card{background:var(--navy);color:var(--white);border-radius:var(--radius);padding:2.5rem;display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;margin-bottom:3rem;position:relative;overflow:hidden;}
+  .intro-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 50%,rgba(200,150,42,0.18) 0%,transparent 60%);pointer-events:none;}
+  .intro-card-content{position:relative;z-index:1;}
+  .intro-card h3{font-family:var(--ff-display);font-size:1.5rem;color:var(--white);margin-bottom:0.5rem;}
+  .intro-card h3 em{font-style:italic;color:var(--gold-lt);}
+  .intro-card p{font-size:0.9375rem;color:rgba(255,255,255,0.7);line-height:1.7;max-width:55ch;}
+  .intro-card-icon{position:relative;z-index:1;width:72px;height:72px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:18px;display:flex;align-items:center;justify-content:center;}
+  .intro-card-icon svg{width:36px;height:36px;stroke:var(--gold-lt);}
+
+  /* VIDEO GRID */
+  .video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1.75rem;}
+  .video-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow var(--transition),transform var(--transition),border-color var(--transition);display:flex;flex-direction:column;}
+  .video-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-3px);border-color:rgba(200,150,42,0.4);}
+  .video-frame{position:relative;width:100%;padding-bottom:56.25%;background:var(--navy);}
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .video-body{padding:1.5rem 1.75rem 1.75rem;display:flex;flex-direction:column;gap:0.5rem;flex:1;}
+  .video-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(26,58,107,0.08);color:var(--blue);border-radius:100px;padding:0.25rem 0.75rem;font-size:0.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;align-self:flex-start;}
+  .video-card h4{font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);line-height:1.2;}
+  .video-card p{font-size:0.875rem;color:var(--muted);line-height:1.6;flex:1;}
+  .video-link{display:inline-flex;align-items:center;gap:6px;font-size:0.8125rem;color:var(--blue);font-weight:600;transition:gap var(--transition);align-self:flex-start;}
+  .video-link:hover{gap:10px;color:var(--navy);}
+
+  /* POSTER GRID */
+  .poster-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+  .poster-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;}
+  .poster-frame{position:relative;width:100%;padding-bottom:62%;background:var(--navy);}
+  .poster-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .poster-body{padding:1.5rem 1.75rem 1.75rem;}
+  .poster-body h4{font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);margin-bottom:0.375rem;}
+  .poster-body p{font-size:0.875rem;color:var(--muted);line-height:1.6;margin-bottom:0.75rem;}
+
+  /* YIR CARDS */
+  .yir-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+  .yir-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;display:flex;flex-direction:column;gap:1rem;transition:box-shadow var(--transition),transform var(--transition),border-color var(--transition);}
+  .yir-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-3px);border-color:rgba(200,150,42,0.4);}
+  .yir-head{display:flex;align-items:center;gap:1rem;}
+  .yir-icon{width:54px;height:54px;background:var(--navy);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .yir-icon svg{width:26px;height:26px;stroke:var(--gold-lt);}
+  .yir-head h4{font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);line-height:1.2;}
+  .yir-head .yir-sub{font-size:0.8125rem;color:var(--muted);margin-top:0.125rem;}
+  .yir-card p{font-size:0.875rem;color:var(--muted);line-height:1.65;flex:1;}
+  .yir-actions{display:flex;gap:0.75rem;flex-wrap:wrap;}
+  .yir-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.875rem;transition:all var(--transition);}
+  .yir-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 4px 12px rgba(200,150,42,0.4);}
+  .yir-btn-outline{background:transparent;border:2px solid var(--blue);color:var(--blue);}
+  .yir-btn-outline:hover{background:var(--blue);color:var(--white);box-shadow:none;}
+
+  /* BACK CTA */
+  .back-cta{padding:3.5rem 1.5rem;background:var(--navy);text-align:center;color:var(--white);position:relative;overflow:hidden;}
+  .back-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(200,150,42,0.12) 0%,transparent 65%);}
+  .back-cta-inner{position:relative;z-index:1;max-width:680px;margin:0 auto;}
+  .back-cta h3{font-family:var(--ff-display);font-size:1.5rem;color:var(--white);margin-bottom:0.5rem;}
+  .back-cta h3 em{font-style:italic;color:var(--gold-lt);}
+  .back-cta p{font-size:0.9375rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:1.5rem;}
+  .back-cta a{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.5rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.9375rem;transition:all var(--transition);}
+  .back-cta a:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,150,42,0.4);}
+
+  /* FOOTER */
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1200px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+
+  @media(max-width:1024px){
+    .poster-grid,.yir-grid{grid-template-columns:1fr;}
+    .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
+    .intro-card{grid-template-columns:1fr;text-align:left;}
+  }
+  @media(max-width:768px){
+    .nav-links{display:none;} .nav-toggle{display:flex;}
+    .video-grid{grid-template-columns:1fr;}
+    .footer-top{grid-template-columns:1fr;}
+    .intro-card{padding:1.75rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link active">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="resources.html#forms">DLC Forms</a>
+        </div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-grid"></div>
+  <div class="page-header-inner">
+    <div class="page-eyebrow">Inspiration Gallery</div>
+    <h1 class="page-title">Past Contest <em>Examples</em></h1>
+    <p class="page-desc">A look at standout entries from previous District Leadership Conferences — videos, posters, and Year in Review submissions to inspire your own contest entry.</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="resources.html">Resources</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Past Contest Examples</span>
+  </div>
+</div>
+
+<!-- INTRO + VIDEO CONTEST -->
+<div class="section">
+  <div class="intro-card fade-in">
+    <div class="intro-card-content">
+      <h3>Use these as <em>inspiration</em>, not a template</h3>
+      <p>Every example below was submitted by a MO-ARK club at a past DLC. Watch, read, and study them to spark ideas — then make your own entry unmistakably yours.</p>
+    </div>
+    <div class="intro-card-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+    </div>
+  </div>
+
+  <div class="section-label fade-in">Contest Category</div>
+  <h2 class="section-title fade-in">Video <em>Contest</em></h2>
+  <p class="section-desc fade-in">A montage-style highlight reel of your club's year in service. Strong submissions tell a clear story, mix candid moments with project footage, and keep the energy moving.</p>
+
+  <div class="video-grid">
+    <div class="video-card fade-in">
+      <div class="video-frame">
+        <iframe src="https://www.youtube.com/embed/iaBKQQ-nlLg" title="Video Contest Example 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-body">
+        <span class="video-tag">Example 1</span>
+        <h4>Video Contest Entry — Example 1</h4>
+        <p>A previous DLC video contest submission. Note the pacing, music, and how service moments are framed.</p>
+        <a href="https://www.youtube.com/watch?v=iaBKQQ-nlLg" target="_blank" rel="noopener" class="video-link">Watch on YouTube →</a>
+      </div>
+    </div>
+    <div class="video-card fade-in">
+      <div class="video-frame">
+        <iframe src="https://www.youtube.com/embed/jcvCfyZvFrU" title="Video Contest Example 2" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-body">
+        <span class="video-tag">Example 2</span>
+        <h4>Video Contest Entry — Example 2</h4>
+        <p>Another past entry showcasing a different storytelling approach and editing style.</p>
+        <a href="https://www.youtube.com/watch?v=jcvCfyZvFrU" target="_blank" rel="noopener" class="video-link">Watch on YouTube →</a>
+      </div>
+    </div>
+    <div class="video-card fade-in">
+      <div class="video-frame">
+        <iframe src="https://www.youtube.com/embed/1dN3P6DtblA" title="Video Contest Example 3" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="video-body">
+        <span class="video-tag">Example 3</span>
+        <h4>Video Contest Entry — Example 3</h4>
+        <p>A third submission to round out the inspiration set — a great comparison of tone, length, and pacing.</p>
+        <a href="https://www.youtube.com/watch?v=1dN3P6DtblA" target="_blank" rel="noopener" class="video-link">Watch on YouTube →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POSTER CONTESTS -->
+<div class="section-alt">
+  <div class="section-alt-inner">
+    <div class="section-label fade-in">Contest Category</div>
+    <h2 class="section-title fade-in">Poster <em>Contests</em></h2>
+    <p class="section-desc fade-in">Both digital and non-digital posters are judged on creativity, clarity, and how well they capture the Key Club spirit. Click through the slideshows below to view past entries in full.</p>
+
+    <div class="poster-grid">
+      <div class="poster-card fade-in">
+        <div class="poster-frame">
+          <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vSpJbRKEpMKj35h-ykSwekSbHegXxD3PXH1-qRRIkiUp__1yvVxo9XhoHpDQe65-h81ydMnsmoWsDlc/embed?start=true&loop=true&delayms=5000" title="Digital Poster Examples" allowfullscreen></iframe>
+        </div>
+        <div class="poster-body">
+          <h4>Digital Poster Examples</h4>
+          <p>Past submissions for the Digital Poster Contest, autoplaying as a slideshow.</p>
+          <a href="https://docs.google.com/presentation/d/e/2PACX-1vSpJbRKEpMKj35h-ykSwekSbHegXxD3PXH1-qRRIkiUp__1yvVxo9XhoHpDQe65-h81ydMnsmoWsDlc/pub?start=true&loop=true&delayms=5000&slide=id.g3e3122e98fe_0_42" target="_blank" rel="noopener" class="video-link">Open in new tab →</a>
+        </div>
+      </div>
+      <div class="poster-card fade-in">
+        <div class="poster-frame">
+          <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQ2Y7gKYA5FC1txGn_mePKorJYFRsWX_Zda1tW9wf9HxJF9ffkUtNYBFJMLCNz2J5DgyTadbqNG1OeJ/embed?start=true&loop=true&delayms=3000" title="Non-Digital Poster Examples" allowfullscreen></iframe>
+        </div>
+        <div class="poster-body">
+          <h4>Non-Digital Poster Examples</h4>
+          <p>Photographed entries from the Non-Digital Poster Contest, autoplaying as a slideshow.</p>
+          <a href="https://docs.google.com/presentation/d/e/2PACX-1vQ2Y7gKYA5FC1txGn_mePKorJYFRsWX_Zda1tW9wf9HxJF9ffkUtNYBFJMLCNz2J5DgyTadbqNG1OeJ/pub?start=true&loop=true&delayms=3000&slide=id.p11" target="_blank" rel="noopener" class="video-link">Open in new tab →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- YEAR IN REVIEW -->
+<div class="section">
+  <div class="section-label fade-in">Contest Category</div>
+  <h2 class="section-title fade-in">Year in Review <em>Examples</em></h2>
+  <p class="section-desc fade-in">A polished retrospective of your club's year — service projects, member growth, fundraising totals, and signature events. The strongest YIRs combine data, photography, and design.</p>
+
+  <div class="yir-grid">
+    <div class="yir-card fade-in">
+      <div class="yir-head">
+        <div class="yir-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+        </div>
+        <div>
+          <h4>Year in Review — Example 1</h4>
+          <div class="yir-sub">PDF · Past DLC submission</div>
+        </div>
+      </div>
+      <p>A full-length Year in Review PDF from a previous award-winning entry. Study the structure, the way data is visualized, and how photography is paired with copy.</p>
+      <div class="yir-actions">
+        <a href="https://keyclubint-my.sharepoint.com/personal/mellis_keyclub_org/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmellis%5Fkeyclub%5Forg%2FDocuments%2FKey%20Club%20I%2DBoard%2FExecutive%2FICON26%2FSpecial%20Events%2F%2DFun%2D%20Contests%2FDigital%20Year%2Din%2DReview%2FYear%2Din%2DReview%2FYIR%20ID%204%2Epdf&parent=%2Fpersonal%2Fmellis%5Fkeyclub%5Forg%2FDocuments%2FKey%20Club%20I%2DBoard%2FExecutive%2FICON26%2FSpecial%20Events%2F%2DFun%2D%20Contests%2FDigital%20Year%2Din%2DReview%2FYear%2Din%2DReview&ga=1" target="_blank" rel="noopener" class="yir-btn">
+          Open Example 1
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="yir-card fade-in">
+      <div class="yir-head">
+        <div class="yir-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+        </div>
+        <div>
+          <h4>Year in Review — Example 2</h4>
+          <div class="yir-sub">PDF · Past DLC submission</div>
+        </div>
+      </div>
+      <p>A second example with a different layout philosophy. Compare the two side-by-side to see how varied an effective YIR can look.</p>
+      <div class="yir-actions">
+        <a href="https://keyclubint-my.sharepoint.com/personal/mellis_keyclub_org/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fmellis%5Fkeyclub%5Forg%2FDocuments%2FKey%20Club%20I%2DBoard%2FExecutive%2FICON26%2FSpecial%20Events%2F%2DFun%2D%20Contests%2FDigital%20Year%2Din%2DReview%2FYear%2Din%2DReview%2FYIR%20ID%2021%2Epdf&parent=%2Fpersonal%2Fmellis%5Fkeyclub%5Forg%2FDocuments%2FKey%20Club%20I%2DBoard%2FExecutive%2FICON26%2FSpecial%20Events%2F%2DFun%2D%20Contests%2FDigital%20Year%2Din%2DReview%2FYear%2Din%2DReview&ga=1" target="_blank" rel="noopener" class="yir-btn">
+          Open Example 2
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BACK CTA -->
+<div class="back-cta">
+  <div class="back-cta-inner">
+    <h3>Ready to submit your <em>own</em> entry?</h3>
+    <p>Head back to the Resources page for the full list of DLC contest forms and submission links.</p>
+    <a href="resources.html#forms">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to Resources
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

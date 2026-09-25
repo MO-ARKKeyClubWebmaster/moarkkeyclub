@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>My Profile | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav"></nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My <em>Profile</em></h1>
+      <p class="page-desc">Your officer profile, service record, and photo.</p>
+    </div>
+    <a href="dashboard.html" class="btn btn-outline">← Dashboard</a>
+  </div>
+
+  <div class="profile-hero">
+    <div class="profile-avatar" id="pfAvatar"></div>
+    <div class="profile-id">
+      <div class="profile-name" id="pfName">-</div>
+      <div class="profile-role-line" id="pfRole"></div>
+      <span class="role-chip" id="pfChip"></span>
+    </div>
+  </div>
+
+  <div class="section-head"><div class="section-title">Service Record <span class="section-sub" id="pfYear"></span></div></div>
+  <div class="profile-stats" id="pfStats">
+    <div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading your record…</div></div>
+  </div>
+
+  <div class="section-head"><div class="section-title">Recent Activity</div></div>
+  <div class="card"><div class="card-body" style="padding:0;" id="pfActivity"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div></div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const WORKER = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+const user = AUTH.requireAuth();
+let me = OFFICERS.forSession(user);
+
+function paintIdentity() {
+  me = OFFICERS.forSession(user);
+  document.getElementById('pfAvatar').innerHTML = OFFICERS.avatarInner(me);
+  document.getElementById('pfName').textContent = me.name;
+  const region = me.region ? ` · ${me.region}` : (AUTH.isLTG() ? '' : '');
+  document.getElementById('pfRole').innerHTML = AUTH.isLTG()
+    ? `<strong>Lieutenant Governor</strong> · Division ${me.division}${region}`
+    : `<strong>${me.title}</strong>`;
+  const chip = document.getElementById('pfChip');
+  chip.textContent = (user.role||'').toUpperCase();
+  chip.className = `role-chip on-light role-${user.role}`;
+}
+paintIdentity();
+document.getElementById('pfYear').textContent = '· ' + API.getCurrentYears().at(-1);
+
+async function load() {
+  try {
+    const [subs, dcms, mrfs, comm] = await Promise.allSettled([API.getAll(), API.getDCMs(), API.getMRFs(), API.getCommitteeReports()]);
+    const allSubs=subs.status==='fulfilled'?subs.value:[], allDCMs=dcms.status==='fulfilled'?dcms.value:[],
+          allMRFs=mrfs.status==='fulfilled'?mrfs.value:[], allComm=comm.status==='fulfilled'?comm.value:[];
+    const s = PORTAL.statsFor(me, { subs:allSubs, dcms:allDCMs, mrfs:allMRFs, committees:allComm });
+
+    const tiles = AUTH.isLTG() ? [
+      ['Newsletters', s.newslettersApproved, 'approved'],
+      ['DC Reports', s.dcReports, 'approved'],
+      ['DCMs', s.dcmsReported, 'reported'],
+      ['MRFs', s.mrfs, 'filed'],
+      ['Committee', s.committeeReports, 'reports'],
+    ] : [
+      ['Newsletters', allSubs.filter(x=>x.status==='approved').length, 'approved district-wide'],
+      ['DCMs', allDCMs.filter(d=>d.reportStatus==='submitted').length, 'reported'],
+      ['MRFs', allMRFs.length, 'filed'],
+      ['Committee', allComm.length, 'reports'],
+    ];
+    document.getElementById('pfStats').innerHTML = tiles.map(([l,n,sub])=>
+      `<div class="profile-stat"><div class="profile-stat-num">${n}</div><div class="profile-stat-label">${l}</div><div style="font-size:0.7rem;color:var(--faint);margin-top:0.2rem;">${sub}</div></div>`).join('');
+
+    const mine = (AUTH.isLTG()
+      ? allSubs.filter(x=>x.division===me.division)
+      : allSubs.filter(x=>(x.ltgEmail||'').toLowerCase()===me.email.toLowerCase()))
+      .sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt)).slice(0,8);
+    document.getElementById('pfActivity').innerHTML = mine.length===0
+      ? `<div class="empty" style="padding:2rem;"><div class="empty-icon">🗂️</div><h3>No submissions yet</h3></div>`
+      : `<table class="sub-table"><thead><tr><th>Month</th><th>Type</th><th>Status</th><th>Date</th></tr></thead><tbody>
+        ${mine.map(x=>`<tr><td><strong>${x.month}</strong></td><td style="font-size:0.8rem;">${x.type==='newsletter'?'Newsletter':'DC Report'}</td><td>${statusBadge(x.status)}</td><td style="color:var(--muted);font-size:0.8rem;">${fmtDate(x.submittedAt)}</td></tr>`).join('')}
+        </tbody></table>`;
+  } catch(e) {
+    document.getElementById('pfStats').innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">⚠️</div><h3>Couldn’t load your record</h3><p>${e.message}</p></div>`;
+  }
+}
+load();
+
+
+function statusBadge(s){const m={'pending-editor':['badge-pending-editor','Pending Editor'],'pending-webmaster':['badge-pending-webmaster','Pending Webmaster'],'approved':['badge-approved','✓ Approved'],'denied':['badge-denied','Needs Revision']};const[c,l]=m[s]||['badge-pending-editor',s];return`<span class="badge ${c}">${l}</span>`;}
+function fmtDate(iso){return iso?new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'-';}
+</script>
+<style>
+.dash-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:1.75rem; align-items:start; }
+@media (max-width: 860px){ .dash-grid{ grid-template-columns:1fr; } }
+code { background:var(--bg-2); padding:1px 5px; border-radius:5px; font-size:0.85em; }
+</style>
+</body>
+</html>

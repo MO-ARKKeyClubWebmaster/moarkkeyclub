@@ -1,0 +1,507 @@
+[
+  {
+    "id": "mrf-1778450599668-zg4k",
+    "submittedAt": "2026-05-10T22:03:18.813Z",
+    "updatedAt": "2026-05-10T22:03:19.668Z",
+    "division": 9,
+    "ltgEmail": "moarkkcltg9@gmail.com",
+    "ltgName": "Division 9 LTG",
+    "month": "May",
+    "year": "2026-2027",
+    "clubs": [],
+    "committee": {
+      "name": "Charity Comittee",
+      "workWith": "Haritha Kumaresan",
+      "evaluation": "No progress so far, no transferred emails but excited to see progress!",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "never",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "I have had people reach out from division 9. I spent my time reaserching about UNICEF, to give Haritha the best advice on how to pursue becoming a UNICEF Champion! She was also very interested in becoming a LTG, Which I helped guide her through the process when she reached out.It is difficult to find contact information, if there is any help I can receive to require contact information in Division 9 It would be much appreciated. I have loved the role and intend to become further enveloped in it as time goes on!"
+    }
+  },
+  {
+    "id": "mrf-1778455112861-vlqv",
+    "submittedAt": "2026-05-10T23:18:33.004Z",
+    "updatedAt": "2026-05-10T23:18:32.861Z",
+    "division": 10,
+    "ltgEmail": "moarkkcltg010@gmail.com",
+    "ltgName": "Division 10 LTG",
+    "month": "May",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Crestview Middle School - Builder's Club",
+        "contacted": "Other",
+        "contactHow": "Visit",
+        "problems": "Need to find a sponsor and a Kiwanis Club near them that would sponsor them for the next school year.",
+        "projects": "N/A",
+        "report": "Excited to start a club, want to hit the ground running next year so this month will be used to coordinate a sponsor and introduce Builder's Club to St. Louis.",
+        "kiwanis": "No"
+      }
+    ],
+    "committee": {
+      "name": "Membership Development Committee",
+      "workWith": "Names are on the spreadhseet",
+      "evaluation": "Trained district board on the International Charter Champion's role and how to proceed with chartering clubs in this respective division. We will be meeting as a committee next time to make specific resources available for all members to use to charter more clubs and also retain clubs.",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "never",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1783276316417-fv39",
+    "submittedAt": "2026-07-05T18:31:58.029Z",
+    "updatedAt": "2026-07-05T18:31:56.417Z",
+    "division": 5,
+    "ltgEmail": "moarkkcltg05@gmail.com",
+    "ltgName": "Division 5 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Cuba High School",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "N/A",
+        "projects": "None",
+        "report": "Advisor, and officer changes.",
+        "kiwanis": "No"
+      }
+    ],
+    "committee": {
+      "name": "DLC planning committee",
+      "workWith": "Ava Long",
+      "evaluation": "I've been in constant contact with some of our options for keynote speakers. I'm still in discussion with the fine details of it all. And me and Ava have been in contact over the playlist for DLC",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "Yes",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1783478536453-gosy",
+    "submittedAt": "2026-07-08T02:42:15.838Z",
+    "updatedAt": "2026-07-08T02:42:16.453Z",
+    "division": 3,
+    "ltgEmail": "moarkkeyclubltg3@gmail.com",
+    "ltgName": "Division 3 LTG",
+    "month": "June",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Calvary Lutheran High School Key Club",
+        "contacted": "President",
+        "contactHow": "Email",
+        "problems": "Dues paid off.",
+        "projects": "None",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Central High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Gloria Deo Academy Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Clark County R-1 High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "They currently have $187 in dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Republic High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Joplin High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Mountain Grove High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Kickapoo High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Monett High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Sacred Heart School",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Neosho High School",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "No dues.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Membership Development Committee",
+      "workWith": "Savanna, Pritam, Tanvi, Omar.",
+      "evaluation": "We have worked together to create flyers to advertise Key Club and district board positions. We worked on a plan to reactivate a few clubs. We also started the Officer Training Workshop slideshow.",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "twice+",
+      "staffContact": "Yes, I have contacted Hilary Plenge, the Key Club advisor at Clark County R-1 High school, about their dues.",
+      "newsletterQs": "No.",
+      "divProject": "No.",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1785179055187-2eeg",
+    "submittedAt": "2026-07-27T19:04:14.600Z",
+    "updatedAt": "2026-07-27T19:04:15.187Z",
+    "division": 9,
+    "ltgEmail": "moarkkcltg9@gmail.com",
+    "ltgName": "Division 9 LTG",
+    "month": "June",
+    "year": "2026-2027",
+    "clubs": [],
+    "committee": {
+      "name": "Charity",
+      "workWith": "Ava and Nandhu",
+      "evaluation": "Our committee had amazing aspirations and a will to do good, and make the biggest impact possible. The committee works tirelessly to find the best organizations to invest in. It is no easy feat and you can tell the care that goes into choosing!",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "never",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1785187994697-ragm",
+    "submittedAt": "2026-07-27T21:33:14.059Z",
+    "updatedAt": "2026-07-27T21:33:14.697Z",
+    "division": 6,
+    "ltgEmail": "moarkkcltg6@gmail.com",
+    "ltgName": "Division 6 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Jasper Key Club",
+        "contacted": "Other",
+        "contactHow": "Messaging",
+        "problems": "None",
+        "projects": "4th of July food service",
+        "report": "None",
+        "kiwanis": "They don't have one"
+      }
+    ],
+    "committee": {
+      "name": "Charity Commitee",
+      "workWith": "Nandu, Amara",
+      "evaluation": "We received an email back with our inquiry for the possibility of creating hygiene kits to donate from New Life Evangelistic Center Team. They have agreed that we can donate any amount of hygiene kit and have included what we can put in them, although they say there is nothing that they would reject. Again this would incorporate the American theme by helping veterans.",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No, currently I am planning a DMC to take place very quickly once school starts again for most districts.",
+      "additionalNotes": "I did reach out to all club advisers to let them know of the golf volunteer opportunity."
+    }
+  },
+  {
+    "id": "mrf-1785276923249-dnve",
+    "submittedAt": "2026-07-28T22:15:22.551Z",
+    "updatedAt": "2026-07-28T22:15:23.249Z",
+    "division": 3,
+    "ltgEmail": "moarkkeyclubltg3@gmail.com",
+    "ltgName": "Division 3 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Calvary Lutheran",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Central",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Gloria Deo",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Republic",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Joplin",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Mountain Grove",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Kickapoo",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Monett",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Sacred Heart",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Neosho",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None.",
+        "projects": "None.",
+        "report": "Nothing.",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Membership Development",
+      "workWith": "Savanna, Pritam, Tanvi, Omar",
+      "evaluation": "Scheduled a Mem. Dev. meeting date and time.",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "No.",
+      "newsletterQs": "No.",
+      "divProject": "No.",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1785516676532-evmg",
+    "submittedAt": "2026-07-31T16:51:16.114Z",
+    "updatedAt": "2026-07-31T16:51:16.532Z",
+    "division": 10,
+    "ltgEmail": "moarkkcltg010@gmail.com",
+    "ltgName": "Division 10 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Parkway West High School",
+        "contacted": "President",
+        "contactHow": "Other",
+        "problems": "They did not get the newsletters, and this was resolved by sharing the president's personal email address as well as updating the advisor's contact information. Otherwise, the club is really strong and has a lot of initiatives going on in terms of water walks.",
+        "projects": "School is off for the summer, but the President visited ICON which was how I was able to talk to her in-person.",
+        "report": "N/A",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Mem-Dev Commitee",
+      "workWith": "Omar Vargas Garcia",
+      "evaluation": "Was contacted with the group chat and scheduled a meeting which will be happening tomorrow at 4pm!",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No, not this year and I have contacted each club this year only once due to the down time in emails during the summer.",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1785518809191-0wdm",
+    "submittedAt": "2026-07-31T17:26:48.660Z",
+    "updatedAt": "2026-07-31T17:26:49.191Z",
+    "division": 2,
+    "ltgEmail": "moarkkcltg002@gmail.com",
+    "ltgName": "Division 2 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Prescott High School",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "Inactive and don't respond to emails",
+        "projects": "N/A",
+        "report": "N/A",
+        "kiwanis": "No"
+      }
+    ],
+    "committee": {
+      "name": "Mem Dev",
+      "workWith": "Omar, Mary-Ann",
+      "evaluation": "Created multiple posters promoting board positions and back to school engagement.",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "Yes",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1785551387656-wyh0",
+    "submittedAt": "2026-08-01T02:29:47.277Z",
+    "updatedAt": "2026-08-01T02:29:47.656Z",
+    "division": 9,
+    "ltgEmail": "moarkkcltg9@gmail.com",
+    "ltgName": "Division 9 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [],
+    "committee": {
+      "name": "Charity",
+      "workWith": "Ava & Nandu",
+      "evaluation": "Our committee has not been active this month",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "twice+",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
+  },
+  {
+    "id": "mrf-1785620357285-8zrc",
+    "submittedAt": "2026-08-01T21:39:16.841Z",
+    "updatedAt": "2026-08-01T21:39:17.285Z",
+    "division": 1,
+    "ltgEmail": "moarkkcltg1@gmail.com",
+    "ltgName": "Division 1 LTG",
+    "month": "July",
+    "year": "2026-2027",
+    "clubs": [],
+    "committee": {
+      "name": "Mem Dev",
+      "workWith": "Omar, Mary Ann, Pritam, Tanvi, Bethany",
+      "evaluation": "In the meeting we discussed the officer training workshop, discussing what we wanted in the presentation and assigned roles for each slide.",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "Not yet",
+      "additionalNotes": "Nope"
+    }
+  }
+]

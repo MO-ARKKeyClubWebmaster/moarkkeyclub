@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Committee Reports | MO-ARK Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body>
+<nav class="topnav">
+  <a href="dashboard.html" class="topnav-logo">
+    <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
+    <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+  </a>
+  <div class="topnav-divider"></div>
+  <div class="topnav-links">
+    <a href="dashboard.html" class="topnav-link">Dashboard</a>
+    <a href="newsletter.html" class="topnav-link">Newsletter</a>
+    <a href="dcm.html" class="topnav-link">DCMs</a>
+    <a href="mrf.html" class="topnav-link">Monthly RF</a>
+    <a href="committee.html" class="topnav-link active">Committee Reports</a>
+    <a href="calendar.html" class="topnav-link">Calendar</a>    <a href="review.html" class="topnav-link" id="navReview" style="display:none">Review Queue</a>
+    <a href="console.html" class="topnav-link topnav-console" id="navConsole" style="display:none">Console</a>
+  </div>
+  <div class="topnav-user">
+    <div class="topnav-avatar" id="navAvatar">?</div>
+    <span class="topnav-username" id="navName"></span>
+    <span class="role-chip" id="navRole"></span>
+    <button class="topnav-logout" onclick="AUTH.logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="page fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Committee <em>Reports</em></h1>
+      <p class="page-desc">Submit committee reports and view the archive.</p>
+    </div>
+  </div>
+
+  <div class="section-tabs">
+    <button class="section-tab active" onclick="showTab('submit')" id="tab-submit">Submit Report</button>
+    <button class="section-tab" onclick="showTab('archive')" id="tab-archive">Archive</button>
+  </div>
+
+  <!-- SUBMIT TAB -->
+  <div id="panel-submit">
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Committee Report Submission</div></div>
+        <div class="card-body">
+          <div class="form-row" id="fieldPeriod">
+            <div class="form-group">
+              <label class="form-label">Academic Year</label>
+              <select class="form-select" id="selYear"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Month</label>
+              <select class="form-select" id="selMonth"><option value="">Select month…</option></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" id="lblCommittee">Committee Name</label>
+            <input type="text" class="form-input" id="committeeName" placeholder="e.g. Membership Committee">
+          </div>
+          <div class="form-group" id="fieldYourName">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="submitterName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Committee Report PDF</label>
+            <div class="upload-zone" id="uploadZone">
+              <input type="file" id="fileInput" accept=".pdf">
+              <div class="upload-icon">📄</div>
+              <div class="upload-text">Click to choose or drag & drop your PDF</div>
+              <div class="upload-hint">Maximum 50MB · PDF only</div>
+              <div class="upload-selected" id="uploadSelected">
+                <span>✓</span><span id="selectedName"></span>
+                <span id="selectedSize" style="color:var(--muted);font-size:0.8rem;margin-left:auto;"></span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="fieldNotes">
+            <label class="form-label">Notes <span style="font-weight:400;text-transform:none;font-size:0.8rem;">(optional)</span></label>
+            <textarea class="form-textarea" id="notes" placeholder="Any notes about this report…" style="min-height:80px;"></textarea>
+          </div>
+          <div id="submitError" style="display:none;padding:0.75rem 1rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:8px;color:#7f1d1d;font-size:0.875rem;margin-bottom:1rem;"></div>
+          <button class="btn btn-primary" id="submitBtn" onclick="handleSubmit()">Submit Committee Report →</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="example-card">
+          <div class="example-icon">📋</div>
+          <div><h3>Report Template</h3><p>View the official committee report template before submitting.</p>
+            <a href="https://docs.google.com/document/d/171qsMNEi_d5Mx5fJ35AZ_wmkD8EGbsCOYYQFk6ifuD0/edit?usp=sharing" target="_blank" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">View Template →</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">About Committee Reports</div></div>
+          <div class="card-body" style="font-size:0.875rem;color:var(--muted);line-height:1.75;">
+            <p style="margin-bottom:0.75rem;">📬 <strong style="color:var(--text);">Goes to:</strong> Governor, Secretary, and Webmaster.</p>
+            <p style="margin-bottom:0.75rem;">✅ <strong style="color:var(--text);">No approval needed</strong> - submitted straight to the record.</p>
+            <p>👥 <strong style="color:var(--text);">Anyone</strong> on the board can submit committee reports.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCHIVE TAB -->
+  <div id="panel-archive" style="display:none;">
+    <div id="archiveContent"><div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading…</div></div></div>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div id="successOverlay" style="display:none;position:fixed;inset:0;background:rgba(10,22,40,0.7);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--white);border-radius:var(--radius);padding:3rem;max-width:440px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;">✅</div>
+    <h2 style="font-family:var(--ff-display);font-size:1.5rem;color:var(--navy);margin-bottom:0.5rem;">Report Submitted!</h2>
+    <p style="font-size:0.9375rem;color:var(--muted);line-height:1.7;margin-bottom:1.75rem;">Your committee report has been sent to the governor, secretary, and webmaster.</p>
+    <div style="display:flex;gap:0.75rem;justify-content:center;">
+      <a href="dashboard.html" class="btn btn-primary">Dashboard →</a>
+      <button class="btn btn-outline" onclick="resetForm()">Submit Another</button>
+    </div>
+  </div>
+</div>
+
+<!-- View modal -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Committee Report</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal()">Close</button></div>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="logger.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+document.getElementById('submitterName').value = user.name;
+
+// Governor & Webmaster get a stripped-down uploader: just a name + the PDF.
+// Period is filled in automatically so the archive and record stay intact.
+const simpleUpload = AUTH.isGovernor() || AUTH.isWebmaster();
+if (simpleUpload) {
+  document.getElementById('fieldPeriod').style.display   = 'none';
+  document.getElementById('fieldYourName').style.display = 'none';
+  document.getElementById('fieldNotes').style.display    = 'none';
+  document.getElementById('lblCommittee').textContent    = 'Report Name';
+  document.getElementById('committeeName').placeholder   = 'e.g. Fall Membership Committee Report';
+}
+
+API.getCurrentYears().forEach(y => {
+  const o = document.createElement('option'); o.value=y; o.textContent=y;
+  document.getElementById('selYear').appendChild(o);
+});
+document.getElementById('selYear').value = API.getCurrentYears().at(-1);
+API.getMRFMonths().forEach(m => {
+  const o = document.createElement('option'); o.value=m; o.textContent=m;
+  document.getElementById('selMonth').appendChild(o);
+});
+
+let selectedFile = null, selectedFileData = null;
+const zone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('dragover'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+function handleFile(file) {
+  if (!file.type.includes('pdf')) { showError('Please upload a PDF file only.'); return; }
+  if (file.size > 50*1024*1024) { showError('File must be under 50MB.'); return; }
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => { selectedFileData = e.target.result; };
+  reader.readAsDataURL(file);
+  document.getElementById('selectedName').textContent = file.name;
+  document.getElementById('selectedSize').textContent = file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
+  document.getElementById('uploadSelected').classList.add('show');
+}
+
+async function handleSubmit() {
+  const committeeName = document.getElementById('committeeName').value.trim();
+  // In simple mode (governor/webmaster) the period is auto-filled and notes are skipped.
+  const year  = simpleUpload ? API.getCurrentYears().at(-1) : document.getElementById('selYear').value;
+  const month = simpleUpload ? new Date().toLocaleString('en-US',{month:'long'}) : document.getElementById('selMonth').value;
+  const notes = simpleUpload ? null : (document.getElementById('notes').value.trim() || null);
+  if (simpleUpload) {
+    if (!committeeName) { showError('Please enter a report name.'); return; }
+  } else {
+    if (!year||!month||!committeeName) { showError('Please fill in all required fields.'); return; }
+  }
+  if (!selectedFile||!selectedFileData) { showError('Please select a PDF file.'); return; }
+  const btn = document.getElementById('submitBtn');
+  btn.innerHTML = '<span class="spinner"></span> Submitting…'; btn.disabled = true;
+  try {
+    await API.createCommitteeReport({
+      submitterEmail: user.email,
+      submitterName:  user.name,
+      submitterRole:  user.role,
+      division:       user.division || null,
+      committeeName,
+      year, month,
+      fileName:    selectedFile.name,
+      fileData:    selectedFileData,
+      fileSize:    selectedFile.size,
+      notes:       notes || null,
+      submittedAt: new Date().toISOString(),
+    });
+    await LOG.record('COMMITTEE_SUBMITTED', LOG.committeeDetail({submitterName:user.name,committeeName,month,year}));
+    document.getElementById('successOverlay').style.display = 'flex';
+    btn.textContent = 'Submit Committee Report →'; btn.disabled = false;
+  } catch(e) {
+    showError('Submission failed: ' + e.message);
+    btn.textContent = 'Submit Committee Report →'; btn.disabled = false;
+  }
+}
+
+function resetForm() {
+  document.getElementById('successOverlay').style.display='none';
+  document.getElementById('selYear').value='';
+  document.getElementById('selMonth').value='';
+  document.getElementById('committeeName').value='';
+  document.getElementById('notes').value='';
+  selectedFile=null; selectedFileData=null;
+  document.getElementById('uploadSelected').classList.remove('show');
+}
+
+function showError(m){const e=document.getElementById('submitError');e.textContent=m;e.style.display='block';}
+
+// ── ARCHIVE ───────────────────────────────────────────────────────────
+let archiveLoaded = false;
+let allReports = [];
+
+async function initArchive() {
+  if (archiveLoaded) return;
+  const c = document.getElementById('archiveContent');
+  try {
+    allReports = await API.getCommitteeReports();
+    archiveLoaded = true;
+    if (AUTH.isGovernor() || AUTH.isWebmaster() || AUTH.isSecretary()) {
+      renderAdminArchive();
+    } else {
+      renderMyArchive();
+    }
+  } catch(e) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function renderMyArchive() {
+  const myReports = allReports.filter(r=>r.submitterEmail===user.email).sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
+  const c = document.getElementById('archiveContent');
+  if (!myReports.length) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">📁</div><h3>None Submitted</h3><p>Your submitted committee reports will appear here.</p></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="committee-grid">${myReports.map(r => `
+    <div class="committee-box" onclick="openView('${r.id}')">
+      <div style="font-family:var(--ff-display);font-size:0.875rem;color:var(--navy);margin-bottom:0.375rem;">${r.committeeName}</div>
+      <div style="font-size:0.8125rem;color:var(--muted);">${r.month} ${r.year}</div>
+      <div style="margin-top:0.75rem;"><span class="badge badge-submitted">✓ Submitted</span></div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">${fmtDate(r.submittedAt)}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderAdminArchive() {
+  const c = document.getElementById('archiveContent');
+  // Group by submitter
+  const byPerson = {};
+  allReports.forEach(r => {
+    const k = r.submitterEmail;
+    if (!byPerson[k]) byPerson[k] = { name: r.submitterName, role: r.submitterRole, reports: [] };
+    byPerson[k].reports.push(r);
+  });
+  if (!Object.keys(byPerson).length) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">📁</div><h3>No reports yet</h3></div>`;
+    return;
+  }
+  c.innerHTML = Object.entries(byPerson).map(([email, person]) => `
+    <div class="div-card" id="person-${email.replace(/[@.]/g,'-')}">
+      <div class="div-card-hd" onclick="this.closest('.div-card').classList.toggle('open')">
+        <div class="div-num" style="font-size:0.7rem;">${person.name.charAt(0)}</div>
+        <div><div class="div-name">${person.name}</div><div class="div-ltg-name">${person.role.toUpperCase()}</div></div>
+        <div class="div-count">${person.reports.length} report${person.reports.length!==1?'s':''}</div>
+        <div class="div-chev">▼</div>
+      </div>
+      <div class="div-body">
+        <div class="committee-grid">
+          ${person.reports.sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt)).map(r=>`
+            <div class="committee-box" onclick="openView('${r.id}')">
+              <div style="font-family:var(--ff-display);font-size:0.875rem;color:var(--navy);margin-bottom:0.375rem;">${r.committeeName}</div>
+              <div style="font-size:0.8125rem;color:var(--muted);">${r.month} ${r.year}</div>
+              <div style="margin-top:0.5rem;"><span class="badge badge-submitted">✓ Submitted</span></div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-top:0.375rem;">${fmtDate(r.submittedAt)}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+  // Open first
+  const first = document.querySelector('.div-card');
+  if (first) first.classList.add('open');
+}
+
+async function openView(id) {
+  const r = allReports.find(x=>x.id===id) || await API.getCommitteeReportById(id);
+  await LOG.record('COMMITTEE_VIEWED', LOG.committeeDetail(r));
+  document.getElementById('modalTitle').textContent = `${r.committeeName} - ${r.month} ${r.year}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;">
+      <span class="badge badge-submitted">✓ Submitted</span>
+      <span style="font-size:0.8125rem;color:var(--muted);">By ${r.submitterName} · ${fmtDate(r.submittedAt)}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;margin-bottom:1.25rem;">
+      <div><div class="form-label">Committee</div><div style="font-weight:600;">${r.committeeName}</div></div>
+      <div><div class="form-label">Period</div><div style="font-weight:600;">${r.month} ${r.year}</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;background:var(--cream);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:1.25rem;">
+      <span>📄</span>
+      <div><div style="font-size:0.875rem;font-weight:600;">${r.fileName}</div><div style="font-size:0.75rem;color:var(--muted);">${fmtSize(r.fileSize)}</div></div>
+      <div style="margin-left:auto;display:flex;gap:0.5rem;">
+        <a href="https://raw.githubusercontent.com/MO-ARKKeyClubWebmaster/moarkkeyclub-net/main/committee-pdfs/${r.id}.pdf" download="${r.fileName}" class="btn btn-outline btn-sm">Download</a>
+        <a href="https://raw.githubusercontent.com/MO-ARKKeyClubWebmaster/moarkkeyclub-net/main/committee-pdfs/${r.id}.pdf" target="_blank" class="btn btn-navy btn-sm">View PDF</a>
+      </div>
+    </div>
+    ${r.notes?`<div><div class="form-label">Notes</div><div style="background:var(--cream);border-radius:var(--radius-sm);padding:0.75rem;font-size:0.875rem;color:var(--text);">${r.notes}</div></div>`:''}`;
+  document.getElementById('viewModal').classList.add('open');
+}
+
+function closeModal(){document.getElementById('viewModal').classList.remove('open');}
+document.getElementById('viewModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function showTab(t) {
+  document.getElementById('panel-submit').style.display = t==='submit'?'':'none';
+  document.getElementById('panel-archive').style.display = t==='archive'?'':'none';
+  document.querySelectorAll('.section-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`tab-${t}`).classList.add('active');
+  if (t==='archive') initArchive();
+}
+
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtSize(b){return b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';}
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# ---- Not part of the served portal site ----
+
+# Cloudflare Worker source (deployed in Cloudflare, never served from the web root)
+worker.js
+*.bak
+
+# Operational / setup docs
+*.md
+
+# Local dev helper
+dev.command
+
+# Worker-owned runtime data — kept in the repo, but must NEVER be public.
+# The moark-portal-api Worker serves these through its own endpoints.
+submissions/
+data/
+logs/
+reimbursement-pdfs/
+dcm-reports/
+committee-pdfs/

@@ -1,0 +1,26 @@
+{
+  "id": "moark-1778473333745-abu9n",
+  "division": 1,
+  "ltgEmail": "moarkkcltg1@gmail.com",
+  "ltgName": "Division 1 LTG",
+  "year": "2026-2027",
+  "month": "May",
+  "type": "newsletter",
+  "fileName": "MAY NEWLETTER.pdf",
+  "fileSize": 2361017,
+  "pdfUrl": "/pdf/moark-1778473333745-abu9n",
+  "status": "pending-editor",
+  "submittedAt": "2026-05-11T04:22:13.745Z",
+  "updatedAt": "2026-05-11T04:22:13.745Z",
+  "deleted": true,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Division 1 LTG",
+      "to": "editor",
+      "message": "I wasnât for sure if it submitted all the way, so this is a resubmission",
+      "timestamp": "2026-05-11T04:22:13.745Z"
+    }
+  ],
+  "deletedAt": "2026-05-12T15:38:59.287Z"
+}

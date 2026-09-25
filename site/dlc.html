@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DLC 2027 | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+
+  /* DLC HERO - Space themed */
+  .dlc-hero{padding-top:68px;background:var(--navy);min-height:60vh;display:flex;align-items:center;position:relative;overflow:hidden;}
+  .dlc-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 60%,rgba(200,150,42,0.1) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(26,58,107,0.5) 0%,transparent 50%);}
+  .dlc-stars{position:absolute;inset:0;}
+  .dlc-hero-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:5rem 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+  .dlc-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.25rem;}
+  .dlc-badge-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(0.8);}}
+  .dlc-title{font-family:var(--ff-display);font-size:clamp(2rem,4.5vw,3.75rem);color:var(--white);line-height:1.05;margin-bottom:1.25rem;}
+  .dlc-title em{font-style:italic;color:var(--gold-lt);}
+  .dlc-dates{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;}
+  .dlc-date-badge{background:var(--gold);color:var(--navy);font-weight:700;font-size:0.8rem;padding:0.3rem 0.875rem;border-radius:100px;text-transform:uppercase;letter-spacing:0.06em;}
+  .dlc-location{font-size:0.9375rem;color:rgba(255,255,255,0.6);}
+  .dlc-theme{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;}
+  .dlc-theme-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);font-weight:700;margin-bottom:0.5rem;}
+  .dlc-theme-text{font-family:var(--ff-display);font-size:1.1rem;color:var(--white);line-height:1.4;}
+  .dlc-actions{display:flex;flex-wrap:wrap;gap:0.875rem;}
+  .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.8125rem 1.625rem;border-radius:var(--radius-sm);font-size:0.9375rem;font-weight:600;cursor:pointer;border:2px solid transparent;transition:all var(--transition);white-space:nowrap;}
+  .btn-primary{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+  .btn-primary:hover{background:var(--gold-lt);border-color:var(--gold-lt);transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,150,42,0.4);}
+  .btn-outline{background:transparent;color:var(--white);border-color:rgba(255,255,255,0.3);}
+  .btn-outline:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.6);transform:translateY(-2px);}
+
+  /* DLC DETAILS CARD */
+  .dlc-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius);padding:2rem;}
+  .dlc-card h3{font-family:var(--ff-display);font-size:1.375rem;color:var(--white);margin-bottom:1.5rem;}
+  .dlc-detail{display:flex;gap:1rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .dlc-detail:last-child{border-bottom:none;}
+  .dlc-detail-icon{font-size:1.25rem;flex-shrink:0;width:2rem;text-align:center;}
+  .dlc-detail-text strong{display:block;color:var(--white);font-size:0.9375rem;margin-bottom:0.2rem;}
+  .dlc-detail-text span{font-size:0.875rem;color:rgba(255,255,255,0.5);}
+
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);}
+  .breadcrumb-sep{opacity:0.4;}
+
+  .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;color:var(--gold);margin-bottom:0.75rem;}
+  .section-title{font-family:var(--ff-display);font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1;color:var(--navy);margin-bottom:1rem;}
+  .section-title em{font-style:italic;color:var(--blue);}
+
+  /* INFO PACKET */
+  .packet-card{background:var(--navy);border-radius:var(--radius);padding:3rem;display:flex;gap:3rem;align-items:center;margin-bottom:4rem;}
+  .packet-icon{font-size:5rem;opacity:0.4;flex-shrink:0;}
+  .packet-text h3{font-family:var(--ff-display);font-size:1.625rem;color:var(--white);margin-bottom:0.75rem;}
+  .packet-text p{font-size:0.9375rem;color:rgba(255,255,255,0.6);line-height:1.7;font-style:italic;margin-bottom:1.5rem;}
+  .packet-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.9375rem;transition:all var(--transition);}
+  .packet-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,150,42,0.5);}
+
+  /* ── BUILT-IN CALENDAR ── */
+  .cal-wrapper {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .cal-wrapper { grid-template-columns: 1fr; }
+  }
+
+  /* Mini month picker */
+  .cal-mini {
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    color: var(--white);
+    position: sticky;
+    top: 88px;
+  }
+  .cal-mini-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .cal-mini-month {
+    font-family: var(--ff-display);
+    font-size: 1.1rem;
+    color: var(--white);
+  }
+  .cal-mini-nav {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    transition: background 0.2s, color 0.2s;
+    font-size: 0.875rem;
+  }
+  .cal-mini-nav:hover { background: rgba(200,150,42,0.2); color: var(--gold-lt); }
+  .cal-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    text-align: center;
+  }
+  .cal-mini-dow {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-weight: 700;
+    padding: 0.25rem 0;
+  }
+  .cal-mini-day {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.15rem;
+    border-radius: 5px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.6);
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+  }
+  .cal-mini-day:hover { background: rgba(255,255,255,0.1); color: var(--white); }
+  .cal-mini-day.has-event { color: var(--white); font-weight: 600; }
+  .cal-mini-day.has-event::after {
+    content: '·';
+    display: block;
+    color: var(--gold);
+    font-size: 1rem;
+    line-height: 0.5;
+    margin-top: 1px;
+  }
+  .cal-mini-day.today {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .cal-mini-day.today::after { color: var(--navy); }
+  .cal-mini-day.other-month { opacity: 0.25; pointer-events: none; }
+  .cal-mini-day.active {
+    background: rgba(200,150,42,0.3);
+    color: var(--gold-lt);
+    outline: 1px solid rgba(200,150,42,0.5);
+  }
+
+  /* Legend */
+  .cal-legend {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .cal-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+  }
+  .cal-legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Event list panel */
+  .cal-events-panel {}
+  .cal-month-group {
+    margin-bottom: 2rem;
+  }
+  .cal-month-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .cal-month-label-text {
+    font-family: var(--ff-display);
+    font-size: 1.25rem;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .cal-month-label-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .cal-event-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.75rem;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+  .cal-event-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateX(4px);
+    border-color: var(--gold);
+  }
+  .cal-event-date-block {
+    flex-shrink: 0;
+    text-align: center;
+    width: 64px;
+  }
+  .cal-event-date-range {
+    font-family: var(--ff-display);
+    font-size: 1.5rem;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .cal-event-date-month {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    font-weight: 700;
+    margin-top: 0.25rem;
+  }
+  .cal-event-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .cal-event-body { flex: 1; min-width: 0; }
+  .cal-event-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    margin-bottom: 0.5rem;
+  }
+  .cal-event-tag.district { background: rgba(26,58,107,0.1); color: var(--blue); }
+  .cal-event-tag.conference { background: rgba(200,150,42,0.15); color: #8a6200; }
+  .cal-event-tag.international { background: rgba(34,139,34,0.1); color: #1a6b1a; }
+  .cal-event-tag.board { background: rgba(128,0,128,0.1); color: #6b006b; }
+  .cal-event-tag.dlc { background: rgba(200,150,42,0.25); color: var(--navy); }
+  .cal-event-title {
+    font-family: var(--ff-display);
+    font-size: 1.0625rem;
+    color: var(--navy);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+  }
+  .cal-event-meta {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .cal-event-meta-sep { opacity: 0.3; }
+
+  /* Filter tabs */
+  .cal-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .cal-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border-radius: 100px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cal-filter-btn:hover { border-color: var(--gold); color: var(--navy); }
+  .cal-filter-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .cal-filter-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+
+  /* Empty state */
+  .cal-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+    background: var(--white);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  .cal-empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
+  .cal-empty p { font-size: 0.9375rem; }
+
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1200px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+
+  @media(max-width:1024px){.dlc-hero-inner{grid-template-columns:1fr;gap:2.5rem;}.packet-card{flex-direction:column;gap:1.5rem;}.footer-top{grid-template-columns:1fr 1fr;}}
+  @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.dlc-actions{flex-direction:column;}.footer-top{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link active">Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="resources.html#forms">DLC Forms</a>
+        </div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<!-- DLC HERO -->
+<div class="dlc-hero">
+  <div class="dlc-hero-bg"></div>
+  <div class="dlc-stars" id="dlcStars"></div>
+  <div class="dlc-hero-inner">
+    <div>
+      <div class="dlc-badge">
+        <div class="dlc-badge-dot"></div>
+        Featured Event
+      </div>
+      <h1 class="dlc-title">District Leadership<br><em>Conference 2027</em></h1>
+      <div class="dlc-dates">
+        <span class="dlc-date-badge">March 4-6, 2027</span>
+        <span class="dlc-location">Springfield, Missouri</span>
+      </div>
+      <div class="dlc-theme">
+        <div class="dlc-theme-label">2027 Theme</div>
+        <div class="dlc-theme-text">Patriotic - Red, White & You — Making a Difference</div>
+      </div>
+      <div class="dlc-actions">
+        <a href="resources.html#forms" class="btn btn-primary">
+          DLC Forms &amp; Registration
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="#calendar" class="btn btn-outline">View Calendar</a>
+      </div>
+    </div>
+    <div class="dlc-card">
+      <h3>Event Details</h3>
+      <div class="dlc-detail">
+        <div class="dlc-detail-icon">📍</div>
+        <div class="dlc-detail-text">
+          <strong>University Plaza Hotel</strong>
+          <span>333 S. John Q. Hammons Pkwy, Springfield, MO 65806</span>
+        </div>
+      </div>
+      <div class="dlc-detail">
+        <div class="dlc-detail-icon">📅</div>
+        <div class="dlc-detail-text">
+          <strong>March 4-6, 2027</strong>
+          <span>Thursday through Saturday</span>
+        </div>
+      </div>
+      <div class="dlc-detail">
+        <div class="dlc-detail-icon">📋</div>
+        <div class="dlc-detail-text">
+          <strong>Forms Deadline: February 1, 2027</strong>
+          <span>Submit by Feb 1 to appear on the DLC t-shirt</span>
+        </div>
+      </div>
+      <div class="dlc-detail">
+        <div class="dlc-detail-icon">🏆</div>
+        <div class="dlc-detail-text">
+          <strong>Forums, contests, elections</strong>
+          <span>Celebrate a year of service and elect new board members</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Events / DLC 2027</span>
+  </div>
+</div>
+
+<!-- WHAT IS DLC -->
+<div class="section">
+  <div class="section-label fade-in">About DLC</div>
+  <h2 class="section-title fade-in">What is <em>DLC?</em></h2>
+  <p style="font-size:1.0625rem;color:var(--muted);line-height:1.8;max-width:70ch;margin-top:0.5rem;" class="fade-in">DLC stands for District Leadership Conference. At DLC, Mo-Ark Key Club members can get together, attend various forums, participate in contests, and celebrate a year of service — as well as elect new members to the board. It's the highlight of the Key Club year in the Missouri-Arkansas District.</p>
+
+  <!-- INFORMATIONAL PACKET -->
+  <div class="packet-card fade-in" style="margin-top:3rem;">
+    <div class="packet-icon">🚀</div>
+    <div class="packet-text">
+      <h3>Start Here: DLC Informational Packet</h3>
+      <p>The DLC Informational Packet contains important information regarding everything about our DLC! Please go through it to fully understand how to prepare for DLC.</p>
+      <a href="DLC-2027-Info-Packet.pdf" class="packet-btn" target="_blank" rel="noopener">
+        Access Informational Packet
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- FORMS LINK -->
+  <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin-top:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;" class="fade-in">
+    <div>
+      <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);font-weight:700;margin-bottom:0.5rem;">Registration &amp; Awards Forms</div>
+      <h3 style="font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);margin-bottom:0.375rem;">Access All DLC Forms</h3>
+      <p style="font-size:0.875rem;color:var(--muted);">Registration, awards, contests, candidate packets, and distinguished club member forms — all in one place.</p>
+    </div>
+    <a href="resources.html#forms" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:var(--navy);color:var(--white);font-weight:700;border-radius:var(--radius-sm);font-size:0.9375rem;white-space:nowrap;transition:all var(--transition);" onmouseover="this.style.background='var(--blue)'" onmouseout="this.style.background='var(--navy)'">
+      View All Forms →
+    </a>
+  </div>
+</div>
+
+<!-- EVENT CALENDAR -->
+<div class="section" id="calendar" style="background:var(--cream);max-width:none;padding:5rem 1.5rem;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="section-label fade-in">Schedule</div>
+    <h2 class="section-title fade-in">Event <em>Calendar</em></h2>
+    <p style="font-size:1rem;color:var(--muted);max-width:55ch;margin-bottom:2.5rem;" class="fade-in">Stay up to date with all district events, deadlines, and meetings throughout the 2025–2027 service year.</p>
+
+    <!-- EXTENDED CALENDAR BANNER -->
+    <a href="extended-calendar.html" data-smooth-nav class="packet-card fade-in" style="margin-bottom:3rem;text-decoration:none;cursor:pointer;transition:transform var(--transition),box-shadow var(--transition);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 36px rgba(10,22,40,0.25)';" onmouseout="this.style.transform='';this.style.boxShadow='';">
+      <div class="packet-icon">🗓️</div>
+      <div class="packet-text">
+        <h3>Extended Calendar — Year-Long Initiatives</h3>
+        <p>Explore the full 2026–2027 district timeline of initiatives, promotions, training, and campaigns laid out month by month. Click any item to see what it's all about.</p>
+        <span class="packet-btn">
+          View Extended Calendar
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <div class="cal-wrapper fade-in">
+
+      <!-- ── Mini month navigator + legend ── -->
+      <aside class="cal-mini">
+        <div class="cal-mini-header">
+          <button class="cal-mini-nav" id="miniPrev" aria-label="Previous month">&#8249;</button>
+          <div class="cal-mini-month" id="miniMonthLabel"></div>
+          <button class="cal-mini-nav" id="miniNext" aria-label="Next month">&#8250;</button>
+        </div>
+        <div class="cal-mini-grid" id="miniGrid"></div>
+        <div class="cal-legend">
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#1A3A6B;"></div>
+            District Board Meeting
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#C8962A;"></div>
+            Conference / Training
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#228B22;"></div>
+            International Event
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#800080;"></div>
+            Convention
+          </div>
+          <div class="cal-legend-item">
+            <div class="cal-legend-dot" style="background:#C8962A; outline: 2px solid #0A1628; outline-offset:1px;"></div>
+            DLC
+          </div>
+        </div>
+      </aside>
+
+      <!-- ── Event list ── -->
+      <div>
+        <!-- Filter buttons -->
+        <div class="cal-filters" id="calFilters">
+          <button class="cal-filter-btn active" data-filter="all">
+            All Events
+          </button>
+          <button class="cal-filter-btn" data-filter="board">
+            <span class="cal-filter-dot" style="background:#1A3A6B;"></span>
+            Board Meetings
+          </button>
+          <button class="cal-filter-btn" data-filter="conference">
+            <span class="cal-filter-dot" style="background:#C8962A;"></span>
+            Conferences
+          </button>
+          <button class="cal-filter-btn" data-filter="international">
+            <span class="cal-filter-dot" style="background:#228B22;"></span>
+            International
+          </button>
+          <button class="cal-filter-btn" data-filter="dlc">
+            <span class="cal-filter-dot" style="background:#C8962A;"></span>
+            DLC
+          </button>
+        </div>
+
+        <div id="calEventList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+
+  /* ================================================================
+     BUILT-IN EVENT CALENDAR
+     ================================================================ */
+  const EVENTS = [
+    {
+      id: 1, type: 'board',
+      title: 'April District Board Meeting',
+      dates: 'Apr 17–19', startDate: new Date(2026,3,17), endDate: new Date(2026,3,19),
+      month: 'APR', dayRange: '17–19',
+      location: 'Missouri-Arkansas District', note: ''
+    },
+    {
+      id: 2, type: 'conference',
+      title: 'Governor/Administrator Training Conference',
+      dates: 'Apr 23–26', startDate: new Date(2026,3,23), endDate: new Date(2026,3,26),
+      month: 'APR', dayRange: '23–26',
+      location: 'Missouri-Arkansas District', note: ''
+    },
+    {
+      id: 3, type: 'board',
+      title: 'June District Board Meeting',
+      dates: 'Jun 12–14', startDate: new Date(2026,5,12), endDate: new Date(2026,5,14),
+      month: 'JUN', dayRange: '12–14',
+      location: 'Missouri-Arkansas District', note: ''
+    },
+    {
+      id: 4, type: 'international',
+      title: 'ICON — Key Club International Convention 2026',
+      dates: 'Jul 1–5', startDate: new Date(2026,6,1), endDate: new Date(2026,6,5),
+      month: 'JUL', dayRange: '1–5',
+      location: 'TBD', note: ''
+    },
+    {
+      id: 5, type: 'conference',
+      title: '2026 MO-ARK Kiwanis Convention',
+      dates: 'Jul 30–Aug 2', startDate: new Date(2026,6,30), endDate: new Date(2026,7,2),
+      month: 'JUL', dayRange: '30–2',
+      location: 'Missouri-Arkansas District', note: 'Ends Aug 2'
+    },
+    {
+      id: 6, type: 'board',
+      title: 'September District Board Meeting',
+      dates: 'Sep 18–20', startDate: new Date(2026,8,18), endDate: new Date(2026,8,20),
+      month: 'SEP', dayRange: '18–20',
+      location: 'Missouri-Arkansas District', note: ''
+    },
+    {
+      id: 7, type: 'board',
+      title: 'January District Board Meeting',
+      dates: 'Jan 8–10', startDate: new Date(2027,0,8), endDate: new Date(2027,0,10),
+      month: 'JAN', dayRange: '8–10',
+      location: 'Missouri-Arkansas District', note: '2027'
+    },
+    {
+      id: 8, type: 'dlc',
+      title: 'DLC — District Board Setup Day',
+      dates: 'Mar 3', startDate: new Date(2027,2,3), endDate: new Date(2027,2,3),
+      month: 'MAR', dayRange: '3',
+      location: 'Springfield, Missouri', note: 'District Board only'
+    },
+    {
+      id: 9, type: 'dlc',
+      title: 'District Leadership Conference (DLC 2027)',
+      dates: 'Mar 4–6', startDate: new Date(2027,2,4), endDate: new Date(2027,2,6),
+      month: 'MAR', dayRange: '4–6',
+      location: 'Springfield, Missouri', note: 'University Plaza Hotel'
+    }
+  ];
+
+  const TYPE_LABELS = {
+    board: 'Board Meeting',
+    conference: 'Conference',
+    international: 'International',
+    dlc: 'DLC',
+  };
+  const TYPE_COLORS = {
+    board: '#1A3A6B',
+    conference: '#C8962A',
+    international: '#228B22',
+    dlc: '#C8962A',
+  };
+
+  /* Group events by "Month YYYY" display heading */
+  function groupEvents(events) {
+    const groups = {};
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    events.forEach(ev => {
+      const key = monthNames[ev.startDate.getMonth()] + ' ' + ev.startDate.getFullYear();
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(ev);
+    });
+    return groups;
+  }
+
+  function renderEvents(filter) {
+    const container = document.getElementById('calEventList');
+    const filtered = filter === 'all' ? EVENTS : EVENTS.filter(e => e.type === filter);
+    if (!filtered.length) {
+      container.innerHTML = `<div class="cal-empty"><div class="cal-empty-icon">📅</div><p>No events match this filter.</p></div>`;
+      return;
+    }
+    const groups = groupEvents(filtered);
+    let html = '';
+    for (const [monthLabel, evs] of Object.entries(groups)) {
+      html += `<div class="cal-month-group">
+        <div class="cal-month-label">
+          <span class="cal-month-label-text">${monthLabel}</span>
+          <div class="cal-month-label-line"></div>
+        </div>`;
+      evs.forEach(ev => {
+        const color = TYPE_COLORS[ev.type];
+        const tagClass = ev.type;
+        const tagLabel = TYPE_LABELS[ev.type];
+        html += `<div class="cal-event-card" data-id="${ev.id}">
+          <div class="cal-event-date-block">
+            <div class="cal-event-date-range" style="color:${color};">${ev.dayRange}</div>
+            <div class="cal-event-date-month">${ev.month}</div>
+          </div>
+          <div class="cal-event-divider"></div>
+          <div class="cal-event-body">
+            <span class="cal-event-tag ${tagClass}">${tagLabel}</span>
+            <div class="cal-event-title">${ev.title}</div>
+            <div class="cal-event-meta">
+              <span>${ev.dates}</span>
+              ${ev.location ? `<span class="cal-event-meta-sep">·</span><span>${ev.location}</span>` : ''}
+              ${ev.note ? `<span class="cal-event-meta-sep">·</span><span style="font-style:italic;">${ev.note}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  /* Filter buttons */
+  document.querySelectorAll('.cal-filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      renderEvents(this.dataset.filter);
+    });
+  });
+
+  /* Mini calendar */
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DOW = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let miniYear = 2026, miniMonth = 3; // April 2026 = index 3
+
+  function getEventDays(year, month) {
+    const days = new Set();
+    EVENTS.forEach(ev => {
+      let d = new Date(ev.startDate);
+      while (d <= ev.endDate) {
+        if (d.getFullYear() === year && d.getMonth() === month) days.add(d.getDate());
+        d.setDate(d.getDate() + 1);
+      }
+    });
+    return days;
+  }
+
+  function renderMini() {
+    const label = document.getElementById('miniMonthLabel');
+    const grid  = document.getElementById('miniGrid');
+    label.textContent = MONTH_NAMES[miniMonth] + ' ' + miniYear;
+
+    const today = new Date();
+    const eventDays = getEventDays(miniYear, miniMonth);
+    const firstDay = new Date(miniYear, miniMonth, 1).getDay();
+    const daysInMonth = new Date(miniYear, miniMonth+1, 0).getDate();
+    const daysInPrev  = new Date(miniYear, miniMonth, 0).getDate();
+
+    let html = DOW.map(d => `<div class="cal-mini-dow">${d}</div>`).join('');
+
+    // Blanks from prev month
+    for (let i = 0; i < firstDay; i++) {
+      html += `<div class="cal-mini-day other-month">${daysInPrev - firstDay + 1 + i}</div>`;
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      let cls = 'cal-mini-day';
+      if (today.getDate() === d && today.getMonth() === miniMonth && today.getFullYear() === miniYear) cls += ' today';
+      if (eventDays.has(d)) cls += ' has-event';
+      html += `<div class="${cls}" data-day="${d}">${d}</div>`;
+    }
+    grid.innerHTML = html;
+
+    // Click day to scroll to event
+    grid.querySelectorAll('.cal-mini-day[data-day]').forEach(el => {
+      el.addEventListener('click', function() {
+        const day = parseInt(this.dataset.day);
+        const clickedDate = new Date(miniYear, miniMonth, day);
+        // Find matching event
+        const match = EVENTS.find(ev => clickedDate >= ev.startDate && clickedDate <= ev.endDate);
+        if (match) {
+          // Reset filter to all, re-render, then scroll to event card
+          document.querySelectorAll('.cal-filter-btn').forEach(b => b.classList.remove('active'));
+          document.querySelector('[data-filter="all"]').classList.add('active');
+          renderEvents('all');
+          setTimeout(() => {
+            const card = document.querySelector(`.cal-event-card[data-id="${match.id}"]`);
+            if (card) {
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              card.style.borderColor = 'var(--gold)';
+              card.style.boxShadow = '0 0 0 3px rgba(200,150,42,0.2)';
+              setTimeout(() => { card.style.borderColor = ''; card.style.boxShadow = ''; }, 2000);
+            }
+          }, 80);
+        }
+      });
+    });
+  }
+
+  document.getElementById('miniPrev').addEventListener('click', () => {
+    miniMonth--;
+    if (miniMonth < 0) { miniMonth = 11; miniYear--; }
+    renderMini();
+  });
+  document.getElementById('miniNext').addEventListener('click', () => {
+    miniMonth++;
+    if (miniMonth > 11) { miniMonth = 0; miniYear++; }
+    renderMini();
+  });
+
+  renderEvents('all');
+  renderMini();
+
+  /* ================================================================
+     END BUILT-IN CALENDAR
+     ================================================================ */
+
+  // Stars
+  const starsC = document.getElementById('dlcStars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');
+    const sz=Math.random()*2.5+0.5;
+    s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:white;border-radius:50%;opacity:${Math.random()*0.5+0.1};animation:twk ${Math.random()*4+2}s ease-in-out infinite;animation-delay:${Math.random()*4}s;`;
+    starsC.appendChild(s);
+  }
+  const style=document.createElement('style');
+  style.textContent='@keyframes twk{0%,100%{opacity:0.5}50%{opacity:0.1}}';
+  document.head.appendChild(style);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  /* ── Smooth page transition: scroll-to-top + fade-out before navigating ── */
+  document.querySelectorAll('a[data-smooth-nav]').forEach(link => {
+    link.addEventListener('click', function(e){
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // honor open-in-new-tab
+      const href = this.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http')) return;
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.32s ease';
+      document.body.style.opacity = '0';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+      setTimeout(() => { window.location.href = href; }, 320);
+    });
+  });
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

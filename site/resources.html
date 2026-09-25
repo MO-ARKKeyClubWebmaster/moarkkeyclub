@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resources | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+
+  .page-header{padding-top:68px;background:var(--navy);position:relative;overflow:hidden;}
+  .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,150,42,0.12) 0%,transparent 60%);}
+  .page-header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);}
+  .page-header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 1.5rem 3.5rem;}
+  .page-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+  .page-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.25rem);color:var(--white);line-height:1.1;margin-bottom:1rem;}
+  .page-title em{font-style:italic;color:var(--gold-lt);}
+  .page-desc{font-size:1.0625rem;color:rgba(255,255,255,0.6);line-height:1.75;max-width:55ch;}
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);}
+  .breadcrumb-sep{opacity:0.4;}
+
+  .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;color:var(--gold);margin-bottom:0.75rem;}
+  .section-title{font-family:var(--ff-display);font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1;color:var(--navy);margin-bottom:1rem;}
+  .section-title em{font-style:italic;color:var(--blue);}
+  .section-divider{border:none;border-top:2px solid var(--border);margin:0;}
+
+  /* RESOURCE CARDS */
+  .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;margin-top:2.5rem;}
+  .resource-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;display:flex;flex-direction:column;gap:1rem;transition:box-shadow var(--transition),transform var(--transition),border-color var(--transition);}
+  .resource-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-3px);border-color:rgba(200,150,42,0.4);}
+  .resource-icon{width:48px;height:48px;background:var(--navy);border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .resource-icon svg{width:24px;height:24px;stroke:var(--gold-lt);}
+  .resource-card h3{font-family:var(--ff-display);font-size:1.25rem;color:var(--navy);}
+  .resource-card p{font-size:0.875rem;color:var(--muted);line-height:1.65;flex:1;}
+  .resource-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.875rem;transition:all var(--transition);align-self:flex-start;}
+  .resource-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 4px 12px rgba(200,150,42,0.4);}
+  .resource-btn-outline{background:transparent;border:2px solid var(--blue);color:var(--blue);}
+  .resource-btn-outline:hover{background:var(--blue);color:var(--white);}
+
+  /* FORMS SECTION */
+  .forms-bg{background:var(--cream);padding:5rem 1.5rem;}
+  .forms-inner{max-width:1200px;margin:0 auto;}
+  .forms-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;margin-top:2.5rem;}
+  .forms-group{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;}
+  .forms-group h4{font-family:var(--ff-display);font-size:1.125rem;color:var(--navy);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:2px solid var(--gold);}
+  .form-link{display:flex;align-items:center;gap:0.625rem;padding:0.625rem 0;font-size:0.875rem;color:var(--blue);font-weight:500;border-bottom:1px solid var(--border);transition:color var(--transition),gap var(--transition);}
+  .form-link:last-child{border-bottom:none;}
+  .form-link:hover{color:var(--navy);gap:0.875rem;}
+  .form-link::before{content:'→';font-size:0.75rem;opacity:0.6;}
+  .examples-btn{display:inline-flex;align-items:center;gap:0.5rem;margin-top:1rem;padding:0.75rem 1.125rem;background:var(--gold);color:var(--navy);font-weight:700;font-size:0.875rem;border-radius:var(--radius-sm);transition:all var(--transition);align-self:flex-start;}
+  .examples-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 4px 12px rgba(200,150,42,0.4);}
+
+  /* DUES SECTION */
+  .dues-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;margin-top:2.5rem;}
+  .dues-card h3{font-family:var(--ff-display);font-size:1.375rem;color:var(--navy);margin-bottom:1rem;}
+  .dues-steps{counter-reset:steps;display:flex;flex-direction:column;gap:0.75rem;margin:1rem 0;}
+  .dues-step{counter-increment:steps;display:flex;gap:1rem;align-items:flex-start;font-size:0.9375rem;color:var(--muted);line-height:1.6;}
+  .dues-step::before{content:counter(steps);display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--navy);color:var(--gold-lt);border-radius:50%;font-size:0.75rem;font-weight:700;flex-shrink:0;}
+  .dues-step a{color:var(--blue);font-weight:600;}
+  .dues-step a:hover{text-decoration:underline;}
+
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1200px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+
+  @media(max-width:1024px){.forms-grid{grid-template-columns:1fr 1fr;}.footer-top{grid-template-columns:1fr 1fr;}}
+  @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.forms-grid{grid-template-columns:1fr;}.resource-grid{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link active">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="resources.html#forms">DLC Forms</a>
+        </div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-grid"></div>
+  <div class="page-header-inner">
+    <div class="page-eyebrow">Club Toolkit</div>
+    <h1 class="page-title">District <em>Resources</em></h1>
+    <p class="page-desc">Service project guides, officer guidebooks, monthly report forms, graphics, and everything your club needs to succeed.</p>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Resources</span>
+  </div>
+</div>
+
+<!-- CLUB RESOURCES -->
+<div class="section" id="club">
+  <div class="section-label fade-in">For Club Officers</div>
+  <h2 class="section-title fade-in">Club <em>Resources</em></h2>
+  <p style="font-size:1rem;color:var(--muted);line-height:1.7;max-width:65ch;margin-top:0.5rem;" class="fade-in">Use this page as a guide to service projects, forms, graphics, and more. Click on the links below to check out our resources for your club.</p>
+  <div class="resource-grid">
+    <div class="resource-card fade-in">
+      <div class="resource-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <h3>Club Officer Guidebooks</h3>
+      <p>Key Club International has provided PDF guidebooks for each member of your club's officer cabinet — downloads for every club officer position.</p>
+      <a href="https://www.keyclub.org/resources/officer-guides-club-officers-lieutenant-governors/" class="resource-btn" target="_blank">Club Officer Guidebooks →</a>
+    </div>
+    <div class="resource-card fade-in">
+      <div class="resource-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+      </div>
+      <h3>Monthly Report Forms</h3>
+      <p>Submit your club's monthly activity reports. Keeping up with these is how your club tracks service hours and stays engaged with the district.</p>
+      <a href="https://engage.kiwanis.org" class="resource-btn" target="_blank">Monthly Report Forms →</a>
+    </div>
+    <div class="resource-card fade-in" id="style-guide">
+      <div class="resource-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="3.5"/><circle cx="17.5" cy="13.5" r="3.5"/><circle cx="8.5" cy="14.5" r="3.5"/></svg>
+      </div>
+      <h3>Key Club Style Guide</h3>
+      <p>Official graphics, wordmarks, and seals created by Key Club International. Contains helpful design tips for club newsletters, advertisements, and documents.</p>
+      <a href="https://www.keyclub.org/resources/key-club-brand-guide/" class="resource-btn" target="_blank">Download Style Guide →</a>
+    </div>
+    <div class="resource-card fade-in">
+      <div class="resource-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>Membership Dues</h3>
+      <p>Learn how to collect and submit your club's annual dues through the Membership Update Center. Keeps your club in good standing with Key Club International.</p>
+      <a href="#" class="resource-btn resource-btn-outline">Learn About Dues →</a>
+    </div>
+    <div class="resource-card fade-in">
+      <div class="resource-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <h3>Programs &amp; Charities</h3>
+      <p>Explore Key Club's preferred charities like UNICEF and Thirst Project, service partners like CollegeWise, and youth programs like the Youth Opportunities Fund.</p>
+      <a href="programs-charities.html" class="resource-btn resource-btn-outline">View Programs →</a>
+    </div>
+    <div class="resource-card fade-in">
+      <div class="resource-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3>DLC Forms &amp; Information</h3>
+      <p>Access registration forms, award applications, candidate packets, and contest entries for the District Leadership Conference.</p>
+      <a href="dlc.html#forms" class="resource-btn resource-btn-outline">DLC Forms →</a>
+    </div>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<!-- MONTHLY REPORT FORMS + DLC FORMS -->
+<div class="forms-bg" id="forms">
+  <div class="forms-inner">
+    <div class="section-label fade-in">DLC 2027</div>
+    <h2 class="section-title fade-in">Forms &amp; <em>Applications</em></h2>
+    <p style="font-size:1rem;color:var(--muted);line-height:1.7;max-width:60ch;margin-top:0.5rem;" class="fade-in">All forms due <strong>February 1st, 2027</strong> unless stated otherwise. All paper forms (PDFs) to be turned in at DLC. Submitting by Feb 1st allows your chapter to appear on the back of the DLC t-shirt.</p>
+
+    <div class="forms-grid">
+      <div class="forms-group fade-in">
+        <h4>Registration</h4>
+        <!-- file #25 = link #25 = https://drive.google.com/file/d/1HVkSVDxGZCHZRCUxNV2ifX1luQNUFJAO/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1HVkSVDxGZCHZRCUxNV2ifX1luQNUFJAO/view?usp=drive_link" class="form-link" target="_blank">Certificate of Club Elections</a>
+        <!-- file #23 = link #23 = https://drive.google.com/file/d/1pAJ5yCMGyS8UR7q3pokeIPimYAzSLa0_/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1pAJ5yCMGyS8UR7q3pokeIPimYAzSLa0_/view?usp=drive_link" class="form-link" target="_blank">Code of Conduct Form</a>
+        <!-- file #18 = link #18 = https://drive.google.com/file/d/1nky0fivb-B7Pieo1SZ0F2G0cSwpO_qE7/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1nky0fivb-B7Pieo1SZ0F2G0cSwpO_qE7/view?usp=drive_link" class="form-link" target="_blank">Delegate Certification Form</a>
+        <!-- file #24 = link #24 = https://drive.google.com/file/d/1A-rOSbB09VOULhbYx1uMUg2ixmwJ99S2/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1A-rOSbB09VOULhbYx1uMUg2ixmwJ99S2/view?usp=drive_link" class="form-link" target="_blank">Conference Registration Form</a>
+        <!-- file #19 = link #19 = https://drive.google.com/file/d/1uujtXGMQFW0c60x76oHoa6AGjvyG2w3f/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1uujtXGMQFW0c60x76oHoa6AGjvyG2w3f/view?usp=drive_link" class="form-link" target="_blank">Hotel Registration Form</a>
+        <!-- file #22 = link #22 = https://drive.google.com/file/d/1Gsng8W7pnCbaU3YRYTcGgUAy3F6ERNvV/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1Gsng8W7pnCbaU3YRYTcGgUAy3F6ERNvV/view?usp=drive_link" class="form-link" target="_blank">Medical Release Form</a>
+        <!-- file #26 = link #26 = https://drive.google.com/file/d/1G8V7TvTfrIXd4QIB5BQL2AKet0AmzIWS/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1zXUoF8-0E7wzK7vTcx0Sr6cKaQMt5Dhu/view?usp=sharing" class="form-link" target="_blank">Ad Sales Form</a>
+      </div>
+
+      <div class="forms-group fade-in">
+        <h4>Awards</h4>
+        <!-- file #31 = link #31 = https://drive.google.com/file/d/1fod0SrBWEZckXhy8SyKXor_F64yvI9pc/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1fod0SrBWEZckXhy8SyKXor_F64yvI9pc/view?usp=drive_link" class="form-link" target="_blank">Member of the Year Award</a>
+        <!-- file #27 = link #27 = https://drive.google.com/file/d/1fUF9Whq9060rTYrXheoQSjI-QcPwxm_i/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1fUF9Whq9060rTYrXheoQSjI-QcPwxm_i/view?usp=drive_link" class="form-link" target="_blank">Public Relations Award</a>
+        <!-- file #29 = link #29 = https://drive.google.com/file/d/1Cwx0fmkQLA-HZljbB83hKVO6jfnAl8NA/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1Cwx0fmkQLA-HZljbB83hKVO6jfnAl8NA/view?usp=drive_link" class="form-link" target="_blank">Single Service Award</a>
+        <!-- file #21 = link #21 = https://drive.google.com/file/d/1TkIGcDkFaufuPujlcVt8IW-O78RKOcX4/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1TkIGcDkFaufuPujlcVt8IW-O78RKOcX4/view?usp=drive_link" class="form-link" target="_blank">Major Emphasis Award</a>
+        <!-- file #30 = link #30 = https://drive.google.com/file/d/1OeDPVvtxcjTLiuU8qTu8p_PkUwhMSjEP/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1OeDPVvtxcjTLiuU8qTu8p_PkUwhMSjEP/view?usp=drive_link" class="form-link" target="_blank">Annual Achievement Report</a>
+        <!-- file #20 = link #20 = https://drive.google.com/file/d/1H7Jp97OyGEjYtzQaS6W-oQ9MFwF0D7hN/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1H7Jp97OyGEjYtzQaS6W-oQ9MFwF0D7hN/view?usp=drive_link" class="form-link" target="_blank">Key of Honor Nomination</a>
+        <!-- file #28 = link #28 = https://drive.google.com/file/d/1fL_xhmpb8iaKqB5rqYskBt-RU_phHqwB/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1fL_xhmpb8iaKqB5rqYskBt-RU_phHqwB/view?usp=drive_link" class="form-link" target="_blank">Signature Project</a>
+        <!-- file #32 = link #32 = https://drive.google.com/file/d/1mlaDrvMrpYfV_zecxJToLt2B6nXuJA0t/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1mlaDrvMrpYfV_zecxJToLt2B6nXuJA0t/view?usp=drive_link" class="form-link" target="_blank">Outstanding Faculty Advisor/Kiwanis Sponsor Award</a>
+      </div>
+
+      <div class="forms-group fade-in">
+        <h4>Contests</h4>
+        <!-- file #7 = link #7 = https://drive.google.com/file/d/1IrrcXv_s6cbYraa2fVStchqq0sHDkyiW/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1WLbvenmwx95RDaCtHBMT9PTsJD97SJFm/view?usp=sharing" class="form-link" target="_blank">Year in Review Contest</a>
+        <!-- file #5 = link #5 = https://drive.google.com/file/d/1yE2ZQX2ymlsKtjDjvAM-YVRHIWd3cSWv/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1Jt3H7EGQOaetXGTKMuMFUnsQHre63XqL/view?usp=drive_link" class="form-link" target="_blank">Talent Contest Entry</a>
+        <!-- file #4 = link #4 = https://drive.google.com/file/d/1ZumfV5pEQNg__x2WZTzI00BB4wTOCjMF/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1IrrcXv_s6cbYraa2fVStchqq0sHDkyiW/view?usp=drive_link" class="form-link" target="_blank">Show Your K Contest</a>
+        <!-- file #6 = link #6 = https://drive.google.com/file/d/1JoE0Vr7m4J1afcsV5lC2i2L_f_uQyvSo/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1ugj42vq0x3UPqdvCJEsskNtj46QLdt2E/view?usp=sharing" class="form-link" target="_blank">Video Contest Entry</a>
+        <!-- file #3 = link #3 = https://drive.google.com/file/d/1Hes8LJF3_izSnKaxdntOHp1tuy9gGDoH/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1Hes8LJF3_izSnKaxdntOHp1tuy9gGDoH/view?usp=drive_link" class="form-link" target="_blank">Oratory Contest Entry</a>
+        <!-- file #1 = link #1 = https://drive.google.com/file/d/1n28Cjt7wuk2Ic73-cOW_V2qHhFJ-wT8Z/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1n28Cjt7wuk2Ic73-cOW_V2qHhFJ-wT8Z/view?usp=drive_link" class="form-link" target="_blank">Nondigital Poster Submission (PDF)</a>
+        <!-- file #2 = link #2 = https://drive.google.com/file/d/1PY9_3JL8_Zp94VQ1gkqC3i2aVSADhKnS/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1PY9_3JL8_Zp94VQ1gkqC3i2aVSADhKnS/view?usp=drive_link" class="form-link" target="_blank">Digital Poster Submission</a>
+        <a href="past-contest-examples.html" class="examples-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5,3 19,12 5,21 5,3"/></svg>
+          Past Contest Examples
+        </a>
+      </div>
+
+      <div class="forms-group fade-in">
+        <h4>District Candidate Packets</h4>
+        <!-- file #17 = link #17 = https://drive.google.com/file/d/1CKT0buUzjQuL6cTZKzZVQrDIPs3XarlP/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1CKT0buUzjQuL6cTZKzZVQrDIPs3XarlP/view?usp=drive_link" class="form-link" target="_blank">Webmaster's Cand. Packet</a>
+        <!-- file #16 = link #16 = https://drive.google.com/file/d/1FhUQEQyi7fOWK7pXnc4IX6cZvTBB9_Yv/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1FhUQEQyi7fOWK7pXnc4IX6cZvTBB9_Yv/view?usp=drive_link" class="form-link" target="_blank">Treasurer's Cand. Packet</a>
+        <!-- file #15 = link #15 = https://drive.google.com/file/d/1EK0Sz1lakkePRUpeTh8mKTx5lPHrCLyr/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1EK0Sz1lakkePRUpeTh8mKTx5lPHrCLyr/view?usp=drive_link" class="form-link" target="_blank">Secretary's Cand. Packet</a>
+        <!-- file #12 = link #12 = https://drive.google.com/file/d/1JIiA5sNaoFTLYeoV4oD2XfJ9911HWwsl/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/114ywjp-eHtDtTchr6kaAyyjs6kwn1fhl/view?usp=sharing" class="form-link" target="_blank">Editor's Cand. Packet</a>
+        <!-- file #13 = link #13 = https://drive.google.com/file/d/1WLbvenmwx95RDaCtHBMT9PTsJD97SJFm/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1JIiA5sNaoFTLYeoV4oD2XfJ9911HWwsl/view?usp=sharing" class="form-link" target="_blank">Governor's Cand. Packet</a>
+        <!-- file #14 = link #14 = https://drive.google.com/file/d/1mCblITpUBmc8sOHOwnCdTQNJM2_Dyk1F/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1mCblITpUBmc8sOHOwnCdTQNJM2_Dyk1F/view?usp=drive_link" class="form-link" target="_blank">Lt. Governor's Cand. Packet</a>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:0.75rem;">All candidates must sign the Reimbursement and Calendar agreement found in their respective packets.</p>
+      </div>
+
+      <div class="forms-group fade-in">
+        <h4>Distinguished Club Member Forms</h4>
+        <!-- file #11 = link #11 = https://drive.google.com/file/d/1ugj42vq0x3UPqdvCJEsskNtj46QLdt2E/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1LqCix_JvafYn_ocrwltCd3xvI3oxO1-0/view?usp=drive_link" class="form-link" target="_blank">Distinguished Vice President</a>
+        <!-- file #10 = link #10 = https://drive.google.com/file/d/114ywjp-eHtDtTchr6kaAyyjs6kwn1fhl/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1JoE0Vr7m4J1afcsV5lC2i2L_f_uQyvSo/view?usp=drive_link" class="form-link" target="_blank">Distinguished Treasurer</a>
+        <!-- file #9 = link #9 = https://drive.google.com/file/d/1Jt3H7EGQOaetXGTKMuMFUnsQHre63XqL/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1yE2ZQX2ymlsKtjDjvAM-YVRHIWd3cSWv/view?usp=drive_link" class="form-link" target="_blank">Distinguished Secretary</a>
+        <!-- file #8 = link #8 = https://drive.google.com/file/d/1LqCix_JvafYn_ocrwltCd3xvI3oxO1-0/view?usp=drive_link -->
+        <a href="https://drive.google.com/file/d/1ZumfV5pEQNg__x2WZTzI00BB4wTOCjMF/view?usp=drive_link" class="form-link" target="_blank">Distinguished President</a>
+      </div>
+
+      <div class="forms-group fade-in" style="background:var(--navy);color:var(--white);">
+        <h4 style="color:var(--gold-lt);border-color:rgba(200,150,42,0.4);">Quick Links</h4>
+        <a href="dlc.html" class="form-link" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.1);">DLC Overview &amp; Info</a>
+        <a href="dlc.html#calendar" class="form-link" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.1);">Event Calendar</a>
+        <a href="newsletters.html" class="form-link" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.1);">District Newsletters</a>
+        <a href="our-district.html#board" class="form-link" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.1);">District Board</a>
+        <a href="contact.html" class="form-link" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.1);">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DUES SECTION -->
+<div class="section">
+  <div class="section-label fade-in">Membership</div>
+  <h2 class="section-title fade-in">Club <em>Dues</em></h2>
+  <div class="dues-card fade-in">
+    <h3>How do I pay my club's dues?</h3>
+    <div class="dues-steps">
+      <div class="dues-step">Collect information from each member of your club (email addresses, year of graduation, etc.)</div>
+      <div class="dues-step">Visit the <a href="https://www.keyclub.org/resources/membership-update-center/" target="_blank">Membership Update Center</a> — here you can add, remove, or update members and officers of your club.</div>
+      <div class="dues-step">Submit your club's payment online. Alternatively, you may print an invoice and send it along with a check to Kiwanis Youth Programs, P.O. Box 6069, Dept. 123, Indianapolis, Indiana, 46206.</div>
+      <div class="dues-step">Learn more at <a href="https://www.keyclub.org" target="_blank">keyclub.org</a></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

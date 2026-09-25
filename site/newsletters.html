@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="marty-chat.js"></script>
+<script src="site-search.js"></script>
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="keyclub_logo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newsletters | MO-ARK District Key Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<script src="components.js"></script>
+<style>
+
+  .page-header{padding-top:68px;background:var(--navy);position:relative;overflow:hidden;}
+  .page-header-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(200,150,42,0.12) 0%,transparent 60%);}
+  .page-header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);}
+  .page-header-inner{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:4rem 1.5rem 3.5rem;}
+  .page-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(200,150,42,0.15);border:1px solid rgba(200,150,42,0.3);border-radius:100px;padding:0.375rem 0.875rem;font-size:0.75rem;font-weight:600;color:var(--gold-lt);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+  .page-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,3.25rem);color:var(--white);line-height:1.1;margin-bottom:1rem;}
+  .page-title em{font-style:italic;color:var(--gold-lt);}
+  .page-desc{font-size:1.0625rem;color:rgba(255,255,255,0.6);line-height:1.75;max-width:55ch;}
+  .breadcrumb{background:var(--cream);border-bottom:1px solid var(--border);}
+  .breadcrumb-inner{max-width:1200px;margin:0 auto;padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;color:var(--muted);}
+  .breadcrumb a{color:var(--blue);}
+  .breadcrumb-sep{opacity:0.4;}
+
+  .section{padding:5rem 1.5rem;max-width:1200px;margin:0 auto;}
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.14em;font-weight:600;color:var(--gold);margin-bottom:0.75rem;}
+  .section-title{font-family:var(--ff-display);font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.1;color:var(--navy);margin-bottom:1rem;}
+  .section-title em{font-style:italic;color:var(--blue);}
+  .section-desc{font-size:1.0625rem;color:var(--muted);line-height:1.75;max-width:52ch;}
+
+  /* INFO BOX */
+  .info-box{background:var(--cream);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem 2rem;margin-bottom:3rem;display:flex;gap:1.25rem;align-items:flex-start;}
+  .info-icon{width:40px;height:40px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white;font-size:1.1rem;}
+  .info-box p{font-size:0.9375rem;color:var(--muted);line-height:1.7;}
+  .info-box p+p{margin-top:0.5rem;}
+
+  /* NEWSLETTER CARDS */
+  .newsletter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-bottom:3rem;}
+  .newsletter-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow var(--transition),transform var(--transition);display:flex;flex-direction:column;}
+  .newsletter-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-4px);}
+  .newsletter-card-header{padding:2rem 2rem 1.25rem;border-bottom:1px solid var(--border);background:var(--navy);position:relative;overflow:hidden;}
+  .newsletter-card-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(200,150,42,0.15) 0%,transparent 60%);}
+  .newsletter-role{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);font-weight:700;margin-bottom:0.5rem;position:relative;z-index:1;}
+  .newsletter-name{font-family:var(--ff-display);font-size:1.5rem;color:var(--white);position:relative;z-index:1;}
+  .newsletter-card-body{padding:1.5rem 2rem 2rem;flex:1;display:flex;flex-direction:column;gap:1rem;}
+  .newsletter-desc{font-size:0.875rem;color:var(--muted);line-height:1.65;flex:1;}
+  .newsletter-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.875rem;transition:all var(--transition);align-self:flex-start;}
+  .newsletter-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 4px 12px rgba(200,150,42,0.4);}
+
+  /* UNIVERSAL FOLDER */
+  .universal-card{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);border-radius:var(--radius);padding:3rem;display:flex;align-items:center;gap:3rem;margin-bottom:4rem;}
+  .universal-icon{font-size:4rem;flex-shrink:0;opacity:0.6;}
+  .universal-text h3{font-family:var(--ff-display);font-size:1.75rem;color:var(--white);margin-bottom:0.75rem;}
+  .universal-text p{font-size:0.9375rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:1.5rem;}
+  .universal-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;background:var(--gold);color:var(--navy);font-weight:700;border-radius:var(--radius-sm);font-size:0.9375rem;transition:all var(--transition);}
+  .universal-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,150,42,0.5);}
+
+  footer{background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);padding:4rem 1.5rem 2rem;}
+  .footer-inner{max-width:1200px;margin:0 auto;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2.5rem;}
+  .footer-brand p{font-size:0.875rem;color:rgba(255,255,255,0.45);line-height:1.7;margin-top:1rem;max-width:32ch;}
+  .footer-col h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold-lt);font-weight:600;margin-bottom:1.25rem;}
+  .footer-col ul{display:flex;flex-direction:column;gap:0.625rem;}
+  .footer-col ul li a{font-size:0.875rem;color:rgba(255,255,255,0.5);transition:color var(--transition);}
+  .footer-col ul li a:hover{color:var(--white);}
+  .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .footer-copy{font-size:0.8125rem;color:rgba(255,255,255,0.3);}
+  .footer-socials{display:flex;gap:0.75rem;}
+  .footer-social{width:36px;height:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);transition:background var(--transition),color var(--transition),border-color var(--transition);}
+  .footer-social:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+  .footer-social svg{width:16px;height:16px;}
+
+  .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .fade-in.visible{opacity:1;transform:translateY(0);}
+
+  @media(max-width:1024px){.universal-card{flex-direction:column;gap:1.5rem;}.footer-top{grid-template-columns:1fr 1fr;}}
+  @media(max-width:900px){.marty-news{display:none;}}
+  @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.newsletter-grid{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="MO-ARK Key Club Home">
+      <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">MO-ARK District</span>
+        <span class="nav-logo-sub">Key Club International</span>
+      </div>
+    </a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item">
+        <a href="about.html" class="nav-link">About
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="about.html">About MO-ARK</a>
+          <a href="about.html#history">Our History</a>
+          <a href="about.html#mission">Mission &amp; Values</a>
+          <div class="nav-dropdown-divider"></div>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a href="our-district.html" class="nav-link">Our District
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="our-district.html#board">District Board</a>
+          <a href="our-district.html#clubs">Club Directory</a>
+          <a href="our-district.html#bylaws">District Bylaws</a>
+        </div>
+      </li>
+      <li><a href="newsletters.html" class="nav-link active">Newsletters</a></li>
+      <li><a href="resources.html" class="nav-link">Resources</a></li>
+      <li class="nav-item">
+        <a href="dlc.html" class="nav-link">Events
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg>
+        </a>
+        <div class="nav-dropdown">
+          <a href="dlc.html">DLC 2027</a>
+          <a href="dlc.html#calendar">Event Calendar</a>
+          <a href="resources.html#forms">DLC Forms</a>
+        </div>
+      </li>
+      <li><a href="contact.html" class="nav-cta nav-link">Contact Us</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <div class="nav-mobile-section">About</div>
+  <a href="about.html">About MO-ARK</a>
+  <a href="about.html#history">Our History</a>
+  <a href="about.html#mission">Mission &amp; Values</a>
+  <div class="nav-mobile-section">District</div>
+  <a href="our-district.html#board">District Board</a>
+  <a href="our-district.html#clubs">Club Directory</a>
+  <a href="our-district.html#bylaws">District Bylaws</a>
+  <div class="nav-mobile-section">Events &amp; Resources</div>
+  <a href="newsletters.html">Newsletters</a>
+  <a href="resources.html">Resources</a>
+  <a href="dlc.html">DLC 2027</a>
+  <div class="nav-mobile-section">Connect</div>
+  <a href="contact.html">Contact Us</a>
+</div>
+
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-grid"></div>
+  <div class="page-header-inner" style="position:relative;">
+    <div class="page-eyebrow">Stay Informed</div>
+    <h1 class="page-title">District <em>Newsletters</em></h1>
+    <p class="page-desc">Division newsletters, the Key Way, Kiwanigram, and more — published throughout the year by our board members.</p>
+
+    <!-- Marty reading the news — sits on the right side of the hero -->
+    <div class="marty-news" aria-hidden="true" style="position:absolute;right:1.5rem;bottom:0.5rem;width:150px;height:auto;pointer-events:none;">
+      <svg viewBox="0 0 180 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.35));display:block;">
+        <!-- Tail -->
+        <path d="M72 245 Q55 260 60 274 Q70 284 85 276 Q90 264 90 252" fill="#C8A06A" stroke="#A07840" stroke-width="1.2"/>
+        <!-- Legs (drawn before body so body covers their top) -->
+        <rect x="68" y="248" width="16" height="22" rx="7" fill="#C89050"/>
+        <rect x="96" y="248" width="16" height="22" rx="7" fill="#C89050"/>
+        <!-- Foot pads -->
+        <ellipse cx="76" cy="272" rx="14" ry="7.5" fill="#7A4A1A"/>
+        <ellipse cx="104" cy="272" rx="14" ry="7.5" fill="#7A4A1A"/>
+        <!-- Toes -->
+        <ellipse cx="67" cy="270" rx="4" ry="3.5" fill="#6A3A10"/>
+        <ellipse cx="76" cy="269" rx="4" ry="3.5" fill="#6A3A10"/>
+        <ellipse cx="85" cy="270" rx="4" ry="3.5" fill="#6A3A10"/>
+        <ellipse cx="95" cy="270" rx="4" ry="3.5" fill="#6A3A10"/>
+        <ellipse cx="104" cy="269" rx="4" ry="3.5" fill="#6A3A10"/>
+        <ellipse cx="113" cy="270" rx="4" ry="3.5" fill="#6A3A10"/>
+        <!-- Toe highlights -->
+        <ellipse cx="67" cy="268.5" rx="2" ry="1.4" fill="#8A5020" opacity="0.55"/>
+        <ellipse cx="76" cy="267.5" rx="2" ry="1.4" fill="#8A5020" opacity="0.55"/>
+        <ellipse cx="85" cy="268.5" rx="2" ry="1.4" fill="#8A5020" opacity="0.55"/>
+        <ellipse cx="95" cy="268.5" rx="2" ry="1.4" fill="#8A5020" opacity="0.55"/>
+        <ellipse cx="104" cy="267.5" rx="2" ry="1.4" fill="#8A5020" opacity="0.55"/>
+        <ellipse cx="113" cy="268.5" rx="2" ry="1.4" fill="#8A5020" opacity="0.55"/>
+        <!-- Body & belly -->
+        <ellipse cx="90" cy="210" rx="42" ry="50" fill="#D4A574"/>
+        <ellipse cx="90" cy="215" rx="23" ry="34" fill="#F0D8B0"/>
+        <!-- Shirt -->
+        <path d="M52 178 Q52 158 90 156 Q128 158 128 178 L130 232 Q130 242 90 244 Q50 242 50 232 Z" fill="#1A6BAA"/>
+        <path d="M76 156 Q90 151 104 156 L104 170 Q90 164 76 170 Z" fill="#1558A0"/>
+        <!-- Chest fluff -->
+        <ellipse cx="90" cy="160" rx="20" ry="10" fill="#D4A574"/>
+        <!-- Head -->
+        <ellipse cx="90" cy="118" rx="44" ry="42" fill="#D4A574"/>
+        <ellipse cx="52" cy="93" rx="11" ry="14" fill="#C89050"/>
+        <ellipse cx="128" cy="93" rx="11" ry="14" fill="#C89050"/>
+        <ellipse cx="74" cy="115" rx="17" ry="14" fill="#6B3A1A" opacity=".75"/>
+        <ellipse cx="106" cy="115" rx="17" ry="14" fill="#6B3A1A" opacity=".75"/>
+        <!-- Snout -->
+        <ellipse cx="90" cy="130" rx="22" ry="18" fill="#F0D8B0"/>
+        <ellipse cx="90" cy="126" rx="6" ry="4" fill="#3A2010"/>
+        <path d="M84 134 Q90 137 96 134" stroke="#7A4A1A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- Eyes looking DOWN at the paper -->
+        <ellipse cx="74" cy="113" rx="9" ry="9.5" fill="#FFFEF8"/>
+        <ellipse cx="106" cy="113" rx="9" ry="9.5" fill="#FFFEF8"/>
+        <circle cx="74" cy="118" r="6" fill="#3A2010"/>
+        <circle cx="106" cy="118" r="6" fill="#3A2010"/>
+        <circle cx="74" cy="119" r="3.2" fill="#0A0604"/>
+        <circle cx="106" cy="119" r="3.2" fill="#0A0604"/>
+        <circle cx="76" cy="117" r="1.5" fill="white" opacity=".9"/>
+        <circle cx="108" cy="117" r="1.5" fill="white" opacity=".9"/>
+        <!-- Eyebrows -->
+        <path d="M64 100 Q74 96 84 100" stroke="#5A3010" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M96 100 Q106 96 116 100" stroke="#5A3010" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Cowboy hat -->
+        <ellipse cx="90" cy="80" rx="52" ry="10" fill="#1A1008"/>
+        <path d="M48 80 Q46 45 90 42 Q134 45 132 80 Z" fill="#1A1008"/>
+        <path d="M52 78 Q90 74 128 78" stroke="#8B6020" stroke-width="4" fill="none"/>
+        <!-- Arms holding newspaper up -->
+        <path d="M52 178 Q50 175 50 172" stroke="#C89050" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <path d="M128 178 Q130 175 130 172" stroke="#C89050" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <!-- Newspaper -->
+        <rect x="44" y="172" width="92" height="68" fill="#FFFEF8" stroke="#3A2010" stroke-width="0.9" rx="1"/>
+        <!-- Slight fold shadow -->
+        <line x1="90" y1="172" x2="90" y2="240" stroke="#E6DDC9" stroke-width="0.8"/>
+        <!-- Masthead -->
+        <rect x="46" y="174" width="88" height="13" fill="#0A1628"/>
+        <text x="90" y="184" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="bold" fill="#F0C14B" letter-spacing="0.5">MO-ARK KEY WAY</text>
+        <!-- Headline -->
+        <rect x="48" y="191" width="84" height="3.5" fill="#1A1008"/>
+        <!-- Left column lines -->
+        <line x1="48" y1="200" x2="86" y2="200" stroke="#5A5A6A" stroke-width="0.8"/>
+        <line x1="48" y1="203" x2="84" y2="203" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="206" x2="86" y2="206" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="209" x2="80" y2="209" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="212" x2="86" y2="212" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="215" x2="82" y2="215" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="218" x2="86" y2="218" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="221" x2="76" y2="221" stroke="#8A95A8" stroke-width="0.7"/>
+        <!-- Right column lines -->
+        <line x1="94" y1="200" x2="132" y2="200" stroke="#5A5A6A" stroke-width="0.8"/>
+        <line x1="94" y1="203" x2="130" y2="203" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="94" y1="206" x2="132" y2="206" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="94" y1="209" x2="126" y2="209" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="94" y1="212" x2="132" y2="212" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="94" y1="215" x2="128" y2="215" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="94" y1="218" x2="132" y2="218" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="94" y1="221" x2="122" y2="221" stroke="#8A95A8" stroke-width="0.7"/>
+        <!-- Lower sub-headline + lines -->
+        <rect x="48" y="226" width="50" height="2.5" fill="#1A1008"/>
+        <line x1="48" y1="232" x2="132" y2="232" stroke="#8A95A8" stroke-width="0.7"/>
+        <line x1="48" y1="235" x2="128" y2="235" stroke="#8A95A8" stroke-width="0.7"/>
+        <!-- Paws gripping top corners -->
+        <ellipse cx="50" cy="172" rx="7" ry="5" fill="#7A4A1A"/>
+        <ellipse cx="130" cy="172" rx="7" ry="5" fill="#7A4A1A"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Newsletters</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-box fade-in">
+    <div class="info-icon">ℹ</div>
+    <div>
+      <p>Division newsletters are created each month by lieutenant governors for their respective divisions.</p>
+      <p>The district secretary and treasurer may include their own newsletter along with the division newsletters. The editor creates the Key Way and Kiwanigram newsletters.</p>
+    </div>
+  </div>
+
+  <!-- UNIVERSAL FOLDER -->
+  <div class="universal-card fade-in">
+    <div class="universal-icon">📁</div>
+    <div class="universal-text">
+      <h3>Universal Newsletter Folder</h3>
+      <p>Access all newsletters in one place — division newsletters, officer publications, and district-wide communications organized by month and publication.</p>
+      <a href="https://drive.google.com/drive/folders/1PE8nmaj95plX_2PcK0auckV5dhV-YT7e?usp=sharing" class="universal-btn" target="_blank">
+        Open Universal Folder
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-label fade-in">Publications by Role</div>
+  <h2 class="section-title fade-in">Browse <em>Newsletters</em></h2>
+  <p class="section-desc fade-in" style="margin-bottom:3rem;">Each newsletter serves a unique purpose in keeping the MO-ARK district connected. Browse by publication type below.</p>
+
+  <div class="newsletter-grid">
+    <div class="newsletter-card fade-in">
+      <div class="newsletter-card-header">
+        <div class="newsletter-role">Executive Board</div>
+        <div class="newsletter-name">Governor's Letter</div>
+      </div>
+      <div class="newsletter-card-body">
+        <p class="newsletter-desc">Monthly updates and messages from the District Governor — highlighting district priorities, upcoming events, and milestones.</p>
+        <a href="https://issuu.com/governors-newsletter" class="newsletter-btn" target="_blank">Open Folder →</a>
+      </div>
+    </div>
+    <div class="newsletter-card fade-in">
+      <div class="newsletter-card-header">
+        <div class="newsletter-role">Executive Board</div>
+        <div class="newsletter-name">Secretary's Newsletter</div>
+      </div>
+      <div class="newsletter-card-body">
+        <p class="newsletter-desc">Updates from the District Secretary covering board meeting notes, official announcements, and administrative reminders.</p>
+        <a href="https://issuu.com/mo-arkkeyclubdistrict/stacks/3c8d6199219c453c82abf960c31d502c" class="newsletter-btn" target="_blank">Open Folder →</a>
+      </div>
+    </div>
+    <div class="newsletter-card fade-in">
+      <div class="newsletter-card-header">
+        <div class="newsletter-role">Executive Board</div>
+        <div class="newsletter-name">Treasurer's Report</div>
+      </div>
+      <div class="newsletter-card-body">
+        <p class="newsletter-desc">Financial updates and dues reminders from the District Treasurer to keep clubs informed about obligations and deadlines.</p>
+        <a href="https://issuu.com/mo-arkkeyclubdistrict/stacks/d59926b55a5c45e1b5d4a858da8438bb" class="newsletter-btn" target="_blank">Open Folder →</a>
+      </div>
+    </div>
+    <div class="newsletter-card fade-in">
+      <div class="newsletter-card-header" style="background:linear-gradient(135deg,var(--blue) 0%,var(--navy) 100%);">
+        <div class="newsletter-role">District Publication</div>
+        <div class="newsletter-name">Key Way</div>
+      </div>
+      <div class="newsletter-card-body">
+        <p class="newsletter-desc">The district-wide publication created by our Editor — featuring highlights, stories, and news from across the Missouri-Arkansas District.</p>
+        <a href="https://issuu.com/mo-arkkeyclubdistrict/stacks/7b0e0e7292d649f08fe9c3efe67a7bc7" class="newsletter-btn" target="_blank">Open Folder →</a>
+      </div>
+    </div>
+    <div class="newsletter-card fade-in">
+      <div class="newsletter-card-header" style="background:linear-gradient(135deg,var(--blue) 0%,var(--navy) 100%);">
+        <div class="newsletter-role">Kiwanis Family</div>
+        <div class="newsletter-name">Kiwanigram</div>
+      </div>
+      <div class="newsletter-card-body">
+        <p class="newsletter-desc">The Kiwanigram connects Key Club members with the broader Kiwanis family, sharing service highlights and family-wide news.</p>
+        <a href="https://issuu.com/mo-arkkeyclubdistrict/stacks/7b0e0e7292d649f08fe9c3efe67a7bc7" class="newsletter-btn" target="_blank">Open Folder →</a>
+      </div>
+    </div>
+    <div class="newsletter-card fade-in">
+      <div class="newsletter-card-header" style="background:linear-gradient(135deg,#2A1A60 0%,var(--navy) 100%);">
+        <div class="newsletter-role">All Divisions</div>
+        <div class="newsletter-name">Division Newsletters</div>
+      </div>
+      <div class="newsletter-card-body">
+        <p class="newsletter-desc">Monthly newsletters from each of our 10 lieutenant governors for their respective divisions. Stay connected with your local region's events and service.</p>
+        <a href="#" class="newsletter-btn">Open Folder →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:0.5rem;">
+          <img src="keyclub_logo.png" alt="Key Club Logo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name">MO-ARK District</span>
+            <span class="nav-logo-sub">Key Club International</span>
+          </div>
+        </div>
+        <p>Serving the home, school, and community across Missouri and Arkansas since 1947. One of 33 districts of Key Club International.</p>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="about.html">About MO-ARK</a></li>
+          <li><a href="about.html#history">Our History</a></li>
+          <li><a href="about.html#mission">Mission &amp; Values</a></li>
+          <li><a href="our-district.html#board">District Board</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Events</h4>
+        <ul>
+          <li><a href="dlc.html#calendar">Event Calendar</a></li>
+          <li><a href="extended-calendar.html">Extended Calendar</a></li>
+          <li><a href="dlc.html">DLC 2027</a></li>
+          <li><a href="newsletters.html">Newsletters</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="resources.html#club">Club Resources</a></li>
+          <li><a href="our-district.html#clubs">Club Directory</a></li>
+          <li><a href="our-district.html#bylaws">District Bylaws</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-partners">
+      <div class="footer-partners-label">Partners &amp; Preferred Charities</div>
+      <div class="footer-partners-row">
+        <a href="https://www.kiwanis.org" target="_blank" rel="noopener" class="footer-partner" title="Kiwanis International — our parent organization"><img src="Images/Kiwanis International Logo.png" alt="Kiwanis International"></a>
+        <a href="https://www.unicefusa.org" target="_blank" rel="noopener" class="footer-partner" title="UNICEF — Trick-or-Treat for UNICEF partner"><img src="Images/UNICEF Logo.png" alt="UNICEF"></a>
+        <a href="https://www.thirstproject.org" target="_blank" rel="noopener" class="footer-partner" title="Thirst Project — clean-water preferred charity"><img src="Images/Thirst Project Logo.png" alt="Thirst Project"></a>
+        <a href="https://www.erikaslighthouse.org" target="_blank" rel="noopener" class="footer-partner" title="Erika's Lighthouse — youth mental health partner"><img src="Images/Erika&apos;s Lighthouse Logo.png" alt="Erika&apos;s Lighthouse"></a>
+        <a href="https://schoolhouse.world" target="_blank" rel="noopener" class="footer-partner" title="Schoolhouse — peer tutoring service partner"><img src="Images/Schoolhouse Logo.png" alt="Schoolhouse"></a>
+        <a href="https://www.collegewise.com" target="_blank" rel="noopener" class="footer-partner" title="CollegeWise — college admissions service partner"><img src="Images/Collegewise Logo.svg" alt="CollegeWise"></a>
+        <a href="https://www.keyclub.org" target="_blank" rel="noopener" class="footer-partner" title="Key Club International"><img src="Images/Key Club Logo.png" alt="Key Club International"></a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Key Club International | Missouri-Arkansas District. All rights reserved.</p>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moarkdistrict/" class="footer-social" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3 6.34 6.34 0 0 0 9.49 21.6a6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.05-.1z"/></svg></a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add('visible'), i * 80); observer.unobserve(entry.target); }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+<script src="transitions.js"></script>
+</body>
+</html>

