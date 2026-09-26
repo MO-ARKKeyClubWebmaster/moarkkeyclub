@@ -380,9 +380,9 @@ const NOTIFY = (() => {
   const bellActive = here === 'notifications.html' ? 'active' : '';
 
   nav.innerHTML = `
-    <a href="dashboard.html" class="topnav-logo">
+    <a href="index.html" class="topnav-logo">
       <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
-      <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">Officer Portal</div></div>
+      <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">District Command Center</div></div>
     </a>
     <div class="topnav-divider"></div>
     <button class="nav-burger" id="navBurger" aria-label="Menu">☰</button>
