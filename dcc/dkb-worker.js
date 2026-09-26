@@ -251,19 +251,27 @@ async function ask(env, question, user) {
     'contain the answer, say you don’t see it in the documents you have access ' +
     'to — do not guess. Never mention documents that are not in the sources.';
 
-  let answer;
-  try {
-    const out = await env.AI.run(LLM_MODEL, {
-      messages: [
-        { role: 'system', content: sys },
-        { role: 'user', content: `Sources:\n${context}\n\nQuestion: ${question}` },
-      ],
-      max_tokens: 700,
-    });
-    answer = (out && (out.response || out.result)) || 'Sorry — I couldn’t generate an answer just now.';
-  } catch (e) {
-    answer = 'Sorry — the answer engine hit an error. The matching documents are linked below.';
+  const MODELS = [
+    '@cf/meta/llama-3.1-8b-instruct',
+    '@cf/meta/llama-3.1-8b-instruct-fast',
+    '@cf/meta/llama-3-8b-instruct',
+    '@cf/meta/llama-3.2-3b-instruct',
+    '@cf/mistral/mistral-7b-instruct-v0.2',
+  ];
+  const prompt = `Sources:\n${context}\n\nQuestion: ${question}`;
+  let answer = '', lastErr = '';
+  for (const m of MODELS) {
+    try {
+      const out = await env.AI.run(m, {
+        messages: [ { role: 'system', content: sys }, { role: 'user', content: prompt } ],
+        max_tokens: 512,
+      });
+      answer = (out && (out.response || out.result ||
+        (out.choices && out.choices[0] && out.choices[0].message && out.choices[0].message.content))) || '';
+      if (answer && answer.trim()) { answer = answer.trim(); break; }
+    } catch (e) { lastErr = String((e && e.message) || e); }
   }
+  if (!answer) return { answer: 'The answer engine is unavailable right now — here are the matching documents.', citations, debug: lastErr };
   return { answer, citations };
 }
 
