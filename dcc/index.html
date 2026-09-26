@@ -92,7 +92,7 @@
   .dcc-hero{position:relative;z-index:2;text-align:left;padding-top:clamp(1.25rem,4vw,2.5rem);padding-bottom:.25rem;}
   .dcc-hero .eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-lt);font-weight:700;}
   .dcc-hero h1{font-family:var(--ff-display);font-size:clamp(1.7rem,3.6vw,2.7rem);margin-top:.4rem;line-height:1.12;
-    text-shadow:0 2px 18px rgba(0,0,0,.45);max-width:22ch;}
+    text-shadow:0 2px 18px rgba(0,0,0,.45);max-width:34ch;}
   .dcc-grid{position:relative;z-index:2;display:grid;gap:1.4rem;justify-content:start;
     grid-template-columns:repeat(auto-fill,minmax(150px,168px));margin-top:2rem;padding-bottom:2rem;}
   .app{display:flex;flex-direction:column;align-items:center;gap:.75rem;cursor:pointer;
@@ -405,8 +405,7 @@
   }
 
   document.getElementById('dccSignOut').addEventListener('click', function(){
-    try { AUTH.logout(); } catch(_){}
-    window.location.href = 'index.html';
+    AUTH.logout();
   });
   document.getElementById('loginForm').addEventListener('submit', async function(e){
     e.preventDefault();
