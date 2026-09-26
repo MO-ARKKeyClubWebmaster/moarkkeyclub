@@ -710,3 +710,11 @@ body::before {
 .notif-list .notif-item { padding: 1rem 1.4rem; }
 .notif-list .notif-ic { width: 40px; height: 40px; font-size: 1.15rem; }
 @media (max-width: 900px){ .notif-menu { position: fixed; top: 64px; right: 8px; left: 8px; width: auto; } }
+
+
+/* ── Standalone app chrome (Console, Notifications — launched from the DCC home) ── */
+.app-bar{display:flex;align-items:center;gap:.9rem;padding:.8rem clamp(1rem,4vw,2rem);background:var(--navy);color:#fff;position:sticky;top:0;z-index:60;box-shadow:0 2px 12px rgba(0,0,0,.12);}
+.app-bar .app-back{display:inline-flex;align-items:center;gap:.35rem;color:#fff;font-weight:600;font-size:.88rem;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);padding:.45rem .85rem;border-radius:9px;transition:background .15s;text-decoration:none;}
+.app-bar .app-back:hover{background:rgba(255,255,255,.20);}
+.app-bar .app-logo{width:30px;height:30px;object-fit:contain;margin-left:.25rem;}
+.app-bar .app-title{font-family:var(--ff-display);font-size:1.2rem;font-weight:700;}

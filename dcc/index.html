@@ -112,14 +112,14 @@
   .dcc-bell:hover{background:rgba(255,255,255,.20);}
   .dcc-bell-badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;
     background:var(--gold);color:var(--navy);font-size:.62rem;font-weight:800;display:grid;place-items:center;line-height:1;}
-  .dcc-inbox{position:absolute;top:52px;right:0;width:340px;max-width:86vw;display:none;z-index:6;color:#fff;overflow:hidden;
+  .dcc-inbox{position:absolute;top:52px;right:0;width:340px;max-width:86vw;max-height:calc(100vh - 78px);display:none;flex-direction:column;z-index:6;color:#fff;overflow:hidden;
     background:rgba(14,24,44,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
     border:1px solid rgba(255,255,255,.16);border-radius:16px;box-shadow:0 22px 54px rgba(0,0,0,.5);}
-  .dcc-inbox.open{display:block;}
+  .dcc-inbox.open{display:flex;}
   .dcc-inbox-head{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;
     border-bottom:1px solid rgba(255,255,255,.12);font-weight:700;font-size:.9rem;}
   .dcc-inbox-head button{background:none;border:none;color:var(--gold-lt);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--ff-body);}
-  .dcc-inbox-body{max-height:min(60vh,440px);overflow:auto;}
+  .dcc-inbox-body{flex:1 1 auto;min-height:0;overflow:auto;}
   .dcc-nitem{display:flex;gap:.7rem;align-items:flex-start;padding:.8rem 1rem;cursor:pointer;position:relative;
     border-bottom:1px solid rgba(255,255,255,.07);transition:background .12s;}
   .dcc-nitem:hover{background:rgba(255,255,255,.07);}
@@ -243,7 +243,22 @@
         <div class="app-name">Console</div>
         <div class="app-tag">Admin</div>
       </div>
-      <!-- 4 more apps will be added here -->
+      <!-- App 3: Notifications -->
+      <div class="app" role="button" tabindex="0" data-href="notifications.html"
+           onclick="location.href=this.dataset.href"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();location.href=this.dataset.href;}">
+        <svg class="app-icon" viewBox="0 0 96 96" role="img" aria-label="Notifications">
+          <defs><linearGradient id="ntfBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173257"/><stop offset="1" stop-color="#0B1B33"/></linearGradient></defs>
+          <rect x="4" y="4" width="88" height="88" rx="21" fill="url(#ntfBg)" stroke="rgba(255,255,255,.10)" stroke-width="1.5"/>
+          <g fill="none" stroke="#E8B84B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M34 45a14 14 0 0 1 28 0c0 10 4 13 6 16H28c2-3 6-6 6-16Z"/>
+            <path d="M42 67a6 6 0 0 0 12 0"/>
+          </g>
+        </svg>
+        <div class="app-name">Notifications</div>
+        <div class="app-tag">Inbox</div>
+      </div>
+      <!-- 3 more apps will be added here -->
     </div>
 
     <div class="dcc-foot dcc-pad">MO-ARK District Command Center &middot; Caring - our way of life.</div>
