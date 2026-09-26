@@ -35,13 +35,13 @@
 // ══════════════ EDIT THESE ══════════════════════════════════════════════
 // The service account's email address (from the Google Cloud console — it
 // looks like  dkb-reader@your-project.iam.gserviceaccount.com ).
-var SERVICE_ACCOUNT_EMAIL = 'PASTE-SERVICE-ACCOUNT-EMAIL-HERE';
+var SERVICE_ACCOUNT_EMAIL = 'dkb-reader-686@moark-dkb.iam.gserviceaccount.com';
 
 // Webmaster address that also receives every account's run summary.
 var RAHUL_EMAIL = 'moarkkeyclubwebmaster@gmail.com';
 
 // SAFETY SWITCH — leave TRUE for the first run, then set to false.
-var DRY_RUN = true;
+var DRY_RUN = false;
 // ═════════════════════════════════════════════════════════════════════════
 
 
