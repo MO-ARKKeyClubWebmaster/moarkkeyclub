@@ -388,17 +388,6 @@ const NOTIFY = (() => {
     <button class="nav-burger" id="navBurger" aria-label="Menu">☰</button>
     <div class="topnav-links" id="navLinks">${linkHTML}</div>
     <div class="topnav-user">
-      <div class="nav-bell-wrap">
-        <button class="nav-bell ${bellActive}" id="navBell" aria-label="Notifications" title="Notifications">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
-          <span class="nav-bell-badge" id="navBellBadge" hidden>0</span>
-        </button>
-        <div class="notif-menu" id="notifMenu">
-          <div class="notif-menu-head"><span>Notifications</span><button class="notif-mark" id="notifMarkAll">Mark all read</button></div>
-          <div class="notif-menu-body" id="notifMenuBody">${PORTAL.loading('')}</div>
-          <a class="notif-menu-foot" href="notifications.html">View all notifications →</a>
-        </div>
-      </div>
       <button class="nav-menu-btn" id="navMenuBtn">
         <span class="topnav-username" id="navName">${me.name}</span>
         <span class="role-chip role-${session.role}" id="navRole">${roleLabel}</span>
@@ -410,7 +399,6 @@ const NOTIFY = (() => {
           <div><div class="nav-menu-name">${me.name}</div><div class="nav-menu-sub">${me.title}</div></div>
         </div>
         <a class="nav-menu-item" href="profile.html">👤 &nbsp;My Profile</a>
-        <a class="nav-menu-item" href="notifications.html">🔔 &nbsp;Notifications</a>
         <a class="nav-menu-item" href="dashboard.html">🏠 &nbsp;Dashboard</a>
         <button class="nav-menu-item danger" id="navSignOut">⏻ &nbsp;Sign out</button>
       </div>
@@ -419,17 +407,11 @@ const NOTIFY = (() => {
   // User dropdown
   const menu = nav.querySelector('#navMenu');
   const menuBtn = nav.querySelector('#navMenuBtn');
-  menuBtn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); notifMenu.classList.remove('open'); });
+  menuBtn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
   nav.querySelector('#navSignOut').addEventListener('click', () => AUTH.logout());
-
-  // Notifications dropdown
-  const bell = nav.querySelector('#navBell');
-  const notifMenu = nav.querySelector('#notifMenu');
-  bell.addEventListener('click', e => { e.stopPropagation(); notifMenu.classList.toggle('open'); menu.classList.remove('open'); });
 
   document.addEventListener('click', e => {
     if (!menu.contains(e.target) && !menuBtn.contains(e.target)) menu.classList.remove('open');
-    if (!notifMenu.contains(e.target) && !bell.contains(e.target)) notifMenu.classList.remove('open');
   });
 
   // Mobile burger
@@ -437,32 +419,6 @@ const NOTIFY = (() => {
   const linksEl = nav.querySelector('#navLinks');
   burger.addEventListener('click', () => linksEl.classList.toggle('open'));
 
-  // ── Load notifications (async, non-blocking) ─────────────────────────
-  let notifs = [];
-  function paintBadge() {
-    const n = NOTIFY.unreadCount(session.email, notifs);
-    const badge = nav.querySelector('#navBellBadge');
-    if (n > 0) { badge.textContent = n > 9 ? '9+' : String(n); badge.hidden = false; bell.classList.add('has-unread'); }
-    else { badge.hidden = true; bell.classList.remove('has-unread'); }
-  }
-  function paintList() {
-    const body = nav.querySelector('#notifMenuBody');
-    if (!notifs.length) { body.innerHTML = `<div class="notif-empty">You're all caught up 🎉</div>`; return; }
-    body.innerHTML = notifs.slice(0, 8).map(n => NOTIFY.itemHTML(session, n)).join('');
-    body.querySelectorAll('[data-nid]').forEach(el => el.addEventListener('click', () => {
-      NOTIFY.markRead(session.email, [el.dataset.nid]);
-      if (el.dataset.link) location.href = el.dataset.link;
-    }));
-  }
-  nav.querySelector('#notifMarkAll').addEventListener('click', () => {
-    NOTIFY.markRead(session.email, notifs.map(n => n.id));
-    paintBadge(); paintList();
-  });
-
-  if (typeof API !== 'undefined') {
-    NOTIFY.fetchData().then(data => { notifs = NOTIFY.compute(session, data); paintBadge(); paintList(); })
-      .catch(() => { const body = nav.querySelector('#notifMenuBody'); if (body) body.innerHTML = `<div class="notif-empty">Couldn't load notifications.</div>`; });
-  }
 })();
 
 /* ─────────────────────────────────────────────────────────────────────────

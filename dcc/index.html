@@ -106,6 +106,31 @@
   .app-tag{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-lt);font-weight:700;}
   .dcc-foot{position:relative;z-index:2;margin-top:auto;text-align:center;
     padding-top:.75rem;padding-bottom:1.1rem;font-size:.74rem;color:rgba(255,255,255,.55);}
+  .dcc-bell-wrap{position:relative;}
+  .dcc-bell{position:relative;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;color:#fff;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:11px;transition:background .15s;}
+  .dcc-bell:hover{background:rgba(255,255,255,.20);}
+  .dcc-bell-badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;
+    background:var(--gold);color:var(--navy);font-size:.62rem;font-weight:800;display:grid;place-items:center;line-height:1;}
+  .dcc-inbox{position:absolute;top:52px;right:0;width:340px;max-width:86vw;display:none;z-index:6;color:#fff;overflow:hidden;
+    background:rgba(14,24,44,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.16);border-radius:16px;box-shadow:0 22px 54px rgba(0,0,0,.5);}
+  .dcc-inbox.open{display:block;}
+  .dcc-inbox-head{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;
+    border-bottom:1px solid rgba(255,255,255,.12);font-weight:700;font-size:.9rem;}
+  .dcc-inbox-head button{background:none;border:none;color:var(--gold-lt);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--ff-body);}
+  .dcc-inbox-body{max-height:min(60vh,440px);overflow:auto;}
+  .dcc-nitem{display:flex;gap:.7rem;align-items:flex-start;padding:.8rem 1rem;cursor:pointer;position:relative;
+    border-bottom:1px solid rgba(255,255,255,.07);transition:background .12s;}
+  .dcc-nitem:hover{background:rgba(255,255,255,.07);}
+  .dcc-nitem.unread{background:rgba(200,150,42,.10);}
+  .dcc-nic{width:30px;height:30px;flex:none;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:.95rem;}
+  .dcc-ntitle{font-size:.85rem;font-weight:600;line-height:1.25;}
+  .dcc-nbody{font-size:.78rem;color:rgba(255,255,255,.72);line-height:1.35;margin-top:.15rem;}
+  .dcc-ntime{font-size:.68rem;color:rgba(255,255,255,.5);margin-top:.25rem;}
+  .dcc-ndot{width:8px;height:8px;flex:none;margin-top:.35rem;border-radius:50%;background:var(--gold);}
+  .dcc-inbox-foot{display:block;text-align:center;padding:.7rem;font-size:.8rem;color:var(--gold-lt);border-top:1px solid rgba(255,255,255,.12);}
+  .dcc-inbox-empty{padding:2rem 1rem;text-align:center;color:rgba(255,255,255,.66);font-size:.85rem;}
   @media (max-width:560px){
     .dcc-clock{display:none;}
     .dcc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
@@ -158,6 +183,17 @@
       </div>
       <div class="dcc-right">
         <div class="dcc-clock"><div class="t" id="dccTime"></div><div class="d" id="dccDate"></div></div>
+        <div class="dcc-bell-wrap">
+          <button class="dcc-bell" id="dccBell" aria-label="Notifications" title="Notifications">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="dcc-bell-badge" id="dccBellBadge" hidden>0</span>
+          </button>
+          <div class="dcc-inbox" id="dccInbox">
+            <div class="dcc-inbox-head"><span>Notifications</span><button id="dccMarkAll">Mark all read</button></div>
+            <div class="dcc-inbox-body" id="dccInboxBody">Loading&hellip;</div>
+            <a class="dcc-inbox-foot" href="notifications.html">View all notifications &rarr;</a>
+          </div>
+        </div>
         <button class="dcc-signout" id="dccSignOut">Sign out</button>
       </div>
     </div>
@@ -200,6 +236,7 @@
 <script src="portal.js"></script>
 <script src="auth.js"></script>
 <script src="logger.js"></script>
+<script src="api.js"></script>
 <script>
   /* ---- Time-aware greetings (150 lines, distinct from the dashboard's) ---- */
   const GREETINGS = {
@@ -399,6 +436,58 @@
     document.getElementById('dccGreet').textContent = g.text;
     document.body.classList.add('dcc-active');
     startClock();
+    dccInitInbox();
+  }
+  /* ---- Desktop notifications inbox (home-styled, powered by NOTIFY) ---- */
+  var dccNotifs = [];
+  function dccEsc(x){
+    if (window.PORTAL && PORTAL.escapeHTML) return PORTAL.escapeHTML(x);
+    return String(x==null?"":x).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});
+  }
+  function dccItem(session,n){
+    var unread = NOTIFY.isUnread(session.email, n.id);
+    var ic = (NOTIFY.ICON && NOTIFY.ICON[n.kind]) || "•";
+    return '<div class="dcc-nitem '+(unread?"unread":"")+'" data-nid="'+n.id+'" data-link="'+(n.link||"")+'">'
+      + '<span class="dcc-nic">'+ic+'</span>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div class="dcc-ntitle">'+dccEsc(n.title)+'</div>'
+      + '<div class="dcc-nbody">'+dccEsc(n.body||"")+'</div>'
+      + '<div class="dcc-ntime">'+NOTIFY.relTime(n.time)+'</div>'
+      + '</div>'
+      + (unread?'<span class="dcc-ndot"></span>':'')
+      + '</div>';
+  }
+  function dccBadge(session){
+    var c = NOTIFY.unreadCount(session.email, dccNotifs);
+    var b = document.getElementById('dccBellBadge');
+    if (c>0){ b.textContent = c>9?'9+':String(c); b.hidden=false; } else { b.hidden=true; }
+  }
+  function dccInboxPaint(session){
+    var body = document.getElementById('dccInboxBody');
+    if (!dccNotifs.length){ body.innerHTML = '<div class="dcc-inbox-empty">You’re all caught up 🎉</div>'; return; }
+    body.innerHTML = dccNotifs.slice(0,10).map(function(n){return dccItem(session,n);}).join('');
+    body.querySelectorAll('[data-nid]').forEach(function(el){
+      el.addEventListener('click', function(){
+        NOTIFY.markRead(session.email, [el.dataset.nid]);
+        if (el.dataset.link) location.href = el.dataset.link;
+      });
+    });
+  }
+  function dccInitInbox(){
+    var session = AUTH.getUser(); if(!session) return;
+    var bell = document.getElementById('dccBell'), inbox = document.getElementById('dccInbox');
+    bell.addEventListener('click', function(e){ e.stopPropagation(); inbox.classList.toggle('open'); });
+    document.addEventListener('click', function(e){ if(!inbox.contains(e.target) && !bell.contains(e.target)) inbox.classList.remove('open'); });
+    document.getElementById('dccMarkAll').addEventListener('click', function(){
+      NOTIFY.markRead(session.email, dccNotifs.map(function(n){return n.id;}));
+      dccBadge(session); dccInboxPaint(session);
+    });
+    if (typeof NOTIFY!=='undefined' && typeof API!=='undefined'){
+      NOTIFY.fetchData().then(function(data){ dccNotifs = NOTIFY.compute(session,data); dccBadge(session); dccInboxPaint(session); })
+        .catch(function(){ document.getElementById('dccInboxBody').innerHTML = '<div class="dcc-inbox-empty">Couldn’t load notifications.</div>'; });
+    } else {
+      document.getElementById('dccInboxBody').innerHTML = '<div class="dcc-inbox-empty">You’re all caught up 🎉</div>';
+    }
   }
   function preloadBoard(){
     return new Promise(res=>{ const i=new Image(); i.onload=i.onerror=res; i.src='assets/board.png'; });
