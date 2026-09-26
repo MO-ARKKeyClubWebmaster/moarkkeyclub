@@ -235,9 +235,17 @@ async function ask(env, question, user) {
   if (!visible.length)
     return { answer: 'I don’t have any indexed documents I can share with your role yet. If you just set this up, run a sync first.', citations: [] };
 
+  const STOP = new Set(['the','a','an','of','to','in','on','for','and','or','is','was','were','are','be','do','did','does','what','when','where','who','how','why','which','that','this','it','with','about','our','your','my']);
+  const qTokens = question.toLowerCase().split(/\W+/).filter((t) => t.length > 2 && !STOP.has(t));
+  const titleScore = (title) => {
+    const t = (title || '').toLowerCase();
+    if (!qTokens.length) return 0;
+    let hit = 0; qTokens.forEach((w) => { if (t.indexOf(w) !== -1) hit++; });
+    return hit / qTokens.length;
+  };
   const qvec = (await embedOne(env, question));
   const scored = visible
-    .map((c) => ({ c, s: cosine(qvec, c.emb) }))
+    .map((c) => ({ c, s: cosine(qvec, c.emb) + 0.4 * titleScore(c.title) }))
     .sort((a, b) => b.s - a.s)
     .slice(0, 8);
 
@@ -376,7 +384,8 @@ async function syncAll(env) {
     const text = await extractText(token, f);
     const parts = chunkText(text);
     if (parts.length) {
-      const vecs = await embedMany(env, parts);
+      const header = meta.title + (meta.folder ? ' (' + meta.folder + ')' : '');
+      const vecs = await embedMany(env, parts.map((p) => header + '\n' + p));
       for (let i = 0; i < parts.length; i++) {
         finalChunks.push({
           fileId: f.id, title: meta.title, url: meta.url, docType: meta.docType,
