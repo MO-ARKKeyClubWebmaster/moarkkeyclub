@@ -838,9 +838,9 @@ function mrfReminderEmail(offset, month, dateStr) {
   if (offset === 0) return { subject: `Today: your ${month} MRF is due`,
     html: emailShell(`${month} MRF is due today`, `<p>Your <b>${month} Monthly Report Form</b> is due <b>today (${dateStr})</b>.</p><p>Submit it before the day is out.</p>`, cta) };
   if (offset === -1) return { subject: `Late: your ${month} MRF was due yesterday`,
-    html: emailShell(`Your ${month} MRF is late`, `<p>Your <b>${month} Monthly Report Form</b> was due <b>${dateStr}</b> and has not been submitted.</p><p>Please submit it as soon as possible. The Governor, Secretary, and Webmaster have been sent the list of outstanding MRFs &mdash; let's keep this from becoming a pattern.</p>`, cta) };
-  return { subject: `Overdue: ${month} MRF &mdash; flagged for removal review`,
-    html: emailShell(`${month} MRF is 3 days overdue`, `<p>Your <b>${month} Monthly Report Form</b> is now <b>three days overdue</b> and still not submitted.</p><p>It has been <b>flagged for potential removal review</b>, and district leadership has been notified. Submitting now resolves the flag.</p>`, cta) };
+    html: emailShell(`Your ${month} MRF is late`, `<p>Your <b>${month} Monthly Report Form</b> was due <b>${dateStr}</b> and still has not been submitted.</p><p>Submit it now. Turning it in late does not erase that it was missed &mdash; it only helps your standing a little. The Governor, Secretary, and Webmaster have been sent the list of officers with outstanding reports, and your name is on it.</p>`, cta) };
+  return { subject: `Overdue: your ${month} MRF &mdash; you have been flagged for removal review`,
+    html: emailShell(`Your ${month} MRF is 3 days overdue`, `<p>Your <b>${month} Monthly Report Form</b> is now <b>three days overdue</b> and still has not been submitted.</p><p><b>You</b> &mdash; the officer, not the report &mdash; <b>have been flagged for removal review</b>, and the Governor, Secretary, and Webmaster have been notified.</p><p>Submit the report now. To be clear: turning it in late does <b>not</b> clear the flag &mdash; it only shows you are willing to correct course. Filing your monthly report on time is one of the core duties of your office, and it cannot happen again. Repeated misses move this from a flag to a removal decision.</p>`, cta) };
 }
 
 function mrfLeadershipEmail(offset, month, submitted, missing) {
@@ -853,7 +853,7 @@ function mrfLeadershipEmail(offset, month, submitted, missing) {
     : `${month} MRF: ${missing.length} division${missing.length !== 1 ? 's' : ''} still overdue`;
   const intro = offset === -1
     ? `<p>One day past the ${month} 30th deadline. You three &mdash; <b>Governor, Secretary, and Webmaster</b> &mdash; are all copied here, so you're working from the same list.</p>`
-    : `<p>Three days past the ${month} deadline. The divisions still missing below are <b>flagged for potential removal review</b>. You three are all copied here.</p>`;
+    : `<p>Three days past the ${month} deadline. The officers still missing below have been <b>flagged for removal review</b>. You three are all copied here.</p>`;
   const body = `${intro}
     <p style="margin-top:14px;"><b>Submitted (${submitted.length}/${total}):</b></p>${list(submitted)}
     <p style="margin-top:14px;color:#7f1d1d;"><b>Not submitted (${missing.length}/${total}):</b></p>${list(missing)}`;
