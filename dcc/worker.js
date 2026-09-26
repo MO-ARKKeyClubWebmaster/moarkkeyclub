@@ -789,21 +789,84 @@ async function runReminders(env) {
     }
   }
 
-  const mrf = nextMRFDeadline(now);
-  if (mrf) {
-    const days = daysBetween(mrf, now);
-    if (days === 3 || days === 1) {
-      const month = MONTHS_FULL[mrf.getUTCMonth()];
-      const dateStr = mrf.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
-      const { content } = await ghReadJSON(MRF_PATH, env);
-      const mrfs = content || [];
-      const done = new Set(mrfs.filter(m => m.month === month).map(m => m.division));
+  // MRF reminders: 3 & 1 days before, day of, and 1 & 3 days after the 30th.
+  await runMrfReminders(env, now);
+}
+
+async function runMrfReminders(env, now) {
+  const todayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const y = now.getUTCFullYear(), m = now.getUTCMonth();
+  const cands = [{ y: y, m: m }, { y: (m === 0 ? y - 1 : y), m: (m === 0 ? 11 : m - 1) }];
+  for (const c of cands) {
+    const deadlineUTC = Date.UTC(c.y, c.m, 30);
+    const offset = Math.round((deadlineUTC - todayUTC) / 86400000);
+    if (offset !== 3 && offset !== 1 && offset !== 0 && offset !== -1 && offset !== -3) continue;
+    const month = MONTHS_FULL[c.m];
+    const dateStr = new Date(Date.UTC(c.y, c.m, 30)).toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+    const { content } = await ghReadJSON(MRF_PATH, env);
+    const done = new Set((content || []).filter(x => x.month === month).map(x => x.division));
+
+    for (let div = 1; div <= 10; div++) {
+      const to = LTG_EMAILS[div];
+      if (!to || done.has(div)) continue;
+      const r = mrfReminderEmail(offset, month, dateStr);
+      await sendEmail(to, r.subject, r.html, env);
+    }
+
+    if (offset === -1 || offset === -3) {
+      const names = await rosterDivisionNames(env);
+      const submitted = [], missing = [];
       for (let div = 1; div <= 10; div++) {
-        const to = LTG_EMAILS[div];
-        if (to && !done.has(div)) await sendEmail(to, `Reminder: ${month} MRF due in ${days} day${days !== 1 ? 's' : ''}`, emailDeadline('mrf', month, days, dateStr), env);
+        if (!LTG_EMAILS[div]) continue;
+        (done.has(div) ? submitted : missing).push({ div: div, name: names[div] || ('Division ' + div + ' LTG') });
+      }
+      const leaders = [OFFICER_EMAILS.governor, OFFICER_EMAILS.secretary, OFFICER_EMAILS.webmaster].filter(Boolean);
+      if (leaders.length) {
+        const L = mrfLeadershipEmail(offset, month, submitted, missing);
+        await sendEmail(leaders, L.subject, L.html, env);
       }
     }
   }
+}
+
+function mrfReminderEmail(offset, month, dateStr) {
+  const cta = { text: 'Submit your MRF', url: `${PORTAL_URL}/mrf.html` };
+  if (offset === 3) return { subject: `Reminder: ${month} MRF due in 3 days`,
+    html: emailShell(`${month} MRF due in 3 days`, `<p>Your <b>${month} Monthly Report Form</b> is due <b>${dateStr}</b>, about three days from now.</p><p>Already submitted? Thank you &mdash; you can ignore this.</p>`, cta) };
+  if (offset === 1) return { subject: `Reminder: ${month} MRF due tomorrow`,
+    html: emailShell(`${month} MRF due tomorrow`, `<p>Your <b>${month} Monthly Report Form</b> is due <b>${dateStr}</b> &mdash; tomorrow.</p><p>Please get it in before the deadline.</p>`, cta) };
+  if (offset === 0) return { subject: `Today: your ${month} MRF is due`,
+    html: emailShell(`${month} MRF is due today`, `<p>Your <b>${month} Monthly Report Form</b> is due <b>today (${dateStr})</b>.</p><p>Submit it before the day is out.</p>`, cta) };
+  if (offset === -1) return { subject: `Late: your ${month} MRF was due yesterday`,
+    html: emailShell(`Your ${month} MRF is late`, `<p>Your <b>${month} Monthly Report Form</b> was due <b>${dateStr}</b> and has not been submitted.</p><p>Please submit it as soon as possible. The Governor, Secretary, and Webmaster have been sent the list of outstanding MRFs &mdash; let's keep this from becoming a pattern.</p>`, cta) };
+  return { subject: `Overdue: ${month} MRF &mdash; flagged for removal review`,
+    html: emailShell(`${month} MRF is 3 days overdue`, `<p>Your <b>${month} Monthly Report Form</b> is now <b>three days overdue</b> and still not submitted.</p><p>It has been <b>flagged for potential removal review</b>, and district leadership has been notified. Submitting now resolves the flag.</p>`, cta) };
+}
+
+function mrfLeadershipEmail(offset, month, submitted, missing) {
+  const total = submitted.length + missing.length;
+  const list = (arr) => arr.length
+    ? `<ul style="margin:6px 0 0;padding-left:18px;">${arr.map(o => `<li>Division ${o.div} &mdash; ${esc(o.name)}</li>`).join('')}</ul>`
+    : `<p style="margin:6px 0 0;color:#667085;">None</p>`;
+  const heading = offset === -1
+    ? `${month} MRF: ${submitted.length} of ${total} divisions submitted`
+    : `${month} MRF: ${missing.length} division${missing.length !== 1 ? 's' : ''} still overdue`;
+  const intro = offset === -1
+    ? `<p>One day past the ${month} 30th deadline. You three &mdash; <b>Governor, Secretary, and Webmaster</b> &mdash; are all copied here, so you're working from the same list.</p>`
+    : `<p>Three days past the ${month} deadline. The divisions still missing below are <b>flagged for potential removal review</b>. You three are all copied here.</p>`;
+  const body = `${intro}
+    <p style="margin-top:14px;"><b>Submitted (${submitted.length}/${total}):</b></p>${list(submitted)}
+    <p style="margin-top:14px;color:#7f1d1d;"><b>Not submitted (${missing.length}/${total}):</b></p>${list(missing)}`;
+  return { subject: heading, html: emailShell(heading, body, { text: 'View the compliance archive', url: `${PORTAL_URL}/console.html` }) };
+}
+
+async function rosterDivisionNames(env) {
+  try {
+    const { content } = await ghReadJSON(ROSTER_PATH, env);
+    const map = {};
+    ((content && content.members) || []).forEach((mem) => { if (mem.role === 'ltg' && mem.division) map[mem.division] = mem.name; });
+    return map;
+  } catch (e) { return {}; }
 }
 
 async function listSubmissionsRaw(env) {

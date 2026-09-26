@@ -403,6 +403,7 @@ const NOTIFY = (() => {
   const bellActive = here === 'notifications.html' ? 'active' : '';
 
   nav.innerHTML = `
+    <a href="index.html" class="topnav-cc" title="Back to Command Center" style="display:inline-flex;align-items:center;gap:.3rem;color:#E8B84B;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:.34rem .72rem;border:1px solid rgba(255,255,255,.18);border-radius:100px;white-space:nowrap;margin-right:.3rem;">&lsaquo; Command Center</a>
     <a href="index.html" class="topnav-logo">
       <img src="Key%20Club%20Logo.png" alt="Key Club" class="topnav-mark">
       <div><div class="topnav-name">MO-ARK District</div><div class="topnav-sub">District Command Center</div></div>
