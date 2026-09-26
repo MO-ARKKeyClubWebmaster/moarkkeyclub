@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>District Knowledge Base | MO-ARK DCC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+<style>
+/* ── DKB-specific layout (chrome + tokens come from portal.css) ── */
+.dkb-wrap{max-width:900px;margin:0 auto;padding:1.5rem 1.25rem 3rem;}
+.dkb-intro{display:flex;align-items:center;gap:.85rem;margin-bottom:1.25rem;}
+.dkb-mark{width:46px;height:46px;flex-shrink:0;}
+.dkb-h1{font-family:var(--ff-display);font-size:1.7rem;color:var(--navy);line-height:1.05;}
+.dkb-h1 em{font-style:italic;color:var(--gold);}
+.dkb-scope{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.dkb-scope b{color:var(--navy);}
+
+/* messages */
+#dkbMsgs{display:flex;flex-direction:column;gap:.8rem;min-height:200px;margin-bottom:1rem;}
+.dkb-msg{max-width:88%;padding:.75rem 1rem;border-radius:16px;font-size:.9rem;line-height:1.6;}
+.dkb-msg.me{align-self:flex-end;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;border-radius:16px 5px 16px 16px;}
+.dkb-msg.ai{align-self:flex-start;background:var(--white);border:1px solid var(--border);color:var(--text,#1a2332);border-radius:5px 16px 16px 16px;box-shadow:0 2px 12px rgba(11,27,51,.05);}
+.dkb-msg.ai sup{color:var(--gold);font-weight:700;}
+.dkb-cites{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem;padding-top:.65rem;border-top:1px dashed var(--border);}
+.dkb-cite{display:inline-flex;align-items:center;gap:.35rem;font-size:.74rem;font-weight:600;color:var(--navy);background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:.28rem .7rem;text-decoration:none;transition:all .15s;}
+.dkb-cite:hover{border-color:var(--gold);color:var(--gold);}
+.dkb-cite .n{background:var(--gold-lt);color:var(--navy);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;}
+#dkbTyping{align-self:flex-start;display:none;gap:5px;padding:.75rem 1rem;background:var(--white);border:1px solid var(--border);border-radius:5px 16px 16px 16px;}
+#dkbTyping.on{display:flex;}
+#dkbTyping span{width:7px;height:7px;border-radius:50%;background:#9aa5b4;animation:dkbB 1.2s ease-in-out infinite;}
+#dkbTyping span:nth-child(2){animation-delay:.18s}#dkbTyping span:nth-child(3){animation-delay:.36s}
+@keyframes dkbB{0%,60%,100%{transform:none}30%{transform:translateY(-6px)}}
+
+/* input */
+.dkb-inputrow{display:flex;gap:.5rem;position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 22%);padding-top:.5rem;}
+#dkbInput{flex:1;border:1.5px solid var(--border);border-radius:100px;padding:.7rem 1.15rem;font-size:.9rem;font-family:var(--ff-body);color:var(--navy);outline:none;background:#fff;}
+#dkbInput:focus{border-color:var(--gold);}
+.dkb-sendbtn{width:44px;height:44px;border:none;border-radius:50%;background:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,transform .12s;}
+.dkb-sendbtn:hover{background:var(--gold-lt);transform:scale(1.06);}
+.dkb-sendbtn svg{width:17px;height:17px;stroke:var(--navy);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.dkb-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1rem;}
+.dkb-chip{background:var(--white);border:1px solid var(--border);border-radius:100px;padding:.35rem .85rem;font-size:.78rem;color:var(--navy);cursor:pointer;font-weight:500;transition:all .15s;}
+.dkb-chip:hover{border-color:var(--gold);color:var(--gold);}
+
+/* browse */
+.dkb-search{display:flex;gap:.5rem;margin-bottom:1.25rem;}
+.dkb-search input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:.88rem;font-family:var(--ff-body);outline:none;}
+.dkb-search input:focus{border-color:var(--gold);}
+.dkb-group{margin-bottom:1.5rem;}
+.dkb-group-hd{font-family:var(--ff-display);font-size:1.05rem;color:var(--navy);display:flex;align-items:center;gap:.5rem;margin-bottom:.7rem;}
+.dkb-group-hd .ct{font-family:var(--ff-body);font-size:.72rem;color:var(--muted);font-weight:600;}
+.dkb-files{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem;}
+.dkb-file{display:block;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:.8rem .9rem;text-decoration:none;transition:box-shadow .15s,transform .12s,border-color .15s;}
+.dkb-file:hover{box-shadow:0 8px 22px rgba(11,27,51,.09);transform:translateY(-2px);border-color:var(--gold-lt);}
+.dkb-file-t{font-weight:600;font-size:.86rem;color:var(--navy);line-height:1.3;margin-bottom:.3rem;word-break:break-word;}
+.dkb-file-m{font-size:.72rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.3rem .6rem;}
+.dkb-empty{color:var(--muted);font-size:.9rem;padding:2rem 0;text-align:center;}
+.dkb-loading{color:var(--muted);font-size:.85rem;padding:1.5rem 0;text-align:center;}
+</style>
+</head>
+<body>
+
+<header class="app-bar">
+  <a class="app-back" href="index.html">&lsaquo; Command Center</a>
+  <img class="app-logo" src="Key%20Club%20Logo.png" alt="">
+  <div class="app-title">District Knowledge Base</div>
+</header>
+
+<div class="dkb-wrap">
+
+  <div class="dkb-intro">
+    <svg class="dkb-mark" viewBox="0 0 96 96" role="img" aria-label="DKB">
+      <defs><linearGradient id="dkbBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173257"/><stop offset="1" stop-color="#0B1B33"/></linearGradient></defs>
+      <rect x="4" y="4" width="88" height="88" rx="21" fill="url(#dkbBg)" stroke="rgba(255,255,255,.10)" stroke-width="1.5"/>
+      <g fill="none" stroke="#E8B84B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M30 26 h24 a6 6 0 0 1 6 6 v38 a6 6 0 0 0 -6 -6 h-24 z"/>
+        <path d="M66 26 h-6 a6 6 0 0 0 -6 6 v38 a6 6 0 0 1 6 -6 h6 z" opacity=".55"/>
+        <circle cx="46" cy="75" r="1.5"/>
+      </g>
+    </svg>
+    <div>
+      <div class="dkb-h1">Ask <em>MO-ARK</em></div>
+      <div class="dkb-scope">Answers drawn from district documents you can access · signed in as <b id="dkbRole">—</b></div>
+    </div>
+  </div>
+
+  <div class="console-tabs">
+    <button class="console-tab active" id="tab-ask" onclick="dkbTab('ask')">💬 Ask MO-ARK</button>
+    <button class="console-tab" id="tab-browse" onclick="dkbTab('browse')">🗂 Browse Documents</button>
+  </div>
+
+  <!-- ═══════════ ASK PANEL ═══════════ -->
+  <div id="panel-ask">
+    <div class="dkb-chips" id="dkbChips">
+      <button class="dkb-chip" onclick="dkbAsk('What did we decide at the last board meeting?')">Last board meeting</button>
+      <button class="dkb-chip" onclick="dkbAsk('How do I submit a monthly report form?')">Monthly reports</button>
+      <button class="dkb-chip" onclick="dkbAsk('Where is the officer handbook?')">Officer handbook</button>
+      <button class="dkb-chip" onclick="dkbAsk('What is the reimbursement process?')">Reimbursements</button>
+    </div>
+    <div id="dkbMsgs">
+      <div class="dkb-msg ai">Hi! I’m the MO-ARK knowledge base. Ask me about district documents, decisions, procedures, or where to find a file — I’ll answer from the documents you have access to and link the sources.</div>
+    </div>
+    <div id="dkbTyping"><span></span><span></span><span></span></div>
+    <div class="dkb-inputrow">
+      <input id="dkbInput" type="text" placeholder="Ask about MO-ARK documents…" autocomplete="off" aria-label="Ask a question">
+      <button class="dkb-sendbtn" onclick="dkbAsk()" aria-label="Send">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════ BROWSE PANEL ═══════════ -->
+  <div id="panel-browse" style="display:none;">
+    <div class="dkb-search">
+      <input id="dkbSearch" type="text" placeholder="Find a file by name, folder, or topic…" autocomplete="off"
+             onkeydown="if(event.key==='Enter')dkbDoSearch()">
+      <button class="btn btn-primary" onclick="dkbDoSearch()">Search</button>
+      <button class="btn" onclick="dkbLoadBrowse()">All</button>
+    </div>
+    <div id="dkbBrowse"><div class="dkb-loading">Loading your document library…</div></div>
+  </div>
+
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+const DKB_BASE = 'https://moark-dkb-api.moarkkeyclubwebmaster.workers.dev';
+const U = { email: user.email, role: user.role, division: (user.division ?? null) };
+
+(function () {
+  const label = ({ ltg: 'Division ' + user.division + ' LTG', governor: 'Governor', secretary: 'Secretary',
+    treasurer: 'Treasurer', webmaster: 'Webmaster', editor: 'Editor', 'adult-treasurer': 'Adult Treasurer',
+    'district-admin': 'District Administrator', 'adult-member': 'Adult Board' })[user.role] || user.role;
+  document.getElementById('dkbRole').textContent = label;
+})();
+
+/* ── tabs ── */
+let browseLoaded = false;
+function dkbTab(t) {
+  ['ask', 'browse'].forEach(function (x) {
+    document.getElementById('tab-' + x).classList.toggle('active', x === t);
+    document.getElementById('panel-' + x).style.display = x === t ? '' : 'none';
+  });
+  if (t === 'browse' && !browseLoaded) { browseLoaded = true; dkbLoadBrowse(); }
+}
+
+/* ── ask ── */
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function typing(on) { document.getElementById('dkbTyping').classList.toggle('on', on); scrollMsgs(); }
+function scrollMsgs() { const m = document.getElementById('dkbMsgs'); window.scrollTo(0, document.body.scrollHeight); }
+
+function addMsg(text, who) {
+  const d = document.createElement('div');
+  d.className = 'dkb-msg ' + (who === 'me' ? 'me' : 'ai');
+  d.textContent = text;
+  document.getElementById('dkbMsgs').appendChild(d);
+  scrollMsgs();
+}
+
+function addAnswer(answer, citations) {
+  const d = document.createElement('div');
+  d.className = 'dkb-msg ai';
+  let html = esc(answer)
+    .replace(/\[(\d+)\]/g, '<sup>[$1]</sup>')
+    .replace(/\n/g, '<br>');
+  d.innerHTML = html;
+  if (citations && citations.length) {
+    const box = document.createElement('div');
+    box.className = 'dkb-cites';
+    citations.forEach(function (c, i) {
+      const a = document.createElement('a');
+      a.className = 'dkb-cite';
+      a.href = c.url; a.target = '_blank'; a.rel = 'noopener';
+      a.innerHTML = '<span class="n">' + (i + 1) + '</span>' + esc(c.title || 'Document');
+      box.appendChild(a);
+    });
+    d.appendChild(box);
+  }
+  document.getElementById('dkbMsgs').appendChild(d);
+  scrollMsgs();
+}
+
+async function dkbAsk(preset) {
+  const input = document.getElementById('dkbInput');
+  const q = (typeof preset === 'string' ? preset : input.value).trim();
+  if (!q) return;
+  input.value = '';
+  const chips = document.getElementById('dkbChips'); if (chips) chips.style.display = 'none';
+  addMsg(q, 'me');
+  typing(true);
+  try {
+    const r = await fetch(DKB_BASE + '/ask', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, user: U }),
+    });
+    const data = await r.json();
+    typing(false);
+    if (data.error) { addMsg('Knowledge base error: ' + data.error, 'ai'); return; }
+    addAnswer(data.answer || '(no answer)', data.citations || []);
+  } catch (e) {
+    typing(false);
+    addMsg('I couldn’t reach the knowledge base just now. Try again in a moment.', 'ai');
+  }
+}
+document.getElementById('dkbInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') dkbAsk(); });
+
+/* ── browse / locate ── */
+function fileCard(f) {
+  const meta = [];
+  if (f.folder) meta.push('📁 ' + esc(f.folder));
+  if (f.position && f.position !== 'unknown') meta.push(esc(f.position));
+  if (f.year) meta.push(esc(String(f.year)));
+  return '<a class="dkb-file" href="' + f.url + '" target="_blank" rel="noopener">' +
+    '<div class="dkb-file-t">' + esc(f.title || 'Untitled') + '</div>' +
+    '<div class="dkb-file-m">' + meta.map(function (m) { return '<span>' + m + '</span>'; }).join('') + '</div></a>';
+}
+
+async function dkbLoadBrowse() {
+  const box = document.getElementById('dkbBrowse');
+  box.innerHTML = '<div class="dkb-loading">Loading your document library…</div>';
+  document.getElementById('dkbSearch').value = '';
+  try {
+    const r = await fetch(DKB_BASE + '/browse', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: U }),
+    });
+    const data = await r.json();
+    const groups = data.groups || {};
+    const keys = Object.keys(groups);
+    if (!keys.length) { box.innerHTML = '<div class="dkb-empty">No documents indexed yet. Once the daily sync has run, your library appears here.</div>'; return; }
+    keys.sort();
+    box.innerHTML = keys.map(function (k) {
+      return '<div class="dkb-group"><div class="dkb-group-hd">' + esc(k) +
+        ' <span class="ct">' + groups[k].length + '</span></div><div class="dkb-files">' +
+        groups[k].map(fileCard).join('') + '</div></div>';
+    }).join('');
+  } catch (e) {
+    box.innerHTML = '<div class="dkb-empty">Couldn’t load the library. Try again shortly.</div>';
+  }
+}
+
+async function dkbDoSearch() {
+  const q = document.getElementById('dkbSearch').value.trim();
+  if (!q) { dkbLoadBrowse(); return; }
+  const box = document.getElementById('dkbBrowse');
+  box.innerHTML = '<div class="dkb-loading">Searching…</div>';
+  try {
+    const r = await fetch(DKB_BASE + '/locate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q, user: U }),
+    });
+    const data = await r.json();
+    const results = data.results || [];
+    if (!results.length) { box.innerHTML = '<div class="dkb-empty">No matching files you can access.</div>'; return; }
+    box.innerHTML = '<div class="dkb-group"><div class="dkb-group-hd">Results <span class="ct">' + results.length +
+      '</span></div><div class="dkb-files">' + results.map(fileCard).join('') + '</div></div>';
+  } catch (e) {
+    box.innerHTML = '<div class="dkb-empty">Search failed. Try again shortly.</div>';
+  }
+}
+</script>
+</body>
+</html>
