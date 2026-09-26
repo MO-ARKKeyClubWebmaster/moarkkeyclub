@@ -353,6 +353,8 @@ init();
 .dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.75rem; align-items:start; }
 @media (max-width: 860px){ .dash-grid{ grid-template-columns:1fr; } }
 .section-head:first-child{ margin-top:0; }
+  /* Cap tall list tables so they scroll instead of running forever */
+  .card-body[style*="padding:0"]{max-height:460px;overflow:auto;}
 </style>
 </body>
 </html>

@@ -367,7 +367,6 @@ const NOTIFY = (() => {
     ['committee.html', 'Committee Reports', true],
     ['calendar.html',  'Calendar',          true],
     ['review.html',    'Review Queue',      canReview || canSeeAll, 'navReview'],
-    ['console.html',   'Console',           canConsole, 'navConsole', 'topnav-console'],
   ];
 
   const linkHTML = links.filter(l => l[2]).map(([href, label, , id, extra]) => {

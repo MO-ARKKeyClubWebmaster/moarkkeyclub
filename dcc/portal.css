@@ -561,47 +561,47 @@ body::before {
 .console-tab.tab-log.active { color: #c9d1d9; background: #0d1117; }
 
 /* ═══ LOG VIEWER (terminal aesthetic - intentionally dark) ═════════════ */
-.log-wrap { background: #0d1117; border: 1px solid #1f2733; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-card); }
-.log-toolbar { background: #12181f; border-bottom: 1px solid #1f2733; padding: 0.85rem 1.2rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-.log-toolbar-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #58a6ff; margin-right: 0.5rem; }
-.log-filter, .log-search { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; padding: 0.38rem 0.75rem; font-size: 0.8rem; color: #c9d1d9; font-family: var(--ff-body); outline: none; transition: border-color var(--transition); }
+.log-wrap { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-card); }
+.log-toolbar { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0.85rem 1.2rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.log-toolbar-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--navy); margin-right: 0.5rem; }
+.log-filter, .log-search { background: var(--white); border: 1px solid var(--border); border-radius: 7px; padding: 0.38rem 0.75rem; font-size: 0.8rem; color: var(--text); font-family: var(--ff-body); outline: none; transition: border-color var(--transition); }
 .log-filter { cursor: pointer; }
-.log-filter option { background: #12181f; }
+.log-filter option { background: var(--white); }
 .log-search { width: 210px; }
-.log-search::placeholder { color: rgba(255,255,255,0.3); }
-.log-filter:focus, .log-search:focus { border-color: #58a6ff; }
-.log-count { margin-left: auto; font-size: 0.75rem; color: rgba(255,255,255,0.35); }
-.log-body { max-height: 640px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
-.log-body::-webkit-scrollbar { width: 7px; }
-.log-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
-.log-row { display: grid; grid-template-columns: 190px 210px 170px 1fr; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.65rem 1.2rem; font-size: 0.78rem; transition: background 0.12s; align-items: start; }
-.log-row:hover { background: rgba(255,255,255,0.04); }
+.log-search::placeholder { color: var(--muted); }
+.log-filter:focus, .log-search:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,80,160,0.10); }
+.log-count { margin-left: auto; font-size: 0.75rem; color: var(--muted); }
+.log-body { max-height: 620px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.log-body::-webkit-scrollbar { width: 8px; }
+.log-body::-webkit-scrollbar-thumb { background: #d5d9e2; border-radius: 4px; }
+.log-row { display: grid; grid-template-columns: 190px 210px 170px 1fr; border-bottom: 1px solid var(--border); padding: 0.65rem 1.2rem; font-size: 0.78rem; transition: background 0.12s; align-items: start; }
+.log-row:hover { background: var(--bg); }
 .log-row:last-child { border-bottom: none; }
-.log-time { color: #7d8590; font-family: 'Courier New', monospace; font-size: 0.72rem; white-space: nowrap; line-height: 1.6; }
-.log-time strong { color: #adbac7; font-weight: 700; }
-.log-ip { font-family: 'Courier New', monospace; font-size: 0.67rem; color: #4a5261; margin-top: 0.15rem; }
-.log-actor { color: #c9d1d9; font-size: 0.78rem; font-weight: 600; }
-.log-actor-role { font-size: 0.65rem; color: #7d8590; margin-top: 0.1rem; }
+.log-time { color: var(--muted); font-family: 'Courier New', monospace; font-size: 0.72rem; white-space: nowrap; line-height: 1.6; }
+.log-time strong { color: var(--navy); font-weight: 700; }
+.log-ip { font-family: 'Courier New', monospace; font-size: 0.67rem; color: #9aa3b2; margin-top: 0.15rem; }
+.log-actor { color: var(--navy); font-size: 0.78rem; font-weight: 600; }
+.log-actor-role { font-size: 0.65rem; color: var(--muted); margin-top: 0.1rem; }
 .log-action-cell { padding-top: 0.1rem; }
-.log-action-badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 5px; font-size: 0.63rem; font-weight: 800; letter-spacing: 0.06em; font-family: 'Courier New', monospace; white-space: nowrap; }
-.log-detail { color: #8b949e; font-size: 0.755rem; line-height: 1.55; padding-left: 0.5rem; }
-.act-LOGIN { background: rgba(56,189,248,0.14); color: #58c8fb; border: 1px solid rgba(56,189,248,0.25); }
-.act-LOGOUT { background: rgba(148,163,184,0.1); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
-.act-CONSOLE_ACCESS { background: rgba(250,204,21,0.12); color: #fbbf24; border: 1px solid rgba(250,204,21,0.24); }
-.act-SUBMISSION_UPLOADED { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.22); }
-.act-EDITOR_APPROVED { background: rgba(99,102,241,0.14); color: #818cf8; border: 1px solid rgba(99,102,241,0.24); }
-.act-WEBMASTER_APPROVED { background: rgba(34,197,94,0.18); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-.act-SUBMISSION_RETURNED { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.24); }
-.act-ARCHIVE_VIEWED { background: rgba(148,163,184,0.1); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
-.act-PDF_VIEWED { background: rgba(14,165,233,0.12); color: #38bdf8; border: 1px solid rgba(14,165,233,0.2); }
-.act-STATUS_UPDATED { background: rgba(251,146,60,0.12); color: #fb923c; border: 1px solid rgba(251,146,60,0.24); }
-.act-DCM_SCHEDULED { background: rgba(30,80,160,0.18); color: #93c5fd; border: 1px solid rgba(30,80,160,0.32); }
-.act-DCM_REPORT_SUBMITTED { background: rgba(99,102,241,0.14); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.24); }
-.act-MRF_SUBMITTED { background: rgba(34,197,94,0.14); color: #86efac; border: 1px solid rgba(34,197,94,0.24); }
-.act-COMMITTEE_SUBMITTED { background: rgba(168,85,247,0.14); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.24); }
-.act-default { background: rgba(148,163,184,0.09); color: #7d8590; border: 1px solid rgba(148,163,184,0.16); }
-.log-empty { padding: 3rem; text-align: center; color: #565f6b; font-size: 0.875rem; }
-.log-loading { padding: 2.5rem; text-align: center; color: #565f6b; font-size: 0.8rem; font-family: 'Courier New', monospace; letter-spacing: 0.04em; }
+.log-action-badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 6px; font-size: 0.63rem; font-weight: 800; letter-spacing: 0.04em; white-space: nowrap; border: 1px solid transparent; }
+.log-detail { color: var(--text); font-size: 0.755rem; line-height: 1.55; padding-left: 0.5rem; }
+.act-LOGIN { background:#e8f0fb; color:#1e50a0; border-color:#cfe0f5; }
+.act-LOGOUT { background:#eef1f6; color:#5b6675; border-color:#e0e5ee; }
+.act-CONSOLE_ACCESS { background:#fbf1da; color:#8a6412; border-color:#efdcab; }
+.act-SUBMISSION_UPLOADED { background:#e6f6ec; color:#177d3e; border-color:#c7ecd3; }
+.act-EDITOR_APPROVED { background:#ecebfd; color:#4f46e5; border-color:#d7d5f7; }
+.act-WEBMASTER_APPROVED { background:#e2f6e9; color:#12813c; border-color:#bfe9cd; }
+.act-SUBMISSION_RETURNED { background:#fdeceb; color:#b42318; border-color:#f6cdc9; }
+.act-ARCHIVE_VIEWED { background:#eef1f6; color:#5b6675; border-color:#e0e5ee; }
+.act-PDF_VIEWED { background:#e7f2fb; color:#1170b8; border-color:#cde5f5; }
+.act-STATUS_UPDATED { background:#fdf0e3; color:#b5610f; border-color:#f5dcbf; }
+.act-DCM_SCHEDULED { background:#e8f0fb; color:#1e50a0; border-color:#cfe0f5; }
+.act-DCM_REPORT_SUBMITTED { background:#ecebfd; color:#4f46e5; border-color:#d7d5f7; }
+.act-MRF_SUBMITTED { background:#e6f6ec; color:#177d3e; border-color:#c7ecd3; }
+.act-COMMITTEE_SUBMITTED { background:#f5ebfb; color:#7e22ce; border-color:#e6cff5; }
+.act-default { background:#eef1f6; color:#5b6675; border-color:#e0e5ee; }
+.log-empty { padding: 3rem; text-align: center; color: var(--muted); font-size: 0.875rem; }
+.log-loading { padding: 2.5rem; text-align: center; color: var(--muted); font-size: 0.8rem; font-family: 'Courier New', monospace; letter-spacing: 0.04em; }
 
 /* MRF read-only display */
 .mrf-display-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-lt); }
