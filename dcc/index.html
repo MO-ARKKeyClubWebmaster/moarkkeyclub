@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
 <title>District Command Center</title>
+<link rel="preload" as="image" href="assets/board.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -67,14 +68,16 @@
 
   /* ===== DESKTOP (Command Center) ===== */
   #desktopView{display:none;position:fixed;inset:0;overflow:auto;color:#fff;
-    background:#0B1B33 url("assets/board.png") center/cover no-repeat fixed;}
+    flex-direction:column;
+    background:#0B1B33 url("assets/board.png") center top/cover no-repeat fixed;}
   #desktopView::before{content:"";position:fixed;inset:0;pointer-events:none;
-    background:linear-gradient(180deg,rgba(9,18,34,.74),rgba(9,18,34,.5) 42%,rgba(9,18,34,.86));}
+    background:linear-gradient(180deg,rgba(9,18,34,.70),rgba(9,18,34,.42) 45%,rgba(9,18,34,.88));}
   body.dcc-active{overflow:hidden;}
   body.dcc-active #loginView{display:none;}
-  body.dcc-active #desktopView{display:block;}
+  body.dcc-active #desktopView{display:flex;}
+  .dcc-pad{padding-left:clamp(1rem,4vw,2.5rem);padding-right:clamp(1rem,4vw,2.5rem);}
   .dcc-bar{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;
-    gap:1rem;padding:1rem clamp(1rem,4vw,2.5rem);}
+    gap:1rem;padding-top:1rem;padding-bottom:1rem;}
   .dcc-brand{display:flex;align-items:center;gap:.7rem;}
   .dcc-brand img{width:44px;height:44px;object-fit:contain;}
   .dcc-brand b{display:block;font-size:.95rem;line-height:1.15;font-weight:700;}
@@ -86,11 +89,12 @@
   .dcc-signout{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);color:#fff;
     padding:.5rem .95rem;border-radius:10px;cursor:pointer;font-family:var(--ff-body);font-size:.82rem;font-weight:600;transition:background .15s;}
   .dcc-signout:hover{background:rgba(255,255,255,.20);}
-  .dcc-hero{position:relative;z-index:2;text-align:center;padding:clamp(1.5rem,5vw,3rem) 1rem .25rem;}
+  .dcc-hero{position:relative;z-index:2;text-align:left;padding-top:clamp(1.25rem,4vw,2.5rem);padding-bottom:.25rem;}
   .dcc-hero .eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-lt);font-weight:700;}
-  .dcc-hero h1{font-family:var(--ff-display);font-size:clamp(1.8rem,4vw,2.8rem);margin-top:.4rem;text-shadow:0 2px 18px rgba(0,0,0,.4);}
-  .dcc-grid{position:relative;z-index:2;display:grid;gap:1.5rem;justify-content:center;
-    grid-template-columns:repeat(auto-fill,minmax(150px,168px));max-width:1000px;margin:2rem auto;padding:0 1rem 3.5rem;}
+  .dcc-hero h1{font-family:var(--ff-display);font-size:clamp(1.7rem,3.6vw,2.7rem);margin-top:.4rem;line-height:1.12;
+    text-shadow:0 2px 18px rgba(0,0,0,.45);max-width:22ch;}
+  .dcc-grid{position:relative;z-index:2;display:grid;gap:1.4rem;justify-content:start;
+    grid-template-columns:repeat(auto-fill,minmax(150px,168px));margin-top:2rem;padding-bottom:2rem;}
   .app{display:flex;flex-direction:column;align-items:center;gap:.75rem;cursor:pointer;
     background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:20px;
     padding:1.5rem 1rem;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
@@ -100,7 +104,8 @@
   .app-icon{width:74px;height:74px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));}
   .app-name{font-weight:600;font-size:.95rem;line-height:1.25;}
   .app-tag{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-lt);font-weight:700;}
-  .dcc-foot{position:relative;z-index:2;text-align:center;padding:0 1rem 2rem;font-size:.74rem;color:rgba(255,255,255,.5);}
+  .dcc-foot{position:relative;z-index:2;margin-top:auto;text-align:center;
+    padding-top:.75rem;padding-bottom:1.1rem;font-size:.74rem;color:rgba(255,255,255,.55);}
   @media (max-width:560px){
     .dcc-clock{display:none;}
     .dcc-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
@@ -146,7 +151,7 @@
 
   <!-- ============ DESKTOP / COMMAND CENTER ============ -->
   <div id="desktopView">
-    <div class="dcc-bar">
+    <div class="dcc-bar dcc-pad">
       <div class="dcc-brand">
         <img src="Key%20Club%20Logo.png" alt="Key Club">
         <div><b>MO-ARK District</b><span>District Command Center</span></div>
@@ -157,12 +162,12 @@
       </div>
     </div>
 
-    <div class="dcc-hero">
-      <div class="eyebrow">Welcome back</div>
+    <div class="dcc-hero dcc-pad">
+      <div class="eyebrow" id="dccEyebrow">Welcome back</div>
       <h1 id="dccGreet">District Command Center</h1>
     </div>
 
-    <div class="dcc-grid" id="dccApps">
+    <div class="dcc-grid dcc-pad" id="dccApps">
       <!-- App 1: District Officer Portal -->
       <div class="app" role="button" tabindex="0" data-href="dashboard.html"
            onclick="location.href=this.dataset.href"
@@ -189,13 +194,192 @@
       <!-- 5 more apps will be added here -->
     </div>
 
-    <div class="dcc-foot">MO-ARK District Command Center &middot; Caring - our way of life.</div>
+    <div class="dcc-foot dcc-pad">MO-ARK District Command Center &middot; Caring - our way of life.</div>
   </div>
 
 <script src="portal.js"></script>
 <script src="auth.js"></script>
 <script src="logger.js"></script>
 <script>
+  /* ---- Time-aware greetings (150 lines, distinct from the dashboard's) ---- */
+  const GREETINGS = {
+    lateNight: { label:'Late night', lines:[
+      "Burning the midnight oil, {name}?",
+      "The district never sleeps, and neither do you, {name}.",
+      "Still going strong past midnight, {name}?",
+      "Late-night leadership, {name} - respect.",
+      "The stars are out and so are you, {name}.",
+      "Midnight command shift, {name}?",
+      "Can't sleep, {name}? The district thanks you.",
+      "Quiet hours, big work, {name}.",
+      "Running the district by moonlight, {name}?",
+      "This is what commitment looks like, {name}.",
+      "Up while the world sleeps, {name}.",
+      "Nocturnal and unstoppable, {name}.",
+      "The 2 a.m. club has a new member, {name}.",
+      "Fueled by dedication (and maybe caffeine), {name}?",
+      "Late shift at the Command Center, {name}.",
+      "Even the meerkat's asleep, {name} - but not you.",
+      "Burning bright well past midnight, {name}.",
+      "Owls have nothing on you, {name}.",
+      "The quiet of night, the work of a leader, {name}.",
+      "Still on the clock, {name}? Legendary.",
+      "Midnight and mission-focused, {name}.",
+      "Who needs sleep when the district calls, {name}?",
+      "Deep in the night shift, {name}.",
+      "The Command Center's night watch: {name}.",
+      "Past your bedtime, {name}? We won't tell.",
+    ]},
+    dawn: { label:'Early start', lines:[
+      "Up with the sunrise, {name}?",
+      "First light, first to lead, {name}.",
+      "Early bird catches the district, {name}.",
+      "Dawn patrol, {name} - impressive.",
+      "Rise and serve, {name}.",
+      "Beating the sun to work, {name}?",
+      "A fresh morning, a fresh start, {name}.",
+      "The quiet dawn belongs to leaders, {name}.",
+      "Coffee's brewing, so is your day, {name}.",
+      "Bright and early, {name}.",
+      "The district wakes with you, {name}.",
+      "Sunrise shift at the Command Center, {name}.",
+      "Getting a head start, {name}?",
+      "Morning's broken, and you're already on it, {name}.",
+      "Early hours, big ambitions, {name}.",
+      "First one in, {name}? Of course.",
+      "The world's still stretching - you're already moving, {name}.",
+      "Dawn of another great day, {name}.",
+      "You and the sunrise, {name}.",
+      "Early light suits a leader, {name}.",
+      "Ready before the day is, {name}.",
+      "Good things start early, {name}.",
+      "The birds are up, and so are you, {name}.",
+      "A calm dawn at the Command Center, {name}.",
+      "Seizing the morning, {name}.",
+    ]},
+    morning: { label:'Good morning', lines:[
+      "Good morning, {name} - let's make it count.",
+      "The district's in good hands this morning, {name}.",
+      "Morning, {name}! Ready to lead?",
+      "A new day of service, {name}.",
+      "Coffee in hand, district on your mind, {name}?",
+      "Morning momentum, {name}.",
+      "Let's build something great today, {name}.",
+      "Bright morning ahead, {name}.",
+      "The Command Center is yours this morning, {name}.",
+      "Good morning, leader, {name}.",
+      "Fresh coffee, fresh goals, {name}.",
+      "Morning check-in, {name}.",
+      "The day is young and so are the possibilities, {name}.",
+      "Rise and lead, {name}.",
+      "Ready to serve first, {name}?",
+      "Morning, {name} - the district's cheering you on.",
+      "A great morning to make a difference, {name}.",
+      "Let's get after it, {name}.",
+      "Morning briefing, Commander {name}?",
+      "The best time to lead is now, {name}.",
+      "Good morning from the Command Center, {name}.",
+      "Another morning, another chance to serve, {name}.",
+      "Sunlight and service, {name}.",
+      "Morning, {name} - you've got this.",
+      "Here's to a productive morning, {name}.",
+    ]},
+    afternoon: { label:'Good afternoon', lines:[
+      "Good afternoon, {name}.",
+      "Powering through the afternoon, {name}?",
+      "Afternoon at the Command Center, {name}.",
+      "Keeping the district on track, {name}.",
+      "Midday momentum, {name}.",
+      "Hope your day's going well, {name}.",
+      "Afternoon check-in, {name}.",
+      "Still leading strong, {name}.",
+      "The district thanks you this afternoon, {name}.",
+      "Good afternoon, Commander {name}.",
+      "Halfway through, going strong, {name}.",
+      "Afternoon focus, {name}.",
+      "Making the afternoon count, {name}.",
+      "Lunch fueled and ready, {name}?",
+      "The day's in full swing, {name}.",
+      "Afternoon leadership looks good on you, {name}.",
+      "Keep the momentum, {name}.",
+      "Good afternoon from the district, {name}.",
+      "Steady hands this afternoon, {name}.",
+      "Getting things done, {name}.",
+      "Afternoon shift, {name} - let's roll.",
+      "The Command Center's humming, {name}.",
+      "Right on schedule, {name}.",
+      "A fine afternoon to serve, {name}.",
+      "Afternoon, {name} - the district's better with you in it.",
+    ]},
+    evening: { label:'Good evening', lines:[
+      "Good evening, {name}.",
+      "Winding into the evening, {name}?",
+      "Evening shift at the Command Center, {name}.",
+      "Still serving after hours, {name}?",
+      "The day's not done, and neither are you, {name}.",
+      "Good evening, leader, {name}.",
+      "Evening focus, {name}.",
+      "Dinner can wait - the district can't, {name}?",
+      "Golden hour, golden effort, {name}.",
+      "Evening momentum, {name}.",
+      "The sun's setting on a day of service, {name}.",
+      "Good evening, Commander {name}.",
+      "Wrapping the day strong, {name}.",
+      "Evening check-in, {name}.",
+      "Leading into the evening, {name}.",
+      "The Command Center glows this evening, {name}.",
+      "Twilight and still on task, {name}.",
+      "A productive evening to you, {name}.",
+      "Evening, {name} - the district appreciates you.",
+      "Closing out the day, {name}?",
+      "Steady into the evening, {name}.",
+      "Good evening from the district, {name}.",
+      "Still making moves after sundown, {name}.",
+      "Evening dedication, {name} - noticed.",
+      "Here's to a calm evening, {name}.",
+    ]},
+    night: { label:'Winding down', lines:[
+      "Winding down, {name}?",
+      "Late-evening leadership, {name}.",
+      "The district's night owl, {name}?",
+      "Still going as the day closes, {name}.",
+      "One more task before bed, {name}?",
+      "Night shift at the Command Center, {name}.",
+      "Burning a little evening oil, {name}?",
+      "The quiet of night suits a leader, {name}.",
+      "Wrapping up the night, {name}.",
+      "Dedicated well into the night, {name}.",
+      "A good night's work, {name}.",
+      "Still on it after dark, {name}.",
+      "Nighttime focus, {name}.",
+      "The stars are out, {name} - and so are you.",
+      "Closing the Command Center for the night, {name}?",
+      "Late-night check-in, {name}.",
+      "The district rests easy with you on watch, {name}.",
+      "Almost bedtime, {name}? One more win first.",
+      "Night leadership, {name} - respect.",
+      "Serving past sundown, {name}.",
+      "A quiet night at the Command Center, {name}.",
+      "Still leading as the day ends, {name}.",
+      "Good evening turns to good night, {name}.",
+      "Night owl on duty, {name}.",
+      "Rest soon, {name} - you've earned it.",
+    ]},
+  };
+  function dccBucket(h){
+    if(h<5)  return 'lateNight';
+    if(h<8)  return 'dawn';
+    if(h<12) return 'morning';
+    if(h<17) return 'afternoon';
+    if(h<21) return 'evening';
+    return 'night';
+  }
+  function dccGreeting(first){
+    const b = GREETINGS[dccBucket(new Date().getHours())];
+    const line = b.lines[Math.floor(Math.random()*b.lines.length)];
+    return { label:b.label, text: line.replace('{name}', first) };
+  }
+
   function startClock(){
     const t=document.getElementById('dccTime'), d=document.getElementById('dccDate');
     function tick(){
@@ -209,13 +393,17 @@
   }
   function enterDCC(){
     const u = AUTH.getUser();
-    if (u && u.name){
-      const first = (u.name.split(' ')[0]) || u.name;
-      document.getElementById('dccGreet').textContent = 'Welcome, ' + first;
-    }
+    const first = (u && u.name) ? ((u.name.split(' ')[0])||u.name) : 'Officer';
+    const g = dccGreeting(first);
+    document.getElementById('dccEyebrow').textContent = g.label;
+    document.getElementById('dccGreet').textContent = g.text;
     document.body.classList.add('dcc-active');
     startClock();
   }
+  function preloadBoard(){
+    return new Promise(res=>{ const i=new Image(); i.onload=i.onerror=res; i.src='assets/board.png'; });
+  }
+
   document.getElementById('dccSignOut').addEventListener('click', function(){
     try { AUTH.logout(); } catch(_){}
     window.location.href = 'index.html';
@@ -232,6 +420,8 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Signing in…';
       try { await LOG.record('LOGIN', 'Signed in to portal'); } catch(_){}
+      // Load the wallpaper during the spinner so the desktop never flashes blank.
+      await Promise.race([preloadBoard(), new Promise(r=>setTimeout(r,1500))]);
       enterDCC();
     } else {
       document.getElementById('loginError').classList.add('show');
