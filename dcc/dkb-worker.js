@@ -119,6 +119,13 @@ export default {
         if (!adminOk(request, url, env)) return json({ error: 'Unauthorized.' }, 401);
         return json(await syncAll(env));
       }
+      if (path === '/reset' && method === 'POST') {
+        if (!adminOk(request, url, env)) return json({ error: 'Unauthorized.' }, 401);
+        await env.DKB.delete('dkb:chunks');
+        await env.DKB.delete('dkb:files');
+        await env.DKB.delete('dkb:state');
+        return json({ ok: true, reset: true });
+      }
       if (path === '/state' && method === 'GET') {
         if (!adminOk(request, url, env)) return json({ error: 'Unauthorized.' }, 401);
         const st = (await env.DKB.get('dkb:state', 'json')) || {};
@@ -181,6 +188,13 @@ function classify(ownerEmail, folderName, fileName) {
   if (!owner) return { scope: 'admin' };          // FAIL CLOSED
   if (owner.role === 'ltg') return { scope: 'division', division: owner.division };
   return { scope: 'board' };                        // exec / adult / admin account
+}
+
+function isExtractable(mt) {
+  return mt === 'application/vnd.google-apps.document'
+      || mt === 'application/vnd.google-apps.spreadsheet'
+      || mt === 'application/vnd.google-apps.presentation'
+      || mt === 'text/plain' || mt === 'text/markdown' || mt === 'text/csv';
 }
 
 function docTypeOf(folderName, fileName) {
@@ -308,13 +322,13 @@ async function syncAll(env) {
     pageToken = page.nextPageToken;
   } while (pageToken && ++pages < 40);
 
-  // Pre-populate the folder-name cache from folders that are themselves shared.
+  // Cache folder names from folders that are themselves shared (free lookups).
   all.forEach((f) => { if (f.mimeType === 'application/vnd.google-apps.folder') state.folders[f.id] = f.name; });
 
   const seen = {};
   const filesOut = [];
   const finalChunks = [];
-  let indexed = 0, reused = 0, budgetLeft = MAX_CHANGED_PER_RUN;
+  let indexed = 0, reused = 0, metaOnly = 0, budgetLeft = MAX_CHANGED_PER_RUN;
 
   for (const f of all) {
     if (f.mimeType === 'application/vnd.google-apps.folder') continue;
@@ -324,23 +338,33 @@ async function syncAll(env) {
     const meta = buildMeta(f, ownerEmail, folderName);
     filesOut.push(meta);
 
-    const unchanged = state.rev[f.id] === f.modifiedTime && chunkByFile[f.id];
-    if (unchanged || budgetLeft <= 0) {
-      // Reuse existing chunks (refresh their meta), or defer to a later run.
+    // Already processed at this version → skip for free (reattach chunks if any).
+    if (state.rev[f.id] === f.modifiedTime) {
       if (chunkByFile[f.id]) {
         chunkByFile[f.id].forEach((c) => {
           c.access = meta.access; c.division = meta.division; c.docType = meta.docType;
           c.title = meta.title; c.url = meta.url; finalChunks.push(c);
         });
-        if (unchanged) reused++;
+        reused++;
       }
-      // If it changed but we're out of budget, leave state.rev untouched so a
-      // future run re-picks it up.
-      if (unchanged) state.rev[f.id] = f.modifiedTime;
       continue;
     }
 
-    // Changed (or new) and we have budget → extract + embed.
+    // New/changed but NOT text-extractable (PDF, image, binary): metadata-only.
+    // Mark done immediately — no subrequest, no budget — so a big pile of PDFs
+    // can never stall the index. It stays findable by name via Browse/Locate.
+    if (!isExtractable(f.mimeType)) {
+      state.rev[f.id] = f.modifiedTime;
+      metaOnly++;
+      continue;
+    }
+
+    // Text-extractable + changed, but only so many per run (subrequest budget).
+    if (budgetLeft <= 0) {
+      if (chunkByFile[f.id]) chunkByFile[f.id].forEach((c) => finalChunks.push(c));
+      continue; // leave state.rev so it retries next run
+    }
+
     const text = await extractText(token, f);
     const parts = chunkText(text);
     if (parts.length) {
@@ -360,15 +384,14 @@ async function syncAll(env) {
   let removed = 0;
   Object.keys(state.rev).forEach((id) => { if (!seen[id]) { delete state.rev[id]; removed++; } });
 
-  const counts = { files: filesOut.length, chunks: finalChunks.length, indexedThisRun: indexed, reused, removed };
+  const counts = { files: filesOut.length, chunks: finalChunks.length, indexedThisRun: indexed, metaOnly, reused, removed };
   await env.DKB.put('dkb:files', JSON.stringify(filesOut));
   await env.DKB.put('dkb:chunks', JSON.stringify(finalChunks));
   await env.DKB.put('dkb:state', JSON.stringify({ rev: state.rev, folders: state.folders, lastSync: new Date().toISOString(), counts }));
 
-  const done = budgetLeft > 0; // if budget hit 0 there may be more changed files
+  const done = budgetLeft > 0;
   return { ok: true, done, ...counts, note: done ? 'Index up to date.' : 'Budget reached — run /sync again to continue indexing the backlog.' };
 }
-
 // ── Google Drive API ──────────────────────────────────────────────────────
 async function driveList(token, pageToken) {
   const params = new URLSearchParams({
