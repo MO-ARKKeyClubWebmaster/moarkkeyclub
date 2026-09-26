@@ -52,6 +52,9 @@ const REIMBURSEMENTS_DIR         = 'dcc/data/reimbursements';
 const REIMB_PDF_PATH             = 'dcc/reimbursement-pdfs';
 const BOARD_MEETINGS_PATH_LEGACY = 'dcc/data/board-meetings.json';
 const REIMBURSEMENTS_PATH_LEGACY = 'dcc/data/reimbursements.json';
+// ── BOARD ROSTER (master list of everyone: names, titles, emails, photos) ──
+const ROSTER_PATH    = 'dcc/data/roster.json';
+const ROSTER_IMG_DIR = 'dcc/data/roster-images';
 
 /* ── EMAIL CONFIG ─────────────────────────────────────────────────────────
  * FROM must be on the domain you verify in Resend. */
@@ -112,6 +115,37 @@ export default {
         return json({ ok: true });
       }
       if (path === '/logs' && method === 'GET') return await getLogs(env);
+
+      // ── BOARD ROSTER (master list) ──────────────────────────────────────
+      if (path === '/roster' && method === 'GET') {
+        const { content } = await ghReadJSON(ROSTER_PATH, env);
+        return json(content || { members: [], groupImage: null, martyImage: null });
+      }
+      if (path === '/roster' && method === 'PUT') {
+        const body = await request.json();
+        const { sha } = await ghReadJSON(ROSTER_PATH, env);
+        body.updatedAt = new Date().toISOString();
+        await ghWriteJSON(ROSTER_PATH, body, sha, `Roster updated${body._actorName ? ' by ' + body._actorName : ''}`, env);
+        wait(writeLog({ actor: body._actor || 'unknown', actorName: body._actorName || 'Unknown',
+          actorRole: body._actorRole || 'webmaster', action: 'ROSTER_UPDATED', detail: 'Board Members list updated', ip }, env));
+        return json({ ok: true });
+      }
+      if (path === '/roster-image' && method === 'POST') {
+        const body = await request.json();
+        const id = String(body.id || '').replace(/[^a-z0-9_-]/gi, '');
+        if (!id || !body.dataURL) return json({ error: 'id and dataURL required' }, 400);
+        const mt = (body.dataURL.match(/^data:image\/([a-z0-9+]+)/i) || [null, 'png'])[1].toLowerCase();
+        const ext = (mt === 'jpeg' || mt === 'jpg') ? 'jpg' : (mt === 'png' ? 'png' : mt === 'webp' ? 'webp' : mt === 'gif' ? 'gif' : 'png');
+        const file = `${id}.${ext}`;
+        const filePath = `${ROSTER_IMG_DIR}/${file}`;
+        const existing = await ghFetch(filePath, 'GET', null, env);
+        await ghWritePDF(filePath, body.dataURL, existing && existing.sha, `Roster image: ${file}`, env);
+        return json({ ok: true, file });
+      }
+      if (path.startsWith('/roster-img/') && method === 'GET') {
+        const file = (path.split('/')[2] || '').replace(/[^a-z0-9._-]/gi, '');
+        return await serveImage(`${ROSTER_IMG_DIR}/${file}`, env);
+      }
 
       // ── MILEAGE DISTANCE (Google Routes API proxy) ──────────────────────
       if (path === '/distance' && method === 'POST') {
@@ -952,4 +986,24 @@ async function deleteSubmission(id, env) {
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+}
+
+
+/* Serve a roster image from the repo with the right content-type (raw media type). */
+async function serveImage(filePath, env) {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`;
+    const res = await fetch(url, { headers: {
+      'Authorization': `Bearer ${env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.raw',
+      'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'moark-portal-worker',
+    } });
+    if (res.status === 404) return new Response('Image not found', { status: 404, headers: CORS });
+    if (!res.ok) return new Response('Error fetching image', { status: 500, headers: CORS });
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    const ext = filePath.split('.').pop().toLowerCase();
+    const ct = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
+    return new Response(bytes, { headers: { ...CORS, 'Content-Type': ct, 'Cache-Control': 'public, max-age=300' } });
+  } catch (e) {
+    return new Response('Image error: ' + e.message, { status: 500, headers: CORS });
+  }
 }

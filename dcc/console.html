@@ -72,6 +72,22 @@
 .no-clearance-title{font-size:1.2rem;font-weight:800;color:var(--navy);margin-bottom:.4rem;}
 .no-clearance-msg{font-size:.92rem;line-height:1.55;color:var(--muted);}
 #nlComplianceTable,#nlRemovalTable,#mrfComplianceTable,#mrfRemovalTable,#dcmComplianceTable,#dcmRemovalTable{max-height:460px;overflow-y:auto;}
+.bmx-wrap{max-width:920px;}
+.bmx-savebar{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;position:sticky;top:0;background:var(--bg);padding:.6rem 0;z-index:5;border-bottom:1px solid var(--border);}
+.bmx-imgrow{display:flex;gap:1.25rem;margin-bottom:1.75rem;flex-wrap:wrap;}
+.bmx-imgcard{flex:1;min-width:220px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center;}
+.bmx-imgcard img{width:100%;height:170px;object-fit:cover;border-radius:8px;background:var(--bg);}
+.bmx-imgcard .lbl{font-weight:700;color:var(--navy);font-size:.85rem;margin:.6rem 0 .4rem;}
+.bmx-group-title{font-family:var(--ff-display);font-size:1.05rem;color:var(--navy);margin:1.5rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--gold);}
+.bmx-row{display:flex;align-items:center;gap:1rem;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem;margin-bottom:.6rem;}
+.bmx-avatar{width:54px;height:54px;border-radius:50%;object-fit:cover;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;overflow:hidden;font-size:1.05rem;}
+.bmx-avatar img{width:100%;height:100%;object-fit:cover;}
+.bmx-role{font-size:.72rem;color:var(--muted);width:140px;flex:none;}
+.bmx-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;min-width:0;}
+.bmx-fields input{width:100%;padding:.5rem .7rem;border:1px solid var(--border);border-radius:8px;font-family:var(--ff-body);font-size:.85rem;color:var(--text);}
+.bmx-upload{font-size:.75rem;color:var(--blue);cursor:pointer;white-space:nowrap;font-weight:600;}
+.bmx-btn{background:linear-gradient(135deg,var(--gold),#d8a63a);color:var(--navy);font-weight:700;border:none;border-radius:9px;padding:.6rem 1.2rem;cursor:pointer;font-family:var(--ff-body);}
+@media(max-width:640px){.bmx-fields{grid-template-columns:1fr;}.bmx-role{display:none;}}
 </style>
 </head>
 <body>
@@ -118,6 +134,7 @@
     <button class="console-tab active" id="tab-compliance" onclick="switchTab('compliance')">📊 Compliance</button>
     <button class="console-tab tab-log" id="tab-log" onclick="switchTab('log')">🖥 Activity Log</button>
     <button class="console-tab" id="tab-boardmeetings" onclick="switchTab('boardmeetings')">🏛 Board Meetings</button>
+    <button class="console-tab" id="tab-boardmembers" onclick="switchTab('boardmembers')">👥 Board Members</button>
   </div>
 
   <!-- ═══════════════════════ COMPLIANCE PANEL ═══════════════════════ -->
@@ -304,6 +321,7 @@
     <div id="bm-archive" style="display:none;"></div>
   </div>
 
+  <div id="panel-boardmembers" style="display:none;"><div class="bm-editor" id="bmEditor"></div></div>
 </div><!-- /consoleContent -->
 
 <script src="auth.js"></script>
@@ -316,6 +334,7 @@ const user = AUTH.requireAuth();
 
 const SECTIONS = AUTH.consoleSections();   // e.g. ['compliance','log','boardmeetings'] or ['boardmeetings']
 const CAN = s => SECTIONS.includes(s);
+const CAN_BOARD = ['webmaster','governor'].includes(user.role);
 
 // All three tabs are visible to everyone; clearance is enforced per tab on open.
 
@@ -336,22 +355,23 @@ document.getElementById('consoleContent').style.display = 'block';
 try { if (SECTIONS.length) LOG.record('CONSOLE_ACCESS', user.name + ' opened the console'); } catch(_){}
 
 function showNoClearance(){
-  ['compliance','log','boardmeetings'].forEach(function(t){ document.getElementById('panel-'+t).style.display='none'; });
+  ['compliance','log','boardmeetings','boardmembers'].forEach(function(t){ var pn=document.getElementById('panel-'+t); if(pn) pn.style.display='none'; });
   document.getElementById('noClearance').style.display = '';
 }
 
 // ── TAB SWITCHER ──────────────────────────────────────────────────────────
+function canTab(tab){ return tab === 'boardmembers' ? CAN_BOARD : CAN(tab); }
 function switchTab(tab) {
-  document.getElementById('tab-compliance').classList.toggle('active', tab === 'compliance');
-  document.getElementById('tab-log').classList.toggle('active', tab === 'log');
-  document.getElementById('tab-boardmeetings').classList.toggle('active', tab === 'boardmeetings');
+  ['compliance','log','boardmeetings','boardmembers'].forEach(function(t){
+    var tb=document.getElementById('tab-'+t); if(tb) tb.classList.toggle('active', t===tab);
+    var pn=document.getElementById('panel-'+t); if(pn) pn.style.display='none';
+  });
   document.getElementById('noClearance').style.display = 'none';
-  if (!CAN(tab)) { showNoClearance(); return; }
-  document.getElementById('panel-compliance').style.display    = tab === 'compliance'    ? '' : 'none';
-  document.getElementById('panel-log').style.display           = tab === 'log'           ? '' : 'none';
-  document.getElementById('panel-boardmeetings').style.display = tab === 'boardmeetings' ? '' : 'none';
+  if (!canTab(tab)) { showNoClearance(); return; }
+  var panel=document.getElementById('panel-'+tab); if(panel) panel.style.display='';
   if (tab === 'log' && allLogs === null) loadLogs();
   if (tab === 'boardmeetings') BM.ensureLoaded();
+  if (tab === 'boardmembers') loadRoster();
 }
 
 // Sub-tabs inside compliance
@@ -422,6 +442,94 @@ async function loadAll() {
     const t = document.getElementById('nlComplianceTable');
     if (t) t.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load</h3><p>${e.message}</p></div>`;
   }
+}
+
+
+/* ── BOARD MEMBERS EDITOR (master roster; webmaster + governor) ─────────── */
+let rosterData = null, rosterPending = {};
+function bmxEsc(x){ return String(x==null?"":x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function bmxInitials(n){ var p=(n||"?").trim().split(/\s+/); return ((p[0][0]||"")+(p.length>1?(p[p.length-1][0]||""):"")).toUpperCase()||"?"; }
+function bmxGroupLabel(g){ return g==="exec"?"Executive Board":g==="ltg"?"Lieutenant Governors":"Adult Staff"; }
+async function loadRoster(){
+  var host=document.getElementById('bmEditor');
+  if(rosterData){ renderRoster(); return; }
+  host.innerHTML='<div class="loader"><div class="spinner-lg"></div><div class="loader-label">Loading roster…</div></div>';
+  try{ var r=await fetch(API_BASE+'/roster'); rosterData=await r.json(); if(!rosterData||!rosterData.members){ rosterData={members:[],groupImage:null,martyImage:null}; } renderRoster(); }
+  catch(e){ host.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><h3>Failed to load roster</h3><p>'+bmxEsc(e.message)+'</p></div>'; }
+}
+function bmxAvatar(m){
+  var src = rosterPending[m.id] || m.photo;
+  return src ? '<img src="'+bmxEsc(src)+'" alt="">' : bmxInitials(m.name);
+}
+function bmxImgCard(key,label,src){
+  return '<div class="bmx-imgcard"><img id="img-'+key+'" src="'+bmxEsc(src||"")+'" alt=""><div class="lbl">'+label+'</div>'
+    +'<label class="bmx-upload">Change image<input type="file" accept="image/*" class="bmx-file" data-key="'+key+'" style="display:none"></label></div>';
+}
+function renderRoster(){
+  var host=document.getElementById('bmEditor');
+  var grp = rosterPending['__group'] || rosterData.groupImage || '';
+  var mrt = rosterPending['__marty'] || rosterData.martyImage || '';
+  var html='<div class="bmx-wrap">';
+  html+='<div class="bmx-savebar"><button class="bmx-btn" id="bmxSave">Save all changes</button><span id="bmxStatus" style="color:var(--muted);font-size:.85rem;"></span></div>';
+  html+='<div class="bmx-imgrow">'+bmxImgCard('__group','District Group Photo',grp)+bmxImgCard('__marty','Marty the Meerkat',mrt)+'</div>';
+  ['exec','ltg','adult'].forEach(function(g){
+    var list=rosterData.members.filter(function(m){return m.group===g;});
+    if(!list.length) return;
+    html+='<div class="bmx-group-title">'+bmxGroupLabel(g)+'</div>';
+    list.forEach(function(m){
+      html+='<div class="bmx-row">'
+        +'<div class="bmx-avatar" id="av-'+bmxEsc(m.id)+'">'+bmxAvatar(m)+'</div>'
+        +'<div class="bmx-role">'+bmxEsc(m.publicRole||m.title||'')+(m.vacant?' (vacant)':'')+'</div>'
+        +'<div class="bmx-fields">'
+        +'<input type="text" class="bmx-name" data-id="'+bmxEsc(m.id)+'" value="'+bmxEsc(m.name)+'" placeholder="Name">'
+        +'<input type="text" class="bmx-email" data-id="'+bmxEsc(m.id)+'" value="'+bmxEsc(m.email||'')+'" placeholder="Key Club email">'
+        +'</div>'
+        +'<label class="bmx-upload">Change photo<input type="file" accept="image/*" class="bmx-file" data-key="'+bmxEsc(m.id)+'" style="display:none"></label>'
+        +'</div>';
+    });
+  });
+  html+='</div>';
+  host.innerHTML=html;
+  host.querySelectorAll('.bmx-name').forEach(function(i){ i.addEventListener('input',function(){ var m=rosterData.members.find(function(x){return x.id===this.dataset.id;}.bind(this)); if(m) m.name=this.value; }); });
+  host.querySelectorAll('.bmx-email').forEach(function(i){ i.addEventListener('input',function(){ var m=rosterData.members.find(function(x){return x.id===this.dataset.id;}.bind(this)); if(m) m.email=this.value; }); });
+  host.querySelectorAll('.bmx-file').forEach(function(i){ i.addEventListener('change',function(){ bmxPick(this.dataset.key,this); }); });
+  var sv=document.getElementById('bmxSave'); if(sv) sv.addEventListener('click',saveRoster);
+}
+function bmxPick(key,input){
+  var f=input.files&&input.files[0]; if(!f) return;
+  if(f.size>4*1024*1024){ var st=document.getElementById('bmxStatus'); if(st) st.textContent='Image too large (max ~4MB). Please pick a smaller one.'; input.value=''; return; }
+  var rd=new FileReader();
+  rd.onload=function(){
+    rosterPending[key]=rd.result;
+    if(key==='__group'){ var g=document.getElementById('img-__group'); if(g) g.src=rd.result; }
+    else if(key==='__marty'){ var mm=document.getElementById('img-__marty'); if(mm) mm.src=rd.result; }
+    else { var av=document.getElementById('av-'+key); if(av) av.innerHTML='<img src="'+rd.result+'" alt="">'; }
+  };
+  rd.readAsDataURL(f);
+}
+async function saveRoster(){
+  var st=document.getElementById('bmxStatus'); st.textContent='Saving…';
+  try{
+    var keys=Object.keys(rosterPending);
+    for(var k=0;k<keys.length;k++){
+      var key=keys[k], dataURL=rosterPending[key];
+      var id = key==='__group'?'group':(key==='__marty'?'marty':key);
+      var res=await fetch(API_BASE+'/roster-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,dataURL:dataURL})});
+      var out=await res.json();
+      if(!out.ok) throw new Error(out.error||'image upload failed');
+      var url=API_BASE+'/roster-img/'+out.file+'?v='+Date.now();
+      if(key==='__group') rosterData.groupImage=url;
+      else if(key==='__marty') rosterData.martyImage=url;
+      else { var m=rosterData.members.find(function(x){return x.id===key;}); if(m) m.photo=url; }
+    }
+    rosterPending={};
+    rosterData._actor=user.email; rosterData._actorName=user.name; rosterData._actorRole=user.role;
+    var r=await fetch(API_BASE+'/roster',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(rosterData)});
+    var o=await r.json(); if(!o.ok) throw new Error('save failed');
+    st.textContent='Saved ✓  Public site + DCC update within ~5 min.';
+    try{ LOG.record('ROSTER_UPDATED','Updated Board Members list'); }catch(_){}
+    renderRoster();
+  }catch(e){ st.textContent='Error: '+e.message; }
 }
 
 switchTab(DEFAULT_TAB);

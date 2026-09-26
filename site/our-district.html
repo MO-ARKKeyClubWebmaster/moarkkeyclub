@@ -1717,5 +1717,37 @@ document.querySelectorAll('.board-card[data-img]').forEach(card=>{
 
 </script>
 <script src="transitions.js"></script>
+<script>
+/* ── Pull board names, roles, emails, photos + group/Marty from the DCC master roster.
+      Additive & safe: if the roster can't load, the hardcoded content above stays. ── */
+(function(){
+  var BASE='https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+  var R=null;
+  function txt(card,sel,val){ if(val==null||val==='')return; var e=card.querySelector(sel); if(e) e.textContent=val; }
+  function maps(){ var byId={},byDiv={},byPub={}; (R.members||[]).forEach(function(m){ byId[m.id]=m; if(m.division) byDiv[m.division]=m; if(m.publicId) byPub[m.publicId]=m; }); return {byId:byId,byDiv:byDiv,byPub:byPub}; }
+  function setPhoto(card,url){ if(!url)return; card.setAttribute('data-img',url); var back=card.querySelector('.board-card-back'); var img=back&&back.querySelector('img'); if(img) img.src=url; }
+  function forEachCard(sel,fn){ document.querySelectorAll(sel).forEach(fn); }
+  function pickExec(card,M){ var oc=card.getAttribute('onclick')||''; var mm=oc.match(/id=([a-z0-9_-]+)/i); return mm?M.byId[mm[1]]:null; }
+  function pickLtg(card,M){ var d=card.getAttribute('data-div'); return d?M.byDiv[parseInt(d,10)]:null; }
+  function pickAdult(card,M){ var oc=card.getAttribute('onclick')||''; var mm=oc.match(/id=(as\d+)/i); return mm?M.byPub[mm[1]]:null; }
+  function applyText(){
+    if(!R||!R.members) return; var M=maps();
+    forEachCard('#exec-grid .board-card',function(c){ var m=pickExec(c,M); if(!m)return; txt(c,'.board-name',m.name); txt(c,'.board-role',m.publicRole||m.title); txt(c,'.board-email',m.email); txt(c,'.board-card-back-name',m.name); txt(c,'.board-card-back-role',m.publicRole||m.title); });
+    forEachCard('#ltg-grid .board-card',function(c){ var m=pickLtg(c,M); if(!m||m.vacant)return; txt(c,'.board-name',m.name); txt(c,'.board-role',m.publicRole||m.title); txt(c,'.board-email',m.email); txt(c,'.board-card-back-name',m.name); txt(c,'.board-card-back-role',m.publicRole||m.title); });
+    forEachCard('#staff-grid .board-card',function(c){ var m=pickAdult(c,M); if(!m)return; txt(c,'.board-name',m.name); txt(c,'.board-role',m.publicRole||m.title); txt(c,'.board-card-back-name',m.name); txt(c,'.board-card-back-role',m.publicRole||m.title); });
+    if(R.groupImage){ var g=document.getElementById('bpoImg'); if(g) g.src=R.groupImage; }
+    if(R.martyImage){ var mel=document.querySelector('.board-photo-mascot img'); if(mel) mel.src=R.martyImage; }
+  }
+  function applyPhotos(){
+    if(!R||!R.members) return; var M=maps();
+    forEachCard('#exec-grid .board-card',function(c){ var m=pickExec(c,M); if(m) setPhoto(c,m.photo); });
+    forEachCard('#ltg-grid .board-card',function(c){ var m=pickLtg(c,M); if(m&&!m.vacant) setPhoto(c,m.photo); });
+    forEachCard('#staff-grid .board-card',function(c){ var m=pickAdult(c,M); if(m) setPhoto(c,m.photo); });
+  }
+  fetch(BASE+'/roster').then(function(r){return r.json();}).then(function(data){
+    R=data; applyText(); applyPhotos(); window.addEventListener('load',applyPhotos);
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>

@@ -148,8 +148,32 @@ const OFFICERS = (() => {
     return initials(officer ? officer.name : '');
   }
 
-  return { ROSTER, get, forSession, roleTitle, titleFor, contactEmailFor, allMembers, firstNameOf, initials, avatarInner };
+  async function syncRoster(){
+    try{
+      var base='https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+      var res=await fetch(base+'/roster'); var data=await res.json();
+      if(!data||!data.members) return;
+      data.members.forEach(function(m){
+        var key=(m.loginKey||'').toLowerCase(); if(!key) return;
+        var rec=ROSTER[key];
+        if(!rec){ ROSTER[key]={ name:m.name, role:m.role, division:m.division, photo:m.photo||'', title:m.title, region:'' }; return; }
+        if(m.name) rec.name=m.name;
+        if(m.photo) rec.photo=m.photo;
+        if(m.title) rec.title=m.title;
+        rec.vacant=!!m.vacant;
+      });
+      try{
+        var sn=(typeof AUTH!=='undefined')?AUTH.getUser():null;
+        if(sn){ var me=forSession(sn);
+          var av=document.getElementById('navAvatar'); if(av) av.innerHTML=avatarInner(me);
+          var nm=document.getElementById('navName'); if(nm) nm.textContent=me.name;
+        }
+      }catch(_){}
+    }catch(_){}
+  }
+  return { ROSTER, get, forSession, roleTitle, titleFor, contactEmailFor, allMembers, firstNameOf, initials, avatarInner, syncRoster };
 })();
+try{ OFFICERS.syncRoster(); }catch(_){}
 
 /* ─────────────────────────────────────────────────────────────────────────
    PORTAL - greeting, stats, toast, loader, misc helpers
