@@ -540,18 +540,19 @@ async function loadChunks(env) {
 async function saveChunks(env, chunks) {
   const SHARD = 1200;
   const n = Math.max(1, Math.ceil(chunks.length / SHARD));
+  const prev = await env.DKB.get('dkb:chunks:shards', 'json');
+  const prevN = (prev && prev.n) ? prev.n : 0;
   for (let i = 0; i < n; i++) await env.DKB.put('dkb:chunks:' + i, JSON.stringify(chunks.slice(i * SHARD, (i + 1) * SHARD)));
   await env.DKB.put('dkb:chunks:shards', JSON.stringify({ n: n, total: chunks.length }));
-  for (let i = n; i < n + 40; i++) await env.DKB.delete('dkb:chunks:' + i);  // clear shrunk shards
-  await env.DKB.delete('dkb:chunks');  // drop legacy single blob
+  // Delete ONLY shards that actually became surplus (usually none) — never a blind loop.
+  for (let i = n; i < prevN; i++) await env.DKB.delete('dkb:chunks:' + i);
 }
 
 async function clearChunks(env) {
   const meta = await env.DKB.get('dkb:chunks:shards', 'json');
   const n = (meta && meta.n) ? meta.n : 0;
-  for (let i = 0; i < n + 40; i++) await env.DKB.delete('dkb:chunks:' + i);
+  for (let i = 0; i < n; i++) await env.DKB.delete('dkb:chunks:' + i);  // only the shards that exist
   await env.DKB.delete('dkb:chunks:shards');
-  await env.DKB.delete('dkb:chunks');
 }
 
 function cosine(a, b) {
