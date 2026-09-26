@@ -123,6 +123,33 @@ function resetFullSweep() {
 }
 
 
+/**
+ * CATCH-UP MODE — for a big first sweep, run this ONCE instead of clicking
+ * "Run" over and over. It fires every 10 minutes, burns through the whole
+ * backlog hands-free, and AUTOMATICALLY switches itself to the normal daily
+ * 11 AM schedule the moment the full sweep finishes. (First tick is within
+ * ~10 minutes; you can walk away.)
+ */
+function installCatchupTrigger() {
+  removeTriggers('catchUpRun');
+  ScriptApp.newTrigger('catchUpRun').timeBased().everyMinutes(10).create();
+}
+
+function catchUpRun() {
+  runKcDriveSync();
+  if (!PROP.getProperty('SWEEP_TOKEN')) {   // full sweep is complete
+    removeTriggers('catchUpRun');           // stop the frequent catch-up
+    installDailyTrigger();                   // switch to normal daily 11 AM CT
+  }
+}
+
+function removeTriggers(fn) {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === fn) ScriptApp.deleteTrigger(t);
+  });
+}
+
+
 // ── Helpers ──────────────────────────────────────────────────────────────
 
 /** True if the service account can already see this file (explicit or inherited). */
