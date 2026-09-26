@@ -33,7 +33,7 @@
 
 const GITHUB_USER    = 'MO-ARKKeyClubWebmaster';
 const GITHUB_REPO    = 'moarkkeyclub';
-const GITHUB_BRANCH  = 'main';
+const GITHUB_BRANCH  = 'data';   // data lives on a separate branch so Worker commits never trigger Vercel
 const DATA_PATH      = 'dcc/submissions';
 const AUDIT_LOG_PATH = 'dcc/logs/audit.json';
 const DCM_PATH       = 'dcc/data/dcms.json';
@@ -842,7 +842,7 @@ async function getLogs(env) {
 
 /* ════════════════════════ GITHUB HELPERS ══════════════════════════════ */
 async function ghFetch(path, method, body, env) {
-  const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}`;
+  const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}` + (method === 'GET' ? `?ref=${GITHUB_BRANCH}` : '');
   const opts = { method, headers: {
     'Authorization': `Bearer ${env.GITHUB_TOKEN}`, 'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'moark-portal-worker', 'Content-Type': 'application/json',
