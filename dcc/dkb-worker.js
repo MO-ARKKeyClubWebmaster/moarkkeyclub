@@ -121,7 +121,7 @@ export default {
       }
       if (path === '/reset' && method === 'POST') {
         if (!adminOk(request, url, env)) return json({ error: 'Unauthorized.' }, 401);
-        await env.DKB.delete('dkb:chunks');
+        await clearChunks(env);
         await env.DKB.delete('dkb:files');
         await env.DKB.delete('dkb:state');
         return json({ ok: true, reset: true });
@@ -230,7 +230,7 @@ function yearOf(iso) { const d = new Date(iso || Date.now()); return isNaN(d) ? 
 
 // ════════════════════════ ASK / LOCATE / BROWSE ══════════════════════════
 async function ask(env, question, user) {
-  const chunks = (await env.DKB.get('dkb:chunks', 'json')) || [];
+  const chunks = await loadChunks(env);
   const visible = chunks.filter((c) => visibleTo(user, c));
   if (!visible.length)
     return { answer: 'I don’t have any indexed documents I can share with your role yet. If you just set this up, run a sync first.', citations: [] };
@@ -325,7 +325,7 @@ async function syncAll(env) {
   const token = await getAccessToken(env);
   const state = (await env.DKB.get('dkb:state', 'json')) || { rev: {}, folders: {} };
   state.rev = state.rev || {}; state.folders = state.folders || {};
-  const oldChunks = (await env.DKB.get('dkb:chunks', 'json')) || [];
+  const oldChunks = await loadChunks(env);
   const chunkByFile = {};
   oldChunks.forEach((c) => { (chunkByFile[c.fileId] = chunkByFile[c.fileId] || []).push(c); });
 
@@ -389,7 +389,7 @@ async function syncAll(env) {
       for (let i = 0; i < parts.length; i++) {
         finalChunks.push({
           fileId: f.id, title: meta.title, url: meta.url, docType: meta.docType,
-          access: meta.access, division: meta.division, text: parts[i], emb: vecs[i],
+          access: meta.access, division: meta.division, text: parts[i].slice(0, 900), emb: round4(vecs[i]),
         });
       }
     }
@@ -403,7 +403,7 @@ async function syncAll(env) {
 
   const counts = { files: filesOut.length, chunks: finalChunks.length, indexedThisRun: indexed, metaOnly, reused, removed };
   await env.DKB.put('dkb:files', JSON.stringify(filesOut));
-  await env.DKB.put('dkb:chunks', JSON.stringify(finalChunks));
+  await saveChunks(env, finalChunks);
   await env.DKB.put('dkb:state', JSON.stringify({ rev: state.rev, folders: state.folders, lastSync: new Date().toISOString(), counts }));
 
   const done = budgetLeft > 0;
@@ -511,6 +511,35 @@ function bytesToB64url(buf) {
   for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
+function round4(v) { const o = new Array(v.length); for (let i = 0; i < v.length; i++) o[i] = Math.round(v[i] * 1e4) / 1e4; return o; }
+
+async function loadChunks(env) {
+  const meta = await env.DKB.get('dkb:chunks:shards', 'json');
+  if (meta && meta.n) {
+    let all = [];
+    for (let i = 0; i < meta.n; i++) { const part = await env.DKB.get('dkb:chunks:' + i, 'json'); if (part) all = all.concat(part); }
+    return all;
+  }
+  return (await env.DKB.get('dkb:chunks', 'json')) || [];  // legacy
+}
+
+async function saveChunks(env, chunks) {
+  const SHARD = 1200;
+  const n = Math.max(1, Math.ceil(chunks.length / SHARD));
+  for (let i = 0; i < n; i++) await env.DKB.put('dkb:chunks:' + i, JSON.stringify(chunks.slice(i * SHARD, (i + 1) * SHARD)));
+  await env.DKB.put('dkb:chunks:shards', JSON.stringify({ n: n, total: chunks.length }));
+  for (let i = n; i < n + 40; i++) await env.DKB.delete('dkb:chunks:' + i);  // clear shrunk shards
+  await env.DKB.delete('dkb:chunks');  // drop legacy single blob
+}
+
+async function clearChunks(env) {
+  const meta = await env.DKB.get('dkb:chunks:shards', 'json');
+  const n = (meta && meta.n) ? meta.n : 0;
+  for (let i = 0; i < n + 40; i++) await env.DKB.delete('dkb:chunks:' + i);
+  await env.DKB.delete('dkb:chunks:shards');
+  await env.DKB.delete('dkb:chunks');
+}
+
 function cosine(a, b) {
   let d = 0, na = 0, nb = 0;
   const n = Math.min(a.length, b.length);
