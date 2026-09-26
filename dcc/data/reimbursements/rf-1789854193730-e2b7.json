@@ -1,0 +1,106 @@
+{
+  "id": "rf-1789854193730-e2b7",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "moarkeyclubltg04@gmail.com",
+  "officerName": "Bethany Liao",
+  "officerTitle": "Lieutenant Governor · Division 4",
+  "officerRole": "ltg",
+  "officerDivision": 4,
+  "contactEmail": "moarkeyclubltg04@gmail.com",
+  "status": "pending-adult",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "843 Courtwood Ln",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 202,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "843 Courtwood Ln",
+        "miles": 202,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 404,
+      "bmCost": 202,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 202
+    },
+    "name": "BETHANY LIAO",
+    "office": "LIEUTENANT GOVERNOR · DIVISION 4",
+    "certified": true,
+    "signature": "BETHANY LIAO"
+  },
+  "pdfUrl": "/reimb-pdf/rf-1789854193730-e2b7",
+  "submittedAt": "2026-09-19T22:07:30.609Z",
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T22:07:30.609Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T22:07:30.609Z",
+      "event": "submitted",
+      "by": "Bethany Liao"
+    }
+  ]
+}

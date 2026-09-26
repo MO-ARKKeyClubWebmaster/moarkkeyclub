@@ -1,0 +1,36 @@
+{
+  "id": "bm-1789852840804-f5es",
+  "date": "2026-09-18",
+  "endDate": "2026-09-20",
+  "label": "September Board Meeting",
+  "createdAt": "2026-09-19T21:20:40.804Z",
+  "updatedAt": "2026-09-19T21:43:17.372Z",
+  "attendance": {
+    "frozen": true,
+    "savedAt": "2026-09-19T21:42:57.075Z",
+    "present": [
+      "moarkkeyclubgovernor@gmail.com",
+      "moarkkcsecretary@gmail.com",
+      "moarkkeyclubwebmaster@gmail.com",
+      "moarkkeditor1@gmail.com",
+      "james.sturch@southsideschools.org",
+      "districtadmin",
+      "mirandayoung",
+      "carlaobrien",
+      "hollyhoffman",
+      "carter-stephanie@trojans.k12.mo.us",
+      "moarkkcltg1@gmail.com",
+      "moarkkcltg002@gmail.com",
+      "moarkkeyclubltg3@gmail.com",
+      "moarkeyclubltg04@gmail.com",
+      "moarkkcltg6@gmail.com",
+      "moarkkcltg08@gmail.com",
+      "moarkkcltg9@gmail.com",
+      "moarkkcltg010@gmail.com"
+    ]
+  },
+  "reimb": {
+    "sent": true,
+    "sentAt": "2026-09-19T21:43:04.049Z"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "moark-1789934706945-08wnb",
+  "division": 4,
+  "ltgEmail": "moarkeyclubltg04@gmail.com",
+  "ltgName": "Bethany Liao",
+  "year": "2026-2027",
+  "month": "October",
+  "type": "newsletter",
+  "fileName": "Newsletter 1 (1).pdf",
+  "fileSize": 1165839,
+  "pdfUrl": "/pdf/moark-1789934706945-08wnb",
+  "status": "approved",
+  "submittedAt": "2026-09-20T20:05:06.945Z",
+  "updatedAt": "2026-09-26T00:04:46.797Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Bethany Liao",
+      "to": "editor",
+      "message": "hi nandu, please ignore the other october one i submitted (a certain savanna gave me an incorrect date..)! this is the real october newsletter!!!",
+      "timestamp": "2026-09-20T20:05:06.945Z"
+    }
+  ]
+}

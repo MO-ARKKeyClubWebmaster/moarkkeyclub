@@ -1,0 +1,32 @@
+{
+  "id": "moark-1788836694112-do0lw",
+  "division": 5,
+  "ltgEmail": "moarkkcltg05@gmail.com",
+  "ltgName": "Division 5 LTG",
+  "year": "2026-2027",
+  "month": "September",
+  "type": "newsletter",
+  "fileName": "MOARK_Division5_September_2026_OnePage_v2.pdf",
+  "fileSize": 306845,
+  "pdfUrl": "/pdf/moark-1788836694112-do0lw",
+  "status": "denied",
+  "submittedAt": "2026-09-08T03:04:54.112Z",
+  "updatedAt": "2026-09-08T23:11:01.103Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Division 5 LTG",
+      "to": "editor",
+      "message": "If thereâs anything that needs fixing let me know",
+      "timestamp": "2026-09-08T03:04:54.112Z"
+    },
+    {
+      "from": "editor",
+      "fromName": "District Editor",
+      "to": "ltg",
+      "message": "Please add the following items to your newsletter, and it'll be good to send out!\nDLC Information\nMO-ARK Social Media Information\nMore in-depth information about YOF, Earl Collins, and Global Engagement Rally",
+      "timestamp": "2026-09-08T23:11:01.103Z"
+    }
+  ]
+}

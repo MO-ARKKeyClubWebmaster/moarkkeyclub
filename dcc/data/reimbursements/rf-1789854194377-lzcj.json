@@ -1,0 +1,47 @@
+{
+  "id": "rf-1789854194377-lzcj",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "moarkkcltg6@gmail.com",
+  "officerName": "Ava Long",
+  "officerTitle": "Lieutenant Governor · Division 6",
+  "officerRole": "ltg",
+  "officerDivision": 6,
+  "contactEmail": "moarkkcltg6@gmail.com",
+  "status": "no-reimb",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": null,
+  "pdfUrl": null,
+  "submittedAt": null,
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-20T18:15:24.530Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-20T18:15:24.530Z",
+      "event": "attended-no-reimb",
+      "by": "Ava Long"
+    }
+  ],
+  "didNotDrive": true
+}

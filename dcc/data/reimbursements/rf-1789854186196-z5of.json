@@ -1,0 +1,106 @@
+{
+  "id": "rf-1789854186196-z5of",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "moarkkeditor1@gmail.com",
+  "officerName": "Nandu Rakesh Nair",
+  "officerTitle": "District Editor",
+  "officerRole": "editor",
+  "officerDivision": null,
+  "contactEmail": "moarkkeditor1@gmail.com",
+  "status": "pending-adult",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "1012 Red Orchard Trl O'Fallon, MO",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 208,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "1012 Red Orchard Trl O'Fallon, MO",
+        "miles": 208,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 416,
+      "bmCost": 208,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 208
+    },
+    "name": "NANDU RAKESH NAIR",
+    "office": "DISTRICT EDITOR",
+    "certified": true,
+    "signature": "NANDAKISHOR RAKESH NAIR"
+  },
+  "pdfUrl": null,
+  "submittedAt": "2026-09-19T22:06:15.087Z",
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T22:06:15.087Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T22:06:15.087Z",
+      "event": "submitted",
+      "by": "Nandu Rakesh Nair"
+    }
+  ]
+}

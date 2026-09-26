@@ -1,0 +1,25 @@
+{
+  "id": "moark-1789849260155-uy4t3",
+  "division": 6,
+  "ltgEmail": "moarkkeditor1@gmail.com",
+  "ltgName": "Nandu Rakesh Nair",
+  "year": "2026-2027",
+  "month": "May",
+  "type": "newsletter",
+  "fileName": "Ava Long-MayNewsletter.pdf",
+  "fileSize": 5072469,
+  "pdfUrl": "/pdf/moark-1789849260155-uy4t3",
+  "status": "approved",
+  "submittedAt": "2026-09-19T20:21:00.155Z",
+  "updatedAt": "2026-09-19T20:26:29.076Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Nandu Rakesh Nair",
+      "to": "editor",
+      "message": "[Uploaded by Nandu Rakesh Nair on behalf of Div 6]",
+      "timestamp": "2026-09-19T20:21:00.155Z"
+    }
+  ]
+}

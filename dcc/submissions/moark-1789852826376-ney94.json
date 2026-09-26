@@ -1,0 +1,25 @@
+{
+  "id": "moark-1789852826376-ney94",
+  "division": 8,
+  "ltgEmail": "moarkkcltg08@gmail.com",
+  "ltgName": "Andy Santizo",
+  "year": "2026-2027",
+  "month": "September",
+  "type": "newsletter",
+  "fileName": "Newsletter de revolución ecológica con la moda circular, estilo minimalista elegante color beige y verde. (1).pdf",
+  "fileSize": 1072700,
+  "pdfUrl": "/pdf/moark-1789852826376-ney94",
+  "status": "approved",
+  "submittedAt": "2026-09-19T21:20:26.376Z",
+  "updatedAt": "2026-09-19T21:22:18.044Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Andy Santizo",
+      "to": "editor",
+      "message": "Sorry I wasn't let know that these were due on Sept 10 I thought on Sept 29",
+      "timestamp": "2026-09-19T21:20:26.376Z"
+    }
+  ]
+}

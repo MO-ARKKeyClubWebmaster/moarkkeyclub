@@ -1,0 +1,41 @@
+{
+  "id": "rf-1789854188476-kwjr",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "mirandayoung",
+  "officerName": "Miranda Young",
+  "officerTitle": "Adult Board Member",
+  "officerRole": "adult-member",
+  "officerDivision": null,
+  "contactEmail": null,
+  "status": "sent",
+  "routeToTreasurer": false,
+  "attendedAnswer": null,
+  "form": null,
+  "pdfUrl": null,
+  "submittedAt": null,
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T21:43:04.049Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    }
+  ]
+}

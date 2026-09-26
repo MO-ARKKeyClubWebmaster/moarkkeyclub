@@ -1,0 +1,123 @@
+{
+  "id": "rf-1789854189127-q227",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "carlaobrien",
+  "officerName": "Carla O'Brien",
+  "officerTitle": "Adult Board Member",
+  "officerRole": "adult-member",
+  "officerDivision": null,
+  "contactEmail": null,
+  "status": "archived",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "2408 Oakmont Ct High Ridge MO 63049",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 203.3,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "2408 Oakmont Ct High Ridge MO 63049",
+        "miles": 203.3,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 406.6,
+      "bmCost": 203.3,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 203.3
+    },
+    "name": "CARLA O'BRIEN",
+    "office": "ADULT BOARD MEMBER",
+    "certified": true,
+    "signature": "CARLA A OBRIEN"
+  },
+  "pdfUrl": "/reimb-pdf/rf-1789854189127-q227",
+  "submittedAt": "2026-09-19T21:46:04.420Z",
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": "approved",
+    "comment": "",
+    "signature": "JAMES STURCH",
+    "at": "2026-09-19T22:06:33.489Z",
+    "by": "James Sturch"
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T22:06:33.489Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T21:43:51.328Z",
+      "event": "attended-no-reimb",
+      "by": "Carla O'Brien"
+    },
+    {
+      "at": "2026-09-19T21:44:47.212Z",
+      "event": "resent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T21:46:04.420Z",
+      "event": "submitted",
+      "by": "Carla O'Brien"
+    },
+    {
+      "at": "2026-09-19T22:06:33.489Z",
+      "event": "adult-approved",
+      "by": "James Sturch"
+    }
+  ],
+  "didNotDrive": true,
+  "archivedAt": "2026-09-19T22:06:33.489Z"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "moark-1789498241698-eyw5r",
+  "division": 7,
+  "ltgEmail": "moarkkcltg007@gmail.com",
+  "ltgName": "Division 7 LTG",
+  "year": "2026-2027",
+  "month": "September",
+  "type": "newsletter",
+  "fileName": "26_Ad_Sales_Form (1).pdf",
+  "fileSize": 814554,
+  "pdfUrl": "/pdf/moark-1789498241698-eyw5r",
+  "status": "denied",
+  "submittedAt": "2026-09-15T18:50:41.698Z",
+  "updatedAt": "2026-09-15T20:54:17.768Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Division 7 LTG",
+      "to": "editor",
+      "message": "PLEASE DISREGARD THIS NOTICE. THIS IS A TEST BY THE WEBMASTER FOR NOTIFICATIONS",
+      "timestamp": "2026-09-15T18:50:41.698Z"
+    },
+    {
+      "from": "editor",
+      "fromName": "Nandu Rakesh Nair",
+      "to": "ltg",
+      "message": "[webmaster removing from editor queue]",
+      "timestamp": "2026-09-15T20:54:17.768Z"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "moark-1789442813651-p8r1z",
+  "division": 2,
+  "ltgEmail": "moarkkcltg002@gmail.com",
+  "ltgName": "Pritam Avuthu",
+  "year": "2026-2027",
+  "month": "September",
+  "type": "newsletter",
+  "fileName": "Key Club Newsletter.pdf",
+  "fileSize": 152450,
+  "pdfUrl": "/pdf/moark-1789442813651-p8r1z",
+  "status": "approved",
+  "submittedAt": "2026-09-15T03:26:53.651Z",
+  "updatedAt": "2026-09-19T20:14:30.384Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Pritam Avuthu",
+      "to": "editor",
+      "message": "N/A",
+      "timestamp": "2026-09-15T03:26:53.651Z"
+    }
+  ]
+}

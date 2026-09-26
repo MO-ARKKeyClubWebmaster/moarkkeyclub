@@ -1,0 +1,106 @@
+{
+  "id": "rf-1789854186845-g3z9",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "james.sturch@southsideschools.org",
+  "officerName": "James Sturch",
+  "officerTitle": "Treasurer",
+  "officerRole": "adult-treasurer",
+  "officerDivision": null,
+  "contactEmail": "james.sturch@southsideschools.org",
+  "status": "pending-adult",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "1505 Betty Jean St Batesville, AR 72501",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 196.6,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "1505 Betty Jean St Batesville, AR 72501",
+        "miles": 196.6,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 393.2,
+      "bmCost": 196.6,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 196.6
+    },
+    "name": "JAMES STURCH",
+    "office": "TREASURER",
+    "certified": true,
+    "signature": "JAMES STURCH"
+  },
+  "pdfUrl": "/reimb-pdf/rf-1789854186845-g3z9",
+  "submittedAt": "2026-09-19T21:50:40.659Z",
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T21:50:40.659Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T21:50:40.659Z",
+      "event": "submitted",
+      "by": "James Sturch"
+    }
+  ]
+}

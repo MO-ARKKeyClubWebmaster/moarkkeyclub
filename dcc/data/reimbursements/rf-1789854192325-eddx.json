@@ -1,0 +1,106 @@
+{
+  "id": "rf-1789854192325-eddx",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "moarkkcltg002@gmail.com",
+  "officerName": "Pritam Avuthu",
+  "officerTitle": "Lieutenant Governor · Division 2",
+  "officerRole": "ltg",
+  "officerDivision": 2,
+  "contactEmail": "moarkkcltg002@gmail.com",
+  "status": "pending-adult",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "612 strathclyde drive",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 207.3,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "612 strathclyde drive",
+        "miles": 207.3,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 414.6,
+      "bmCost": 207.3,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 207.3
+    },
+    "name": "PRITAM AVUTHU",
+    "office": "LIEUTENANT GOVERNOR · DIVISION 2",
+    "certified": true,
+    "signature": "PRITAM AVUTHU"
+  },
+  "pdfUrl": "/reimb-pdf/rf-1789854192325-eddx",
+  "submittedAt": "2026-09-19T21:48:33.550Z",
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T21:48:33.550Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T21:48:33.550Z",
+      "event": "submitted",
+      "by": "Pritam Avuthu"
+    }
+  ]
+}

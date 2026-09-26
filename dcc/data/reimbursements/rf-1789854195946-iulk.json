@@ -1,0 +1,106 @@
+{
+  "id": "rf-1789854195946-iulk",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "moarkkcltg9@gmail.com",
+  "officerName": "Amara Miles",
+  "officerTitle": "Lieutenant Governor · Division 9",
+  "officerRole": "ltg",
+  "officerDivision": 9,
+  "contactEmail": "moarkkcltg9@gmail.com",
+  "status": "pending-adult",
+  "routeToTreasurer": false,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "48 Anchor Lake Dr",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 118,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "48 Anchor Lake Dr",
+        "miles": 118,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 236,
+      "bmCost": 118,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 118
+    },
+    "name": "AMARA MILES",
+    "office": "LIEUTENANT GOVERNOR · DIVISION 9",
+    "certified": true,
+    "signature": "AMARA MILES"
+  },
+  "pdfUrl": "/reimb-pdf/rf-1789854195946-iulk",
+  "submittedAt": "2026-09-19T22:02:44.807Z",
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-19T22:02:44.807Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-19T22:02:44.807Z",
+      "event": "submitted",
+      "by": "Amara Miles"
+    }
+  ]
+}

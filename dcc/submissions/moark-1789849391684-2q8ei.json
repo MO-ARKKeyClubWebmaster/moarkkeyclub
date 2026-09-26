@@ -1,0 +1,25 @@
+{
+  "id": "moark-1789849391684-2q8ei",
+  "division": 5,
+  "ltgEmail": "moarkkeditor1@gmail.com",
+  "ltgName": "Nandu Rakesh Nair",
+  "year": "2026-2027",
+  "month": "May",
+  "type": "newsletter",
+  "fileName": "May Newletter!.pdf",
+  "fileSize": 396599,
+  "pdfUrl": "/pdf/moark-1789849391684-2q8ei",
+  "status": "approved",
+  "submittedAt": "2026-09-19T20:23:11.684Z",
+  "updatedAt": "2026-09-19T20:26:24.974Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Nandu Rakesh Nair",
+      "to": "editor",
+      "message": "[Uploaded by Nandu Rakesh Nair on behalf of Div 5]",
+      "timestamp": "2026-09-19T20:23:11.684Z"
+    }
+  ]
+}

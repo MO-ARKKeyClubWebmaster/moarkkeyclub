@@ -1,0 +1,46 @@
+{
+  "id": "rf-1789854184049-407d",
+  "boardMeetingId": "bm-1789852840804-f5es",
+  "boardMeetingDate": "2026-09-18",
+  "boardMeetingEndDate": "2026-09-20",
+  "boardMeetingLabel": "September Board Meeting",
+  "officerEmail": "moarkkeyclubgovernor@gmail.com",
+  "officerName": "Dakota Menning",
+  "officerTitle": "District Governor",
+  "officerRole": "governor",
+  "officerDivision": null,
+  "contactEmail": "moarkkeyclubgovernor@gmail.com",
+  "status": "not-attended",
+  "routeToTreasurer": false,
+  "attendedAnswer": false,
+  "form": null,
+  "pdfUrl": null,
+  "submittedAt": null,
+  "treasurer": {
+    "decision": null,
+    "comment": "",
+    "at": null,
+    "by": ""
+  },
+  "adult": {
+    "decision": null,
+    "comment": "",
+    "signature": "",
+    "at": null,
+    "by": ""
+  },
+  "createdAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-09-21T23:19:08.013Z",
+  "history": [
+    {
+      "at": "2026-09-19T21:43:04.049Z",
+      "event": "sent",
+      "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-09-21T23:19:08.013Z",
+      "event": "not-attended",
+      "by": "Dakota Menning"
+    }
+  ]
+}
