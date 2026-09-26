@@ -243,21 +243,35 @@ async function ask(env, question, user) {
     let hit = 0; qTokens.forEach((w) => { if (t.indexOf(w) !== -1) hit++; });
     return hit / qTokens.length;
   };
+  const TODAY = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
   const qvec = (await embedOne(env, question));
   const scored = visible
     .map((c) => ({ c, s: cosine(qvec, c.emb) + 0.4 * titleScore(c.title) }))
     .sort((a, b) => b.s - a.s)
-    .slice(0, 8);
+    .slice(0, 40);
 
-  const context = scored.map((x, i) => `[${i + 1}] Title: ${x.c.title}\n${x.c.text}`).join('\n\n');
-  const citations = dedupeCites(scored.map((x) => x.c));
+  // Group the best chunks by document, so each cited source carries real
+  // content AND the context numbering matches the citation numbering exactly.
+  const byFile = new Map();
+  for (const x of scored) {
+    if (!byFile.has(x.c.fileId)) byFile.set(x.c.fileId, { title: x.c.title, url: x.c.url, docType: x.c.docType, best: x.s, texts: [] });
+    const f = byFile.get(x.c.fileId);
+    if (f.texts.length < 3) f.texts.push(x.c.text);
+  }
+  const files = [...byFile.values()].sort((a, b) => b.best - a.best).slice(0, 5);
+  const context = files.map((f, i) => `[${i + 1}] ${f.title}\n${f.texts.join('\n. . .\n')}`).join('\n\n----\n\n');
+  const citations = files.map((f) => ({ title: f.title, url: f.url, docType: f.docType }));
 
   const sys =
-    'You are the MO-ARK District Key Club Knowledge Base assistant. Answer the ' +
-    'question using ONLY the numbered sources provided. Be concise and specific. ' +
-    'Cite the sources you used inline like [1] or [2]. If the sources do not ' +
-    'contain the answer, say you don’t see it in the documents you have access ' +
-    'to — do not guess. Never mention documents that are not in the sources.';
+    'You are the MO-ARK District Key Club knowledge base assistant. Today is ' + TODAY + '. ' +
+    'The current board term is 2025-2026, so a question naming only a month (e.g. "September") ' +
+    'or saying "this year" refers to the most recent term unless another year is explicitly stated; ' +
+    'never refuse just because an exact year string is missing from the sources. ' +
+    'Answer using the numbered sources below and cite the ones you use inline like [1]. ' +
+    'Prefer the earlier (higher-ranked) sources, and actually give the content asked for ' +
+    '(for example, if asked what a committee did, list what it did). ' +
+    'Only say you do not see it if none of the sources address the topic. ' +
+    'Never mention documents that are not in the sources.';
 
   const MODELS = [
     '@cf/meta/llama-3.1-8b-instruct',
@@ -272,7 +286,7 @@ async function ask(env, question, user) {
     try {
       const out = await env.AI.run(m, {
         messages: [ { role: 'system', content: sys }, { role: 'user', content: prompt } ],
-        max_tokens: 512,
+        max_tokens: 700,
       });
       answer = (out && (out.response || out.result ||
         (out.choices && out.choices[0] && out.choices[0].message && out.choices[0].message.content))) || '';
