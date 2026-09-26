@@ -240,7 +240,7 @@ const CAL = (() => {
 
 /* ── SETUP ──────────────────────────────────────────────────────── */
 const user = AUTH.requireAuth();
-if (!AUTH.isLTG())          document.getElementById('navNewsletter').href = 'archive.html';
+if (!AUTH.isLTG()) { const _nn = document.getElementById('navNewsletter'); if (_nn) _nn.href = 'archive.html'; }
 
 const canEdit = AUTH.isWebmaster() || AUTH.isGovernor();
 if (canEdit) {
