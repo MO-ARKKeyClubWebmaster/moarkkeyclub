@@ -82,6 +82,30 @@
   @media(max-width:1024px){.universal-card{flex-direction:column;gap:1.5rem;}.footer-top{grid-template-columns:1fr 1fr;}}
   @media(max-width:900px){.marty-news{display:none;}}
   @media(max-width:768px){.nav-links{display:none;}.nav-toggle{display:flex;}.newsletter-grid{grid-template-columns:1fr;}.footer-top{grid-template-columns:1fr;}}
+
+  /* Live division-newsletter archive (distinct look) */
+  .arc-section{background:linear-gradient(180deg,var(--cream,#faf7f0),#fff);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .arc-wrap{max-width:1200px;margin:0 auto;padding:3.5rem 1.5rem;}
+  .arc-eyebrow{display:inline-block;background:rgba(200,150,42,.14);border:1px solid rgba(200,150,42,.3);color:#9a6a14;border-radius:100px;padding:.3rem .8rem;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8rem;}
+  .arc-h2{font-family:var(--ff-display);font-size:clamp(1.8rem,3.4vw,2.6rem);color:var(--navy);line-height:1.1;margin-bottom:.5rem;}
+  .arc-h2 em{font-style:italic;color:var(--gold);}
+  .arc-desc{color:var(--muted);max-width:56ch;line-height:1.7;margin-bottom:1.75rem;}
+  .arc-filters{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:2rem;}
+  .arc-chip{border:1px solid var(--border);background:var(--white);color:var(--navy);border-radius:100px;padding:.4rem .9rem;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+  .arc-chip:hover{border-color:var(--gold);}
+  .arc-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .arc-month{margin-bottom:2.25rem;}
+  .arc-month-hd{font-family:var(--ff-display);font-size:1.15rem;color:var(--navy);padding-bottom:.5rem;margin-bottom:1rem;border-bottom:2px solid var(--gold);display:inline-block;}
+  .arc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+  .arc-card{display:flex;align-items:center;gap:1rem;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1rem 1.1rem;text-decoration:none;transition:box-shadow .18s,transform .12s,border-color .18s;}
+  .arc-card:hover{box-shadow:0 12px 30px rgba(11,27,51,.1);transform:translateY(-3px);border-color:var(--gold-lt);}
+  .arc-badge{flex-shrink:0;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#173257,#0b1b33);color:var(--gold-lt);font-family:var(--ff-display);font-size:1.5rem;display:flex;align-items:center;justify-content:center;}
+  .arc-meta{display:flex;flex-direction:column;min-width:0;}
+  .arc-title{font-weight:700;color:var(--navy);font-size:.95rem;}
+  .arc-sub{font-size:.78rem;color:var(--muted);margin-top:.15rem;}
+  .arc-view{font-size:.75rem;color:var(--gold);font-weight:700;margin-top:.5rem;}
+  .arc-card:hover .arc-view{color:var(--blue,#1e50a0);}
+  .arc-loading,.arc-empty{color:var(--muted);padding:1.5rem 0;font-size:.95rem;}
 </style>
 </head>
 <body>
@@ -271,6 +295,17 @@
   </div>
 </div>
 
+<!-- LIVE DIVISION NEWSLETTER ARCHIVE (from the officer portal) -->
+<section class="arc-section">
+  <div class="arc-wrap">
+    <div class="arc-eyebrow">Live Archive</div>
+    <h2 class="arc-h2">Division <em>Newsletter</em> Archive</h2>
+    <p class="arc-desc">Every division newsletter published through the district officer portal, straight from our Lieutenant Governors &mdash; updated automatically as new ones are approved.</p>
+    <div class="arc-filters" id="arcFilters"></div>
+    <div id="arcList"><div class="arc-loading">Loading the latest newsletters&hellip;</div></div>
+  </div>
+</section>
+
 <div class="section">
   <div class="info-box fade-in">
     <div class="info-icon">ℹ</div>
@@ -437,5 +472,51 @@
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
 <script src="transitions.js"></script>
+<script>
+(function () {
+  var BASE = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+  var box = document.getElementById('arcList');
+  var filt = document.getElementById('arcFilters');
+  if (!box) return;
+  var all = [], activeDiv = 0;
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  fetch(BASE + '/public/newsletters').then(function(r){ return r.json(); }).then(function (data) {
+    all = Array.isArray(data) ? data : [];
+    if (!all.length) { box.innerHTML = '<div class="arc-empty">Newsletters will appear here as divisions publish them.</div>'; if (filt) filt.style.display = 'none'; return; }
+    buildFilters(); render();
+  }).catch(function () { box.innerHTML = '<div class="arc-empty">Couldn’t load the archive right now. Please try again later.</div>'; });
+
+  function divisions(){ var seen={}; all.forEach(function(n){ if(n.division) seen[n.division]=1; }); return Object.keys(seen).map(Number).sort(function(a,b){return a-b;}); }
+
+  function buildFilters(){
+    if (!filt) return;
+    var h = '<button class="arc-chip active" data-d="0">All Divisions</button>';
+    divisions().forEach(function(d){ h += '<button class="arc-chip" data-d="'+d+'">Division '+d+'</button>'; });
+    filt.innerHTML = h;
+    filt.addEventListener('click', function(e){ var b = e.target.closest('.arc-chip'); if(!b) return; activeDiv = +b.dataset.d; Array.prototype.forEach.call(filt.children, function(c){ c.classList.toggle('active', +c.dataset.d === activeDiv); }); render(); });
+  }
+
+  function render(){
+    var list = activeDiv ? all.filter(function(n){ return n.division === activeDiv; }) : all.slice();
+    if (!list.length) { box.innerHTML = '<div class="arc-empty">No newsletters for that division yet.</div>'; return; }
+    list.sort(function(a,b){ return String(b.submittedAt||'').localeCompare(String(a.submittedAt||'')); });
+    var groups = {}, order = [];
+    list.forEach(function(n){ var key = (n.month||'') + ' ' + (n.year||''); if(!groups[key]){ groups[key]=[]; order.push(key); } groups[key].push(n); });
+    box.innerHTML = order.map(function(k){
+      return '<div class="arc-month"><div class="arc-month-hd">' + esc(k.trim()) + '</div><div class="arc-grid">' + groups[k].map(card).join('') + '</div></div>';
+    }).join('');
+  }
+
+  function card(n){
+    var pdf = BASE + '/pdf/' + n.id;
+    return '<a class="arc-card" href="' + pdf + '" target="_blank" rel="noopener">'
+      + '<span class="arc-badge">' + (n.division != null ? esc(n.division) : '?') + '</span>'
+      + '<span class="arc-meta"><span class="arc-title">Division ' + esc(n.division) + ' Newsletter</span>'
+      + '<span class="arc-sub">' + esc(n.month||'') + ' ' + esc(n.year||'') + (n.author ? ' · ' + esc(n.author) : '') + '</span>'
+      + '<span class="arc-view">View PDF ↗</span></span></a>';
+  }
+})();
+</script>
 </body>
 </html>

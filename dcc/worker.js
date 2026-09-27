@@ -193,6 +193,7 @@ export default {
 
       // NEWSLETTER SUBMISSIONS
       if (path === '/submissions' && method === 'GET') return await listSubmissions(env);
+      if (path === '/public/newsletters' && method === 'GET') return await publicNewsletters(env);
 
       if (path === '/submissions' && method === 'POST') {
         const body   = await request.json();
@@ -873,6 +874,17 @@ async function listSubmissionsRaw(env) {
   const files = await ghList(env);
   const subs = await Promise.all(files.map(async f => (await ghReadJSON(f.path, env)).content));
   return subs.filter(Boolean);
+}
+
+// Public, read-only: only APPROVED division newsletters, with safe fields only
+// (no threads, emails, or internal status). Served to the public site.
+async function publicNewsletters(env) {
+  const subs = await listSubmissionsRaw(env);
+  const out = (subs || [])
+    .filter((s) => s && s.type === 'newsletter' && s.status === 'approved' && !s.deleted)
+    .map((s) => ({ id: s.id, division: s.division, month: s.month, year: s.year, author: s.ltgName || null, fileName: s.fileName || null, submittedAt: s.submittedAt || s.updatedAt || null }))
+    .sort((a, b) => String(b.submittedAt || '').localeCompare(String(a.submittedAt || '')));
+  return json(out);
 }
 
 /* ════════════════════════ AUDIT LOG ═══════════════════════════════════ */
