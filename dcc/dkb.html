@@ -88,6 +88,39 @@
 .dkb-file-m{font-size:.7rem;color:var(--muted);margin-top:.15rem;}
 .dkb-showall{margin-top:.7rem;font-size:.78rem;color:var(--gold);cursor:pointer;font-weight:700;background:none;border:none;padding:.2rem 0;font-family:var(--ff-body);}
 .dkb-showall:hover{color:var(--gold-lt);text-decoration:underline;}
+
+/* Library (two-pane manager) */
+.lib-toolbar{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap;align-items:center;}
+.lib-toolbar input{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:.88rem;font-family:var(--ff-body);outline:none;}
+.lib-toolbar input:focus{border-color:var(--gold);}
+.lib-toolbar select{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .7rem;font-size:.82rem;color:var(--navy);background:var(--white);cursor:pointer;font-family:var(--ff-body);}
+.lib-editbtn{border:1px solid var(--navy);background:var(--white);color:var(--navy);border-radius:100px;padding:.5rem .95rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);}
+.lib-editbtn.on{background:var(--navy);color:#fff;}
+.lib-wrap{display:flex;gap:1rem;align-items:flex-start;}
+.lib-side{flex:0 0 232px;border:1px solid var(--border);border-radius:12px;background:var(--white);padding:.5rem;max-height:72vh;overflow:auto;}
+.lib-main{flex:1;min-width:0;}
+.lib-fold{display:flex;align-items:center;gap:.5rem;padding:.5rem .6rem;border-radius:8px;cursor:pointer;font-size:.85rem;color:var(--navy);}
+.lib-fold:hover{background:var(--bg);}
+.lib-fold.active{background:var(--navy);color:#fff;}
+.lib-fold .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lib-fold .ct{font-size:.7rem;opacity:.6;font-weight:700;}
+.lib-fold.active .ct{opacity:.85;}
+.lib-fold .fa{opacity:.45;font-size:.72rem;padding:0 .15rem;cursor:pointer;}
+.lib-fold .fa:hover{opacity:1;}
+.lib-sep{height:1px;background:var(--border-lt);margin:.4rem .3rem;}
+.lib-newf{width:100%;text-align:left;border:1px dashed var(--border);background:none;border-radius:8px;padding:.5rem .6rem;color:var(--muted);cursor:pointer;font-size:.8rem;font-family:var(--ff-body);margin-top:.35rem;}
+.lib-newf:hover{border-color:var(--gold);color:var(--gold);}
+.lib-crumb{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.75rem;font-family:var(--ff-display);}
+.lib-crumb .sub{font-size:.72rem;color:var(--muted);font-weight:600;font-family:var(--ff-body);margin-left:.4rem;}
+.lib-card{position:relative;}
+.lib-fmenu-btn{position:absolute;top:6px;right:6px;border:none;background:rgba(255,255,255,.92);color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:.15rem .35rem;border-radius:6px;}
+.lib-fmenu-btn:hover{background:var(--bg);color:var(--navy);}
+.lib-menu{position:absolute;top:32px;right:6px;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 34px rgba(11,27,51,.18);z-index:30;min-width:190px;padding:.35rem;max-height:280px;overflow:auto;}
+.lib-menu button{display:block;width:100%;text-align:left;border:none;background:none;padding:.45rem .6rem;font-size:.8rem;color:var(--navy);cursor:pointer;border-radius:7px;font-family:var(--ff-body);}
+.lib-menu button:hover{background:var(--bg);}
+.lib-menu .hd{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:.35rem .6rem .2rem;font-weight:700;}
+.dkb-file{padding-right:1.7rem;}
+@media(max-width:720px){.lib-wrap{flex-direction:column;}.lib-side{flex:1 1 auto;width:100%;max-height:none;}}
 </style>
 </head>
 <body>
@@ -143,8 +176,8 @@
 
   <!-- ═══════════ BROWSE PANEL ═══════════ -->
   <div id="panel-browse" style="display:none;">
-    <div class="dkb-toolbar">
-      <input id="dkbSearch" type="text" placeholder="Search documents by name, folder, or owner..." autocomplete="off">
+    <div class="lib-toolbar">
+      <input id="dkbSearch" type="text" placeholder="Search all documents..." autocomplete="off">
       <select id="dkbKind" aria-label="Filter by type">
         <option value="">All types</option>
         <option value="Doc">Docs</option>
@@ -154,9 +187,15 @@
         <option value="Image">Images</option>
         <option value="Form">Forms</option>
       </select>
+      <button id="editToggle" class="lib-editbtn" style="display:none;">Organize</button>
     </div>
-    <div class="dkb-cats" id="dkbCats"></div>
-    <div id="dkbBrowse"><div class="dkb-loading">Loading your document library…</div></div>
+    <div class="lib-wrap">
+      <aside class="lib-side" id="libSide"></aside>
+      <section class="lib-main">
+        <div class="lib-crumb" id="libCrumb"></div>
+        <div id="dkbBrowse"><div class="dkb-loading">Loading your library&hellip;</div></div>
+      </section>
+    </div>
   </div>
 
 </div>
@@ -247,10 +286,65 @@ async function dkbAsk(preset) {
 document.getElementById('dkbInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') dkbAsk(); });
 
 /* ── browse / locate ── */
-let browseGroups = null, activeCat = 'All', activeKind = '', searchQ = '', expanded = {}, showAllCats = {};
+/* DKB Library (two-pane, editable) */
+let libData = null, curFolder = '__all', editMode = false, activeKind = '', searchQ = '', openMenuBtn = null;
 const KIND_LABEL = { Doc:'DOC', Sheet:'XLS', Slides:'SLD', PDF:'PDF', Image:'IMG', Form:'FRM', Video:'VID', File:'FILE' };
 
-function allFiles() { const a=[]; const g=browseGroups||{}; Object.keys(g).forEach(k=>g[k].forEach(f=>a.push(f))); return a; }
+async function dkbLoadBrowse() {
+  const box = document.getElementById('dkbBrowse');
+  box.innerHTML = '<div class="dkb-loading">Loading your library…</div>';
+  try {
+    const r = await fetch(DKB_BASE + '/library', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user: U }) });
+    libData = await r.json();
+    const et = document.getElementById('editToggle');
+    if (et) et.style.display = libData.canEdit ? '' : 'none';
+    renderSide(); renderMain();
+  } catch (e) { box.innerHTML = '<div class="dkb-empty">Could not load the library. Try again shortly.</div>'; }
+}
+
+function libFolders() { return (libData && libData.folders) || []; }
+function libTotal() { let n = 0; const bf = (libData && libData.byFolder) || {}; Object.keys(bf).forEach(k => n += bf[k].length); return n; }
+function findFile(id) { const bf = (libData && libData.byFolder) || {}; for (const k of Object.keys(bf)) { const x = bf[k].find(f => f.fileId === id); if (x) return x; } return null; }
+function folderName(id) { if (id === '__all') return 'All documents'; if (id === '__pinned') return 'Pinned'; const f = libFolders().find(x => x.id === id); return f ? f.name : 'Folder'; }
+
+function renderSide() {
+  const side = document.getElementById('libSide'); if (!libData) { side.innerHTML = ''; return; }
+  let h = '';
+  h += `<div class="lib-fold ${curFolder==='__all'?'active':''}" data-f="__all"><span class="nm">All documents</span><span class="ct">${libTotal()}</span></div>`;
+  h += `<div class="lib-fold ${curFolder==='__pinned'?'active':''}" data-f="__pinned"><span class="nm">📌 Pinned</span><span class="ct">${(libData.pinned||[]).length}</span></div>`;
+  h += '<div class="lib-sep"></div>';
+  libFolders().forEach(f => {
+    h += `<div class="lib-fold ${curFolder===f.id?'active':''}" data-f="${f.id}"><span class="nm">${esc(f.name)}</span><span class="ct">${f.count}</span>`
+      + (editMode && f.id !== 'unsorted' ? `<span class="fa" data-ren="${f.id}" title="Rename">✎</span><span class="fa" data-del="${f.id}" title="Delete">✕</span>` : '')
+      + `</div>`;
+  });
+  if (editMode) h += `<button class="lib-newf" data-newf="1">+ New folder</button>`;
+  side.innerHTML = h;
+}
+
+function currentFiles() {
+  const bf = (libData && libData.byFolder) || {};
+  let files;
+  if (curFolder === '__all') { files = []; Object.keys(bf).forEach(k => files = files.concat(bf[k])); }
+  else if (curFolder === '__pinned') { files = (libData.pinned || []).slice(); }
+  else files = (bf[curFolder] || []).slice();
+  files = files.filter(f => {
+    if (activeKind && f.kind !== activeKind) return false;
+    if (searchQ) { const h = ((f.clean||f.title||'') + ' ' + (f.folder||'') + ' ' + (f.source||'')).toLowerCase(); if (h.indexOf(searchQ) === -1) return false; }
+    return true;
+  });
+  files.sort((a,b) => ((b.pinned?1:0)-(a.pinned?1:0)) || (b.modified||'').localeCompare(a.modified||''));
+  return files;
+}
+
+function renderMain() {
+  const crumb = document.getElementById('libCrumb'); const box = document.getElementById('dkbBrowse');
+  if (!libData) { box.innerHTML = ''; return; }
+  const files = currentFiles();
+  crumb.innerHTML = `${esc(folderName(curFolder))} <span class="sub">${files.length} file${files.length!==1?'s':''}${editMode?' · organizing':''}</span>`;
+  if (!files.length) { box.innerHTML = '<div class="dkb-empty">Nothing here' + (searchQ ? ' matches your search' : ' yet') + '.</div>'; return; }
+  box.innerHTML = '<div class="dkb-files">' + files.map(fileCard).join('') + '</div>';
+}
 
 function fileCard(f) {
   const k = f.kind || 'File';
@@ -258,74 +352,56 @@ function fileCard(f) {
   if (f.source) meta.push(esc(f.source));
   if (f.year) meta.push(esc(String(f.year)));
   meta.push(esc(k));
-  return `<a class="dkb-file" href="${f.url}" target="_blank" rel="noopener">`
-    + `<span class="dkb-fk fk-${k}">${KIND_LABEL[k] || 'FILE'}</span>`
-    + `<span><span class="dkb-file-t">${esc(f.clean || f.title || 'Untitled')}</span>`
+  const pin = f.pinned ? '📌 ' : '';
+  const dim = f.hidden ? ' style="opacity:.5;"' : '';
+  const card = `<a class="dkb-file" href="${f.url}" target="_blank" rel="noopener"${dim}>`
+    + `<span class="dkb-fk fk-${k}">${KIND_LABEL[k]||'FILE'}</span>`
+    + `<span style="flex:1;min-width:0;"><span class="dkb-file-t">${pin}${esc(f.clean||f.title||'Untitled')}</span>`
     + `<span class="dkb-file-m">${meta.join(' · ')}</span></span></a>`;
+  const btn = editMode ? `<button class="lib-fmenu-btn" data-menu="${f.fileId}" title="Organize">⋯</button>` : '';
+  return `<div class="lib-card">${card}${btn}</div>`;
 }
 
-function filterFiles(files) {
-  return files.filter(function (f) {
-    if (activeKind && f.kind !== activeKind) return false;
-    if (searchQ) { const h = ((f.clean||f.title||'') + ' ' + (f.folder||'') + ' ' + (f.source||'')).toLowerCase(); if (h.indexOf(searchQ) === -1) return false; }
-    return true;
-  });
+function fileMenuHTML(fileId) {
+  const f = findFile(fileId); if (!f) return '';
+  let h = '<div class="lib-menu"><div class="hd">Move to</div>';
+  libFolders().forEach(fl => { h += `<button data-act="move" data-fid="${fileId}" data-to="${fl.id}">${esc(fl.name)}</button>`; });
+  h += `<button data-act="move" data-fid="${fileId}" data-to="__auto">Auto-sort</button>`;
+  h += '<div class="lib-sep"></div>';
+  h += `<button data-act="pin" data-fid="${fileId}">${f.pinned?'Unpin':'Pin to top'}</button>`;
+  h += `<button data-act="hide" data-fid="${fileId}">${f.hidden?'Unhide':'Hide from library'}</button>`;
+  h += `<button data-act="rename" data-fid="${fileId}">Rename…</button>`;
+  h += '</div>';
+  return h;
+}
+function closeMenu() { const m = document.querySelector('.lib-menu'); if (m) m.remove(); openMenuBtn = null; }
+function toggleMenu(btn) { if (openMenuBtn === btn) { closeMenu(); return; } closeMenu(); btn.parentElement.insertAdjacentHTML('beforeend', fileMenuHTML(btn.dataset.menu)); openMenuBtn = btn; }
+
+async function libEdit(payload) { payload.user = U; try { await fetch(DKB_BASE + '/library/edit', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); } catch (e) {} }
+
+async function doAct(ds) {
+  const fid = ds.fid, f = findFile(fid);
+  if (ds.act === 'move') await libEdit({ op:'moveFile', fileId:fid, folderId:ds.to });
+  else if (ds.act === 'pin') await libEdit({ op:'setPinned', fileId:fid, pinned: !(f && f.pinned) });
+  else if (ds.act === 'hide') await libEdit({ op:'setHidden', fileId:fid, hidden: !(f && f.hidden) });
+  else if (ds.act === 'rename') { const n = prompt('Display name for this document:', f ? (f.clean||f.title) : ''); if (n === null) return; await libEdit({ op:'renameFile', fileId:fid, name: n.trim() }); }
+  closeMenu(); await dkbLoadBrowse();
 }
 
-function buildCats() {
-  if (!browseGroups) return;
-  const cats = Object.keys(browseGroups).sort();
-  const total = allFiles().length;
-  let html = `<button class="dkb-cat ${activeCat==='All'?'active':''}" data-cat="All">All<span class="c">${total}</span></button>`;
-  cats.forEach(function (c) { html += `<button class="dkb-cat ${activeCat===c?'active':''}" data-cat="${esc(c)}">${esc(c)}<span class="c">${browseGroups[c].length}</span></button>`; });
-  document.getElementById('dkbCats').innerHTML = html;
-}
-
-function renderBrowse() {
-  const box = document.getElementById('dkbBrowse');
-  if (!browseGroups || !Object.keys(browseGroups).length) { box.innerHTML = '<div class="dkb-empty">No documents indexed yet.</div>'; return; }
-
-  if (searchQ) {
-    const matches = filterFiles(allFiles()).sort(function (a,b){ return (b.modified||'').localeCompare(a.modified||''); });
-    if (!matches.length) { box.innerHTML = '<div class="dkb-empty">No files match your search.</div>'; return; }
-    const show = matches.slice(0, 80);
-    box.innerHTML = `<div class="dkb-sec open"><div class="dkb-sec-hd" style="cursor:default;"><span class="nm">Results</span><span class="ct">${matches.length} match${matches.length!==1?'es':''}</span></div><div class="dkb-sec-body"><div class="dkb-files">${show.map(fileCard).join('')}</div>${matches.length>80?'<div class="dkb-file-m" style="margin-top:.6rem;">Showing first 80 &mdash; narrow your search to see more.</div>':''}</div></div>`;
-    return;
-  }
-
-  const cats = activeCat === 'All' ? Object.keys(browseGroups).sort() : [activeCat];
-  let html = '';
-  cats.forEach(function (cat) {
-    const files = filterFiles((browseGroups[cat] || []).slice()).sort(function (a,b){ return (b.modified||'').localeCompare(a.modified||''); });
-    if (!files.length) return;
-    const isOpen = activeCat !== 'All' || expanded[cat] === true;
-    const limit = showAllCats[cat] ? files.length : 24;
-    const cards = files.slice(0, limit).map(fileCard).join('');
-    const more = files.length > limit ? `<button class="dkb-showall" data-showall="${esc(cat)}">Show all ${files.length} &rarr;</button>` : '';
-    html += `<div class="dkb-sec${isOpen?' open':''}"><div class="dkb-sec-hd" data-cat="${esc(cat)}"><span class="caret">&#9656;</span><span class="nm">${esc(cat)}</span><span class="ct">${files.length} file${files.length!==1?'s':''}</span></div><div class="dkb-sec-body"><div class="dkb-files">${cards}</div>${more}</div></div>`;
-  });
-  box.innerHTML = html || '<div class="dkb-empty">No files match.</div>';
-}
-
-async function dkbLoadBrowse() {
-  const box = document.getElementById('dkbBrowse');
-  box.innerHTML = '<div class="dkb-loading">Loading your document library&hellip;</div>';
-  try {
-    const r = await fetch(DKB_BASE + '/browse', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user: U }) });
-    const data = await r.json();
-    browseGroups = data.groups || {};
-    buildCats();
-    renderBrowse();
-  } catch (e) { box.innerHTML = '<div class="dkb-empty">Could not load the library. Try again shortly.</div>'; }
-}
-
-document.getElementById('dkbCats').addEventListener('click', function (e) { const b = e.target.closest('.dkb-cat'); if (!b) return; activeCat = b.dataset.cat; buildCats(); renderBrowse(); });
-document.getElementById('dkbBrowse').addEventListener('click', function (e) {
-  const sa = e.target.closest('[data-showall]'); if (sa) { showAllCats[sa.dataset.showall] = true; renderBrowse(); return; }
-  const hd = e.target.closest('.dkb-sec-hd'); if (hd && hd.dataset.cat && activeCat === 'All') { const c = hd.dataset.cat; expanded[c] = !expanded[c]; renderBrowse(); }
+document.getElementById('libSide').addEventListener('click', async function (e) {
+  const nf = e.target.closest('[data-newf]'); if (nf) { const n = prompt('New folder name:'); if (n && n.trim()) { await libEdit({ op:'addFolder', name:n.trim() }); await dkbLoadBrowse(); } return; }
+  const ren = e.target.closest('[data-ren]'); if (ren) { e.stopPropagation(); const f = libFolders().find(x => x.id === ren.dataset.ren); const n = prompt('Rename folder:', f ? f.name : ''); if (n && n.trim()) { await libEdit({ op:'renameFolder', id:ren.dataset.ren, name:n.trim() }); await dkbLoadBrowse(); } return; }
+  const del = e.target.closest('[data-del]'); if (del) { e.stopPropagation(); if (confirm('Delete this folder? Its files move to Unsorted.')) { await libEdit({ op:'deleteFolder', id:del.dataset.del }); if (curFolder === del.dataset.del) curFolder = '__all'; await dkbLoadBrowse(); } return; }
+  const fold = e.target.closest('[data-f]'); if (fold) { curFolder = fold.dataset.f; closeMenu(); renderSide(); renderMain(); }
 });
-document.getElementById('dkbKind').addEventListener('change', function (e) { activeKind = e.target.value; renderBrowse(); });
-document.getElementById('dkbSearch').addEventListener('input', function (e) { searchQ = e.target.value.trim().toLowerCase(); renderBrowse(); });
+document.getElementById('dkbBrowse').addEventListener('click', async function (e) {
+  const mb = e.target.closest('[data-menu]'); if (mb) { e.preventDefault(); e.stopPropagation(); toggleMenu(mb); return; }
+  const act = e.target.closest('[data-act]'); if (act) { e.preventDefault(); e.stopPropagation(); await doAct(act.dataset); return; }
+});
+document.getElementById('editToggle').addEventListener('click', function () { editMode = !editMode; this.classList.toggle('on', editMode); closeMenu(); renderSide(); renderMain(); });
+document.getElementById('dkbKind').addEventListener('change', function (e) { activeKind = e.target.value; renderMain(); });
+document.getElementById('dkbSearch').addEventListener('input', function (e) { searchQ = e.target.value.trim().toLowerCase(); renderMain(); });
+document.addEventListener('click', function (e) { if (!e.target.closest('.lib-menu') && !e.target.closest('[data-menu]')) closeMenu(); });
 
 </script>
 </body>
