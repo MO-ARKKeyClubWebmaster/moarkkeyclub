@@ -60,6 +60,34 @@
 .dkb-file-m{font-size:.72rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.3rem .6rem;}
 .dkb-empty{color:var(--muted);font-size:.9rem;padding:2rem 0;text-align:center;}
 .dkb-loading{color:var(--muted);font-size:.85rem;padding:1.5rem 0;text-align:center;}
+
+/* Browse redesign */
+.dkb-toolbar{display:flex;gap:.5rem;margin-bottom:.85rem;flex-wrap:wrap;}
+.dkb-toolbar input{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:.88rem;font-family:var(--ff-body);outline:none;}
+.dkb-toolbar input:focus{border-color:var(--gold);}
+.dkb-toolbar select{border:1.5px solid var(--border);border-radius:10px;padding:.6rem .7rem;font-size:.82rem;font-family:var(--ff-body);color:var(--navy);background:var(--white);outline:none;cursor:pointer;}
+.dkb-cats{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.1rem;}
+.dkb-cat{padding:.34rem .8rem;border-radius:100px;border:1px solid var(--border);background:var(--white);font-size:.76rem;font-weight:600;color:var(--navy);cursor:pointer;font-family:var(--ff-body);transition:all .14s;}
+.dkb-cat:hover{border-color:var(--gold);}
+.dkb-cat.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.dkb-cat .c{opacity:.55;margin-left:.35rem;font-weight:700;}
+.dkb-cat.active .c{opacity:.75;}
+.dkb-sec{margin-bottom:.7rem;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--white);}
+.dkb-sec-hd{display:flex;align-items:center;gap:.55rem;padding:.75rem 1rem;cursor:pointer;user-select:none;background:var(--bg);transition:background .12s;}
+.dkb-sec-hd:hover{background:var(--bg-2);}
+.dkb-sec-hd .caret{color:var(--muted);font-size:.7rem;transition:transform .15s;}
+.dkb-sec.open .dkb-sec-hd .caret{transform:rotate(90deg);}
+.dkb-sec-hd .nm{font-weight:700;color:var(--navy);font-size:.9rem;}
+.dkb-sec-hd .ct{margin-left:auto;font-size:.72rem;color:var(--muted);font-weight:600;}
+.dkb-sec-body{display:none;padding:.75rem;}
+.dkb-sec.open .dkb-sec-body{display:block;}
+.dkb-fk{flex-shrink:0;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;color:#fff;letter-spacing:.02em;}
+.fk-Doc{background:#1a73e8;}.fk-Sheet{background:#188038;}.fk-Slides{background:#e37400;}.fk-PDF{background:#c5221f;}.fk-Image{background:#8430ce;}.fk-Form{background:#7b1fa2;}.fk-Video{background:#d93025;}.fk-File{background:#5f6368;}
+.dkb-file{display:flex;gap:.6rem;align-items:center;}
+.dkb-file-t{font-weight:600;font-size:.82rem;color:var(--navy);line-height:1.25;word-break:break-word;}
+.dkb-file-m{font-size:.7rem;color:var(--muted);margin-top:.15rem;}
+.dkb-showall{margin-top:.7rem;font-size:.78rem;color:var(--gold);cursor:pointer;font-weight:700;background:none;border:none;padding:.2rem 0;font-family:var(--ff-body);}
+.dkb-showall:hover{color:var(--gold-lt);text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -115,12 +143,19 @@
 
   <!-- ═══════════ BROWSE PANEL ═══════════ -->
   <div id="panel-browse" style="display:none;">
-    <div class="dkb-search">
-      <input id="dkbSearch" type="text" placeholder="Find a file by name, folder, or topic…" autocomplete="off"
-             onkeydown="if(event.key==='Enter')dkbDoSearch()">
-      <button class="btn btn-primary" onclick="dkbDoSearch()">Search</button>
-      <button class="btn" onclick="dkbLoadBrowse()">All</button>
+    <div class="dkb-toolbar">
+      <input id="dkbSearch" type="text" placeholder="Search documents by name, folder, or owner..." autocomplete="off">
+      <select id="dkbKind" aria-label="Filter by type">
+        <option value="">All types</option>
+        <option value="Doc">Docs</option>
+        <option value="Sheet">Sheets</option>
+        <option value="Slides">Slides</option>
+        <option value="PDF">PDFs</option>
+        <option value="Image">Images</option>
+        <option value="Form">Forms</option>
+      </select>
     </div>
+    <div class="dkb-cats" id="dkbCats"></div>
     <div id="dkbBrowse"><div class="dkb-loading">Loading your document library…</div></div>
   </div>
 
@@ -212,57 +247,86 @@ async function dkbAsk(preset) {
 document.getElementById('dkbInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') dkbAsk(); });
 
 /* ── browse / locate ── */
+let browseGroups = null, activeCat = 'All', activeKind = '', searchQ = '', expanded = {}, showAllCats = {};
+const KIND_LABEL = { Doc:'DOC', Sheet:'XLS', Slides:'SLD', PDF:'PDF', Image:'IMG', Form:'FRM', Video:'VID', File:'FILE' };
+
+function allFiles() { const a=[]; const g=browseGroups||{}; Object.keys(g).forEach(k=>g[k].forEach(f=>a.push(f))); return a; }
+
 function fileCard(f) {
+  const k = f.kind || 'File';
   const meta = [];
-  if (f.folder) meta.push('📁 ' + esc(f.folder));
-  if (f.position && f.position !== 'unknown') meta.push(esc(f.position));
+  if (f.source) meta.push(esc(f.source));
   if (f.year) meta.push(esc(String(f.year)));
-  return '<a class="dkb-file" href="' + f.url + '" target="_blank" rel="noopener">' +
-    '<div class="dkb-file-t">' + esc(f.title || 'Untitled') + '</div>' +
-    '<div class="dkb-file-m">' + meta.map(function (m) { return '<span>' + m + '</span>'; }).join('') + '</div></a>';
+  meta.push(esc(k));
+  return `<a class="dkb-file" href="${f.url}" target="_blank" rel="noopener">`
+    + `<span class="dkb-fk fk-${k}">${KIND_LABEL[k] || 'FILE'}</span>`
+    + `<span><span class="dkb-file-t">${esc(f.clean || f.title || 'Untitled')}</span>`
+    + `<span class="dkb-file-m">${meta.join(' · ')}</span></span></a>`;
+}
+
+function filterFiles(files) {
+  return files.filter(function (f) {
+    if (activeKind && f.kind !== activeKind) return false;
+    if (searchQ) { const h = ((f.clean||f.title||'') + ' ' + (f.folder||'') + ' ' + (f.source||'')).toLowerCase(); if (h.indexOf(searchQ) === -1) return false; }
+    return true;
+  });
+}
+
+function buildCats() {
+  if (!browseGroups) return;
+  const cats = Object.keys(browseGroups).sort();
+  const total = allFiles().length;
+  let html = `<button class="dkb-cat ${activeCat==='All'?'active':''}" data-cat="All">All<span class="c">${total}</span></button>`;
+  cats.forEach(function (c) { html += `<button class="dkb-cat ${activeCat===c?'active':''}" data-cat="${esc(c)}">${esc(c)}<span class="c">${browseGroups[c].length}</span></button>`; });
+  document.getElementById('dkbCats').innerHTML = html;
+}
+
+function renderBrowse() {
+  const box = document.getElementById('dkbBrowse');
+  if (!browseGroups || !Object.keys(browseGroups).length) { box.innerHTML = '<div class="dkb-empty">No documents indexed yet.</div>'; return; }
+
+  if (searchQ) {
+    const matches = filterFiles(allFiles()).sort(function (a,b){ return (b.modified||'').localeCompare(a.modified||''); });
+    if (!matches.length) { box.innerHTML = '<div class="dkb-empty">No files match your search.</div>'; return; }
+    const show = matches.slice(0, 80);
+    box.innerHTML = `<div class="dkb-sec open"><div class="dkb-sec-hd" style="cursor:default;"><span class="nm">Results</span><span class="ct">${matches.length} match${matches.length!==1?'es':''}</span></div><div class="dkb-sec-body"><div class="dkb-files">${show.map(fileCard).join('')}</div>${matches.length>80?'<div class="dkb-file-m" style="margin-top:.6rem;">Showing first 80 &mdash; narrow your search to see more.</div>':''}</div></div>`;
+    return;
+  }
+
+  const cats = activeCat === 'All' ? Object.keys(browseGroups).sort() : [activeCat];
+  let html = '';
+  cats.forEach(function (cat) {
+    const files = filterFiles((browseGroups[cat] || []).slice()).sort(function (a,b){ return (b.modified||'').localeCompare(a.modified||''); });
+    if (!files.length) return;
+    const isOpen = activeCat !== 'All' || expanded[cat] === true;
+    const limit = showAllCats[cat] ? files.length : 24;
+    const cards = files.slice(0, limit).map(fileCard).join('');
+    const more = files.length > limit ? `<button class="dkb-showall" data-showall="${esc(cat)}">Show all ${files.length} &rarr;</button>` : '';
+    html += `<div class="dkb-sec${isOpen?' open':''}"><div class="dkb-sec-hd" data-cat="${esc(cat)}"><span class="caret">&#9656;</span><span class="nm">${esc(cat)}</span><span class="ct">${files.length} file${files.length!==1?'s':''}</span></div><div class="dkb-sec-body"><div class="dkb-files">${cards}</div>${more}</div></div>`;
+  });
+  box.innerHTML = html || '<div class="dkb-empty">No files match.</div>';
 }
 
 async function dkbLoadBrowse() {
   const box = document.getElementById('dkbBrowse');
-  box.innerHTML = '<div class="dkb-loading">Loading your document library…</div>';
-  document.getElementById('dkbSearch').value = '';
+  box.innerHTML = '<div class="dkb-loading">Loading your document library&hellip;</div>';
   try {
-    const r = await fetch(DKB_BASE + '/browse', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: U }),
-    });
+    const r = await fetch(DKB_BASE + '/browse', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user: U }) });
     const data = await r.json();
-    const groups = data.groups || {};
-    const keys = Object.keys(groups);
-    if (!keys.length) { box.innerHTML = '<div class="dkb-empty">No documents indexed yet. Once the daily sync has run, your library appears here.</div>'; return; }
-    keys.sort();
-    box.innerHTML = keys.map(function (k) {
-      return '<div class="dkb-group"><div class="dkb-group-hd">' + esc(k) +
-        ' <span class="ct">' + groups[k].length + '</span></div><div class="dkb-files">' +
-        groups[k].map(fileCard).join('') + '</div></div>';
-    }).join('');
-  } catch (e) {
-    box.innerHTML = '<div class="dkb-empty">Couldn’t load the library. Try again shortly.</div>';
-  }
+    browseGroups = data.groups || {};
+    buildCats();
+    renderBrowse();
+  } catch (e) { box.innerHTML = '<div class="dkb-empty">Could not load the library. Try again shortly.</div>'; }
 }
 
-async function dkbDoSearch() {
-  const q = document.getElementById('dkbSearch').value.trim();
-  if (!q) { dkbLoadBrowse(); return; }
-  const box = document.getElementById('dkbBrowse');
-  box.innerHTML = '<div class="dkb-loading">Searching…</div>';
-  try {
-    const r = await fetch(DKB_BASE + '/locate', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: q, user: U }),
-    });
-    const data = await r.json();
-    const results = data.results || [];
-    if (!results.length) { box.innerHTML = '<div class="dkb-empty">No matching files you can access.</div>'; return; }
-    box.innerHTML = '<div class="dkb-group"><div class="dkb-group-hd">Results <span class="ct">' + results.length +
-      '</span></div><div class="dkb-files">' + results.map(fileCard).join('') + '</div></div>';
-  } catch (e) {
-    box.innerHTML = '<div class="dkb-empty">Search failed. Try again shortly.</div>';
-  }
-}
+document.getElementById('dkbCats').addEventListener('click', function (e) { const b = e.target.closest('.dkb-cat'); if (!b) return; activeCat = b.dataset.cat; buildCats(); renderBrowse(); });
+document.getElementById('dkbBrowse').addEventListener('click', function (e) {
+  const sa = e.target.closest('[data-showall]'); if (sa) { showAllCats[sa.dataset.showall] = true; renderBrowse(); return; }
+  const hd = e.target.closest('.dkb-sec-hd'); if (hd && hd.dataset.cat && activeCat === 'All') { const c = hd.dataset.cat; expanded[c] = !expanded[c]; renderBrowse(); }
+});
+document.getElementById('dkbKind').addEventListener('change', function (e) { activeKind = e.target.value; renderBrowse(); });
+document.getElementById('dkbSearch').addEventListener('input', function (e) { searchQ = e.target.value.trim().toLowerCase(); renderBrowse(); });
+
 </script>
 </body>
 </html>

@@ -260,7 +260,7 @@ async function ask(env, question, user) {
   }
   const files = [...byFile.values()].sort((a, b) => b.best - a.best).slice(0, 5);
   const context = files.map((f, i) => `[${i + 1}] ${f.title}\n${f.texts.join('\n. . .\n')}`).join('\n\n----\n\n');
-  const citations = files.map((f) => ({ title: f.title, url: f.url, docType: f.docType }));
+  const citations = files.map((f) => ({ title: cleanTitle(f.title), url: f.url, docType: f.docType }));
 
   const sys =
     'You are the MO-ARK District Key Club knowledge base assistant. Today is ' + TODAY + '. ' +
@@ -320,12 +320,42 @@ async function browse(env, user) {
   const visible = files.filter((f) => visibleTo(user, f)).map(publicFile);
   const groups = {};
   visible.forEach((f) => { (groups[f.docType] = groups[f.docType] || []).push(f); });
-  Object.keys(groups).forEach((k) => groups[k].sort((a, b) => (a.title || '').localeCompare(b.title || '')));
+  Object.keys(groups).forEach((k) => groups[k].sort((a, b) => (b.modified || '').localeCompare(a.modified || '')));
   return { total: visible.length, groups };
 }
 
 function publicFile(f) {
-  return { title: f.title, url: f.url, folder: f.folder, docType: f.docType, position: f.position, year: f.year, modified: f.modified, mimeType: f.mimeType };
+  return {
+    title: f.title,
+    clean: cleanTitle(f.title),
+    url: f.url,
+    folder: f.folder,
+    docType: f.docType,
+    position: f.position,
+    source: ownerLabel(f.position, f.division),
+    year: f.year,
+    modified: f.modified,
+    mimeType: f.mimeType,
+    kind: kindOf(f.mimeType),
+  };
+}
+function kindOf(mt) {
+  if (mt === 'application/vnd.google-apps.document') return 'Doc';
+  if (mt === 'application/vnd.google-apps.spreadsheet') return 'Sheet';
+  if (mt === 'application/vnd.google-apps.presentation') return 'Slides';
+  if (mt === 'application/vnd.google-apps.form') return 'Form';
+  if (mt === 'application/pdf') return 'PDF';
+  if (mt && mt.indexOf('image/') === 0) return 'Image';
+  if (mt && mt.indexOf('video/') === 0) return 'Video';
+  return 'File';
+}
+function cleanTitle(t) {
+  return String(t || '').replace(/\s*\[OCR\]\s*$/i, '').replace(/\.(pdf|docx?|xlsx?|pptx?|txt|csv|jpe?g|png|gif|heic)$/i, '').trim() || 'Untitled';
+}
+function ownerLabel(position, division) {
+  const map = { governor: 'Governor', secretary: 'Secretary', treasurer: 'Treasurer', webmaster: 'Webmaster', editor: 'Editor', 'district-admin': 'District Admin', 'adult-treasurer': 'Adult Treasurer', 'adult-member': 'Adult Board' };
+  if (position === 'ltg') return 'Division ' + division + ' LTG';
+  return map[position] || 'District';
 }
 
 function dedupeCites(chunks) {
