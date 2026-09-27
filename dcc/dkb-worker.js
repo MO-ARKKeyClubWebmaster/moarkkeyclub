@@ -114,6 +114,17 @@ export default {
         return json(await browse(env, user));
       }
 
+      if (path === '/library' && method === 'POST') {
+        const body = await request.json();
+        return json(await libraryView(env, resolveUser(body.user || {})));
+      }
+      if (path === '/library/edit' && method === 'POST') {
+        const body = await request.json();
+        const user = resolveUser(body.user || {});
+        if (!canEditLibrary(user)) return json({ error: 'Not allowed.' }, 403);
+        return json(await libraryEdit(env, body));
+      }
+
       // ── Admin-gated ──────────────────────────────────────────────────
       if (path === '/sync' && method === 'POST') {
         if (!adminOk(request, url, env)) return json({ error: 'Unauthorized.' }, 401);
@@ -555,6 +566,83 @@ function bytesToB64url(buf) {
   for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
+// ════════════════════════ LIBRARY (DKB's own file organization) ═══════════
+const DEFAULT_FOLDERS = [
+  { id: 'governance', name: 'Governance', parent: null, order: 1 },
+  { id: 'finance', name: 'Finance', parent: null, order: 2 },
+  { id: 'events', name: 'Events & DCON', parent: null, order: 3 },
+  { id: 'membership', name: 'Membership & Divisions', parent: null, order: 4 },
+  { id: 'comms', name: 'Communications', parent: null, order: 5 },
+  { id: 'resources', name: 'Officer Resources', parent: null, order: 6 },
+  { id: 'forms', name: 'Forms & Reports', parent: null, order: 7 },
+  { id: 'unsorted', name: 'Unsorted', parent: null, order: 99 },
+];
+const DOCTYPE_FOLDER = { 'Finance': 'finance', 'Governance': 'governance', 'Events & Service': 'events', 'Membership': 'membership', 'Communications': 'comms', 'Reports & Forms': 'forms', 'General': 'unsorted' };
+function autoFolderId(docType) { return DOCTYPE_FOLDER[docType] || 'unsorted'; }
+function canEditLibrary(user) { return ['webmaster', 'governor', 'district-admin'].includes((user.role || '').toLowerCase()); }
+
+async function loadLibrary(env) {
+  let lib = await env.DKB.get('dkb:library', 'json');
+  if (!lib || !Array.isArray(lib.folders) || !lib.folders.length) lib = { v: 1, folders: DEFAULT_FOLDERS.map((f) => ({ ...f })), place: {}, hidden: {}, pinned: {}, rename: {} };
+  lib.place = lib.place || {}; lib.hidden = lib.hidden || {}; lib.pinned = lib.pinned || {}; lib.rename = lib.rename || {};
+  return lib;
+}
+async function saveLibrary(env, lib) { await env.DKB.put('dkb:library', JSON.stringify(lib)); }
+
+async function libraryView(env, user) {
+  const lib = await loadLibrary(env);
+  const files = (await env.DKB.get('dkb:files', 'json')) || [];
+  const canEdit = canEditLibrary(user);
+  const byFolder = {};
+  lib.folders.forEach((f) => { byFolder[f.id] = []; });
+  const pinned = [];
+  for (const f of files) {
+    if (!visibleTo(user, f)) continue;
+    const fid = f.id;
+    if (lib.hidden[fid] && !canEdit) continue;
+    const folderId = (lib.place[fid] && byFolder[lib.place[fid]] !== undefined) ? lib.place[fid] : autoFolderId(f.docType);
+    const rec = publicFile(f);
+    rec.fileId = fid;
+    if (lib.rename[fid]) rec.clean = lib.rename[fid];
+    rec.hidden = !!lib.hidden[fid];
+    rec.pinned = !!lib.pinned[fid];
+    (byFolder[folderId] = byFolder[folderId] || []).push(rec);
+    if (rec.pinned) pinned.push(rec);
+  }
+  const folders = lib.folders
+    .map((f) => ({ id: f.id, name: f.name, parent: f.parent || null, order: f.order || 0, count: (byFolder[f.id] || []).length }))
+    .sort((a, b) => (a.order - b.order) || a.name.localeCompare(b.name));
+  return { canEdit, folders, byFolder, pinned };
+}
+
+async function libraryEdit(env, body) {
+  const lib = await loadLibrary(env);
+  const op = body.op;
+  if (op === 'addFolder') {
+    const id = 'f' + Date.now().toString(36);
+    lib.folders.push({ id, name: String(body.name || 'New folder').slice(0, 60), parent: body.parent || null, order: Number(body.order) || 50 });
+  } else if (op === 'renameFolder') {
+    const f = lib.folders.find((x) => x.id === body.id); if (f) f.name = String(body.name || f.name).slice(0, 60);
+  } else if (op === 'deleteFolder') {
+    if (body.id !== 'unsorted') {
+      Object.keys(lib.place).forEach((fid) => { if (lib.place[fid] === body.id) lib.place[fid] = 'unsorted'; });
+      lib.folders = lib.folders.filter((x) => x.id !== body.id);
+    }
+  } else if (op === 'moveFile') {
+    if (body.folderId === '__auto') delete lib.place[body.fileId]; else lib.place[body.fileId] = body.folderId;
+  } else if (op === 'setHidden') {
+    if (body.hidden) lib.hidden[body.fileId] = 1; else delete lib.hidden[body.fileId];
+  } else if (op === 'setPinned') {
+    if (body.pinned) lib.pinned[body.fileId] = 1; else delete lib.pinned[body.fileId];
+  } else if (op === 'renameFile') {
+    if (body.name) lib.rename[body.fileId] = String(body.name).slice(0, 140); else delete lib.rename[body.fileId];
+  } else {
+    return { error: 'unknown op' };
+  }
+  await saveLibrary(env, lib);
+  return { ok: true };
+}
+
 function round4(v) { const o = new Array(v.length); for (let i = 0; i < v.length; i++) o[i] = Math.round(v[i] * 1e4) / 1e4; return o; }
 
 async function loadChunks(env) {
