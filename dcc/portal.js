@@ -303,6 +303,14 @@ const NOTIFY = (() => {
           body: 'Editor-approved. Waiting on you.',
           time: s.updatedAt, link: 'review.html' });
       });
+      ((data && data.birthdays) || []).forEach(b => {
+        out.push({ id: `bday:${b.id}:${b.phase}`, kind: 'info',
+          title: b.phase === 'today'
+            ? `\u{1F382} ${b.name}'s birthday is today!`
+            : `\u{1F382} ${b.name}'s birthday in ${b.days} day${b.days === 1 ? '' : 's'}`,
+          body: (b.position ? b.position + ' \u00B7 ' : '') + 'Birthday ' + b.dateLabel,
+          time: new Date().toISOString(), link: 'vault.html' });
+      });
     } else { // governor / treasurer / secretary — a feed of district activity
       subs.filter(s => s.status === 'approved')
         .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 10)
@@ -348,7 +356,17 @@ const NOTIFY = (() => {
 
   async function fetchData() {
     const subs = await API.getAll().catch(() => []);
-    return { subs };
+    let birthdays = [];
+    try {
+      const u = (typeof AUTH !== 'undefined' && AUTH.getUser) ? AUTH.getUser() : null;
+      const tok = (typeof AUTH !== 'undefined' && AUTH.getToken) ? AUTH.getToken() : '';
+      if (u && u.role === 'webmaster' && tok) {
+        const r = await fetch('https://moark-portal-api.moarkkeyclubwebmaster.workers.dev/vault/birthdays',
+          { headers: { 'Authorization': 'Bearer ' + tok } });
+        if (r.ok) { const d = await r.json(); birthdays = (d && d.birthdays) || []; }
+      }
+    } catch (_) {}
+    return { subs, birthdays };
   }
 
   function itemHTML(session, n) {

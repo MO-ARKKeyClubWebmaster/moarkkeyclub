@@ -56,6 +56,407 @@ const REIMBURSEMENTS_PATH_LEGACY = 'dcc/data/reimbursements.json';
 const ROSTER_PATH    = 'dcc/data/roster.json';
 const ROSTER_IMG_DIR = 'dcc/data/roster-images';
 
+// ══════════ VAULT (Account Vault + Secrets) ══════════════════════════════
+// Officer login credentials + the Vault app's data. Stored on the private
+// `data` branch and served ONLY through token-gated /vault/* endpoints — the
+// passwords are NEVER shipped to the browser (unlike the old auth.js).
+const VAULT_ACCOUNTS_PATH = 'dcc/data/vault-accounts.json';
+const VAULT_SECRETS_PATH  = 'dcc/data/vault-secrets.json';
+// Only these roles may log into the Vault or hit any /vault/* endpoint.
+const VAULT_ROLES = ['webmaster', 'governor', 'district-admin'];
+// Where birthday alerts are emailed (the webmaster).
+const WEBMASTER_ALERT_EMAIL = 'webmaster@moarkkeyclub.com';
+const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Fallback login table — used ONLY until the webmaster first saves the Vault
+// (which writes vault-accounts.json). `key` = the stable roster/audit identity
+// (session.email); `dccUsername`/`dccPassword` = the editable login pair.
+const DEFAULT_ACCOUNTS = [
+  {
+    "id": "acct-moarkkcltg1-gmail-com",
+    "key": "moarkkcltg1@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 1,
+    "name": "Division 1 LTG",
+    "position": "Division 1 LTG",
+    "email": "moarkkcltg1@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg1@gmail.com",
+    "dccPassword": "ServeFirst_Div1",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg002-gmail-com",
+    "key": "moarkkcltg002@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 2,
+    "name": "Division 2 LTG",
+    "position": "Division 2 LTG",
+    "email": "moarkkcltg002@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg002@gmail.com",
+    "dccPassword": "OneFamily_Div2",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkeyclubltg3-gmail-com",
+    "key": "moarkkeyclubltg3@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 3,
+    "name": "Division 3 LTG",
+    "position": "Division 3 LTG",
+    "email": "moarkkeyclubltg3@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkeyclubltg3@gmail.com",
+    "dccPassword": "BuildBetter_Div3",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkeyclubltg04-gmail-com",
+    "key": "moarkeyclubltg04@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 4,
+    "name": "Bethany Liao",
+    "position": "Division 4 LTG",
+    "email": "moarkeyclubltg04@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkeyclubltg04@gmail.com",
+    "dccPassword": "GuidingLight_Div4",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg05-gmail-com",
+    "key": "moarkkcltg05@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 5,
+    "name": "Division 5 LTG",
+    "position": "Division 5 LTG",
+    "email": "moarkkcltg05@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg05@gmail.com",
+    "dccPassword": "RiseAndServe5",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg6-gmail-com",
+    "key": "moarkkcltg6@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 6,
+    "name": "Division 6 LTG",
+    "position": "Division 6 LTG",
+    "email": "moarkkcltg6@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg6@gmail.com",
+    "dccPassword": "SixStrong_KC6",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg007-gmail-com",
+    "key": "moarkkcltg007@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 7,
+    "name": "Division 7 LTG",
+    "position": "Division 7 LTG",
+    "email": "moarkkcltg007@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg007@gmail.com",
+    "dccPassword": "CareActLead_7",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg08-gmail-com",
+    "key": "moarkkcltg08@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 8,
+    "name": "Division 8 LTG",
+    "position": "Division 8 LTG",
+    "email": "moarkkcltg08@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg08@gmail.com",
+    "dccPassword": "Div8_ServiceAboveAll",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg9-gmail-com",
+    "key": "moarkkcltg9@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 9,
+    "name": "Division 9 LTG",
+    "position": "Division 9 LTG",
+    "email": "moarkkcltg9@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg9@gmail.com",
+    "dccPassword": "NineForService",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcltg010-gmail-com",
+    "key": "moarkkcltg010@gmail.com",
+    "username": null,
+    "role": "ltg",
+    "division": 10,
+    "name": "Division 10 LTG",
+    "position": "Division 10 LTG",
+    "email": "moarkkcltg010@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcltg010@gmail.com",
+    "dccPassword": "Div10_MakeADiff",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkeyclubgovernor-gmail-com",
+    "key": "moarkkeyclubgovernor@gmail.com",
+    "username": null,
+    "role": "governor",
+    "division": null,
+    "name": "District Governor",
+    "position": "District Governor",
+    "email": "moarkkeyclubgovernor@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkeyclubgovernor@gmail.com",
+    "dccPassword": "govpass1",
+    "altLogins": []
+  },
+  {
+    "id": "acct-momoarkkctreasurer-gmail-com",
+    "key": "momoarkkctreasurer@gmail.com",
+    "username": null,
+    "role": "treasurer",
+    "division": null,
+    "name": "District Treasurer",
+    "position": "District Treasurer",
+    "email": "momoarkkctreasurer@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "momoarkkctreasurer@gmail.com",
+    "dccPassword": "trspass1",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkcsecretary-gmail-com",
+    "key": "moarkkcsecretary@gmail.com",
+    "username": null,
+    "role": "secretary",
+    "division": null,
+    "name": "District Secretary",
+    "position": "District Secretary",
+    "email": "moarkkcsecretary@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkcsecretary@gmail.com",
+    "dccPassword": "secpass1",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkeyclubwebmaster-gmail-com",
+    "key": "moarkkeyclubwebmaster@gmail.com",
+    "username": null,
+    "role": "webmaster",
+    "division": null,
+    "name": "Webmaster",
+    "position": "Webmaster",
+    "email": "moarkkeyclubwebmaster@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkeyclubwebmaster@gmail.com",
+    "dccPassword": "webpass1",
+    "altLogins": []
+  },
+  {
+    "id": "acct-moarkkeditor1-gmail-com",
+    "key": "moarkkeditor1@gmail.com",
+    "username": null,
+    "role": "editor",
+    "division": null,
+    "name": "District Editor",
+    "position": "District Editor",
+    "email": "moarkkeditor1@gmail.com",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "moarkkeditor1@gmail.com",
+    "dccPassword": "edtpass1",
+    "altLogins": []
+  },
+  {
+    "id": "acct-districtadmin",
+    "key": "districtadmin",
+    "username": "DISTRICTADMIN",
+    "role": "district-admin",
+    "division": null,
+    "name": "Cheryl Anderson",
+    "position": "District Administrator",
+    "email": "",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "DISTRICTADMIN",
+    "dccPassword": "Caring-Compass-6274",
+    "altLogins": []
+  },
+  {
+    "id": "acct-james-sturch-southsideschools-org",
+    "key": "james.sturch@southsideschools.org",
+    "username": "ADULTTREASURER",
+    "role": "adult-treasurer",
+    "division": null,
+    "name": "James Sturch",
+    "position": "Adult Treasurer",
+    "email": "james.sturch@southsideschools.org",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "ADULTTREASURER",
+    "dccPassword": "Service-Anchor-8351",
+    "altLogins": [
+      "james.sturch@southsideschools.org"
+    ]
+  },
+  {
+    "id": "acct-mirandayoung",
+    "key": "mirandayoung",
+    "username": "MIRANDAYOUNG",
+    "role": "adult-member",
+    "division": null,
+    "name": "Miranda Young",
+    "position": "Adult Board Member",
+    "email": "",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "MIRANDAYOUNG",
+    "dccPassword": "1485",
+    "altLogins": []
+  },
+  {
+    "id": "acct-carlaobrien",
+    "key": "carlaobrien",
+    "username": "CARLAOBRIEN",
+    "role": "adult-member",
+    "division": null,
+    "name": "Carla O'Brien",
+    "position": "Adult Board Member",
+    "email": "",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "CARLAOBRIEN",
+    "dccPassword": "8151",
+    "altLogins": []
+  },
+  {
+    "id": "acct-hollyhoffman",
+    "key": "hollyhoffman",
+    "username": "HOLLYHOFFMAN",
+    "role": "adult-member",
+    "division": null,
+    "name": "Holly Hoffman",
+    "position": "Adult Board Member",
+    "email": "",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "HOLLYHOFFMAN",
+    "dccPassword": "7146",
+    "altLogins": []
+  },
+  {
+    "id": "acct-carter-stephanie-trojans-k12-mo-us",
+    "key": "carter-stephanie@trojans.k12.mo.us",
+    "username": "STEPHCARTER",
+    "role": "adult-member",
+    "division": null,
+    "name": "Stephanie Carter",
+    "position": "Adult Board Member",
+    "email": "carter-stephanie@trojans.k12.mo.us",
+    "alias": "",
+    "password": "",
+    "platform": "",
+    "birthday": "",
+    "needsUpdate": false,
+    "dccUsername": "STEPHCARTER",
+    "dccPassword": "1741",
+    "altLogins": [
+      "carter-stephanie@trojans.k12.mo.us"
+    ]
+  }
+];
+
+
 /* ── EMAIL CONFIG ─────────────────────────────────────────────────────────
  * FROM must be on the domain you verify in Resend. */
 const PORTAL_URL  = 'https://dcc.moarkkeyclub.com';
@@ -329,6 +730,16 @@ export default {
         const rec = (content || []).find(c => c.id === path.split('/')[2]);
         return rec ? json(rec) : json({ error: 'Not found' }, 404);
       }
+
+      // ══════════ AUTH (server-verified; passwords never reach the browser) ══
+      if (path === '/auth/login' && method === 'POST') return await handleLogin(request, env);
+
+      // ══════════ VAULT (token-gated to webmaster / governor / district-admin) ══
+      if (path === '/vault/accounts'  && method === 'GET') return await vaultGetAccounts(request, env);
+      if (path === '/vault/accounts'  && method === 'PUT') return await vaultPutAccounts(request, env, ip, wait);
+      if (path === '/vault/secrets'   && method === 'GET') return await vaultGetSecrets(request, env);
+      if (path === '/vault/secrets'   && method === 'PUT') return await vaultPutSecrets(request, env, ip, wait);
+      if (path === '/vault/birthdays' && method === 'GET') return await vaultBirthdays(request, env);
 
       return json({ error: 'Not found' }, 404);
     } catch (err) {
@@ -792,6 +1203,9 @@ async function runReminders(env) {
 
   // MRF reminders: 3 & 1 days before, day of, and 1 & 3 days after the 30th.
   await runMrfReminders(env, now);
+
+  // Birthday alerts to the webmaster: 3 days before + day of.
+  await runBirthdayReminders(env, now);
 }
 
 async function runMrfReminders(env, now) {
@@ -1062,6 +1476,214 @@ async function deleteSubmission(id, env) {
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 }
+
+/* ════════════════════════ AUTH + VAULT ════════════════════════════════════
+ * Server-side credential store + HMAC-signed session tokens. This replaces the
+ * old client-side plaintext password list: the browser now POSTs to /auth/login
+ * and receives a signed token; /vault/* endpoints require that token to prove
+ * the caller is a webmaster / governor / district-admin. ────────────────── */
+
+function vTE(s){ return new TextEncoder().encode(String(s)); }
+function vB64FromBytes(buf){
+  const b = new Uint8Array(buf); let bin = '';
+  for (let i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]);
+  return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function vB64FromStr(s){ return vB64FromBytes(vTE(s)); }
+function vBytesFromB64(str){
+  str = String(str).replace(/-/g,'+').replace(/_/g,'/'); while (str.length % 4) str += '=';
+  const bin = atob(str); const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out;
+}
+function vStrFromB64(str){ return new TextDecoder().decode(vBytesFromB64(str)); }
+function vAuthSecret(env){ return (env && env.AUTH_SECRET) ? env.AUTH_SECRET : 'moark-dcc-bootstrap-secret-set-AUTH_SECRET-2026'; }
+async function vHmac(msg, env){
+  const key = await crypto.subtle.importKey('raw', vTE(vAuthSecret(env)), { name:'HMAC', hash:'SHA-256' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, vTE(msg));
+  return vB64FromBytes(sig);
+}
+async function signToken(payload, env){
+  const body = vB64FromStr(JSON.stringify(payload));
+  return body + '.' + (await vHmac(body, env));
+}
+async function verifyToken(token, env){
+  if (!token || typeof token !== 'string' || token.indexOf('.') < 0) return null;
+  const [body, sig] = token.split('.');
+  if (!body || !sig) return null;
+  if (sig !== (await vHmac(body, env))) return null;
+  let p; try { p = JSON.parse(vStrFromB64(body)); } catch(_) { return null; }
+  if (p && p.exp && Date.now() > p.exp) return null;
+  return p;
+}
+function vBearer(request){
+  const h = request.headers.get('Authorization') || request.headers.get('authorization') || '';
+  const m = h.match(/^Bearer\s+(.+)$/i); return m ? m[1].trim() : '';
+}
+async function requireVault(request, env){
+  const p = await verifyToken(vBearer(request), env);
+  if (!p || !VAULT_ROLES.includes(p.role)) return null;
+  return p;
+}
+
+function vSlug(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40); }
+
+async function loadAccounts(env){
+  const { content, sha } = await ghReadJSON(VAULT_ACCOUNTS_PATH, env);
+  if (Array.isArray(content) && content.length) return { accounts: content, sha, seeded: true };
+  if (content && Array.isArray(content.accounts) && content.accounts.length) return { accounts: content.accounts, sha, seeded: true };
+  return { accounts: DEFAULT_ACCOUNTS, sha, seeded: false };
+}
+
+async function handleLogin(request, env){
+  let b; try { b = await request.json(); } catch(_) { return json({ error: 'Bad request' }, 400); }
+  const id = String((b && b.identifier) || '').trim().toLowerCase();
+  const pw = String((b && b.password) || '');
+  if (!id || !pw) return json({ error: 'Missing username or password' }, 400);
+  const { accounts } = await loadAccounts(env);
+  const row = accounts.find(a => {
+    if (!a.role) return false;                       // stored-credential rows are not logins
+    if (String(a.dccPassword || '') !== pw) return false;
+    const ids = [a.dccUsername].concat(a.altLogins || []).filter(Boolean).map(x => String(x).toLowerCase());
+    return ids.includes(id);
+  });
+  if (!row) return json({ error: 'Invalid username or password' }, 401);
+  const session = {
+    email:    String(row.key || row.dccUsername || '').toLowerCase(),
+    username: row.username || null,
+    role:     row.role || '',
+    division: (row.division === 0 || row.division) ? row.division : null,
+    name:     row.name || 'Officer',
+  };
+  const token = await signToken({
+    email: session.email, role: session.role, division: session.division,
+    name: session.name, username: session.username,
+    exp: Date.now() + 1000*60*60*24*30,
+  }, env);
+  return json({ session, token });
+}
+
+function normalizeAccount(r){
+  if (!r || typeof r !== 'object') return null;
+  const dccUsername = String(r.dccUsername || '').trim();
+  const name = String(r.name || '').trim();
+  if (!dccUsername && !name) return null;
+  const key = (String(r.key || '').trim().toLowerCase()) || (dccUsername ? dccUsername.toLowerCase() : ('row-' + vSlug(name)));
+  return {
+    id: r.id || ('acct-' + vSlug(key) + '-' + Math.random().toString(36).slice(2,6)),
+    key,
+    username: r.username || null,
+    role: r.role || '',
+    division: (r.division === 0 || r.division) ? r.division : null,
+    name,
+    position: String(r.position || '').trim(),
+    email: String(r.email || '').trim(),
+    alias: String(r.alias || '').trim(),
+    password: String(r.password || ''),
+    platform: String(r.platform || '').trim(),
+    birthday: String(r.birthday || '').trim(),
+    needsUpdate: !!r.needsUpdate,
+    dccUsername,
+    dccPassword: String(r.dccPassword || ''),
+    altLogins: Array.isArray(r.altLogins) ? r.altLogins.filter(Boolean).map(String) : [],
+  };
+}
+
+async function vaultGetAccounts(request, env){
+  const auth = await requireVault(request, env); if (!auth) return json({ error: 'Forbidden' }, 403);
+  const { accounts, seeded } = await loadAccounts(env);
+  return json({ accounts, seeded });
+}
+async function vaultPutAccounts(request, env, ip, wait){
+  const auth = await requireVault(request, env); if (!auth) return json({ error: 'Forbidden' }, 403);
+  let b; try { b = await request.json(); } catch(_) { return json({ error: 'Bad request' }, 400); }
+  const incoming = Array.isArray(b) ? b : (b && Array.isArray(b.accounts) ? b.accounts : null);
+  if (!incoming) return json({ error: 'accounts array required' }, 400);
+  const clean = incoming.map(normalizeAccount).filter(Boolean);
+  if (!clean.length) return json({ error: 'refusing to save an empty account table' }, 400);
+  const { sha } = await ghReadJSON(VAULT_ACCOUNTS_PATH, env);
+  await ghWriteJSON(VAULT_ACCOUNTS_PATH, clean, sha, `Vault accounts updated by ${auth.name || auth.email}`, env);
+  wait(writeLog({ actor: auth.email, actorName: auth.name, actorRole: auth.role,
+    action: 'VAULT_ACCOUNTS_UPDATED', detail: `Account Vault saved (${clean.length} rows)`, ip }, env));
+  return json({ ok: true, count: clean.length });
+}
+async function vaultGetSecrets(request, env){
+  const auth = await requireVault(request, env); if (!auth) return json({ error: 'Forbidden' }, 403);
+  const { content } = await ghReadJSON(VAULT_SECRETS_PATH, env);
+  const secrets = Array.isArray(content) ? content : (content && Array.isArray(content.secrets) ? content.secrets : []);
+  return json({ secrets });
+}
+async function vaultPutSecrets(request, env, ip, wait){
+  const auth = await requireVault(request, env); if (!auth) return json({ error: 'Forbidden' }, 403);
+  let b; try { b = await request.json(); } catch(_) { return json({ error: 'Bad request' }, 400); }
+  const incoming = Array.isArray(b) ? b : (b && Array.isArray(b.secrets) ? b.secrets : null);
+  if (!incoming) return json({ error: 'secrets array required' }, 400);
+  const clean = incoming.map(s => ({
+    id: (s && s.id) || ('sec-' + Math.random().toString(36).slice(2,8)),
+    name: String((s && s.name) || '').trim(),
+    platform: String((s && s.platform) || '').trim(),
+    secret: String((s && s.secret) || ''),
+  })).filter(s => s.name || s.platform || s.secret);
+  const { sha } = await ghReadJSON(VAULT_SECRETS_PATH, env);
+  await ghWriteJSON(VAULT_SECRETS_PATH, clean, sha, `Vault secrets updated by ${auth.name || auth.email}`, env);
+  wait(writeLog({ actor: auth.email, actorName: auth.name, actorRole: auth.role,
+    action: 'VAULT_SECRETS_UPDATED', detail: `Secrets saved (${clean.length})`, ip }, env));
+  return json({ ok: true, count: clean.length });
+}
+
+function parseBirthday(s){
+  s = String(s || '').trim(); if (!s) return null;
+  let m, d, mm;
+  if ((mm = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/))) { m = +mm[2]; d = +mm[3]; }
+  else if ((mm = s.match(/^(\d{1,2})[-\/](\d{1,2})(?:[-\/]\d{2,4})?$/))) { m = +mm[1]; d = +mm[2]; }
+  else return null;
+  if (!m || !d || m < 1 || m > 12 || d < 1 || d > 31) return null;
+  return { month: m, day: d };
+}
+function daysUntilBirthday(bd, now){
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  let next = Date.UTC(now.getUTCFullYear(), bd.month - 1, bd.day);
+  if (next < today) next = Date.UTC(now.getUTCFullYear() + 1, bd.month - 1, bd.day);
+  return Math.round((next - today) / 86400000);
+}
+async function vaultBirthdays(request, env){
+  const auth = await requireVault(request, env); if (!auth) return json({ error: 'Forbidden' }, 403);
+  const now = new Date();
+  const { accounts } = await loadAccounts(env);
+  const out = [];
+  for (const a of accounts) {
+    const bd = parseBirthday(a.birthday); if (!bd) continue;
+    const days = daysUntilBirthday(bd, now);
+    if (days >= 0 && days <= 3) out.push({
+      id: a.id || a.key, name: a.name || a.dccUsername, position: a.position || '',
+      days, dateLabel: MONTHS_ABBR[bd.month - 1] + ' ' + bd.day, phase: days === 0 ? 'today' : 'soon',
+    });
+  }
+  out.sort((x, y) => x.days - y.days);
+  return json({ birthdays: out });
+}
+async function runBirthdayReminders(env, now){
+  let accounts;
+  try { ({ accounts } = await loadAccounts(env)); } catch(_) { return; }
+  for (const a of accounts) {
+    const bd = parseBirthday(a.birthday); if (!bd) continue;
+    const days = daysUntilBirthday(bd, now);
+    if (days !== 3 && days !== 0) continue;
+    const dateLabel = MONTHS_ABBR[bd.month - 1] + ' ' + bd.day;
+    const who = a.name || a.dccUsername || 'A district officer';
+    const subj = days === 0 ? `Today is ${who}'s birthday` : `${who}'s birthday is in 3 days`;
+    await sendEmail(WEBMASTER_ALERT_EMAIL, subj, birthdayEmail(a, days, dateLabel), env);
+  }
+}
+function birthdayEmail(a, days, dateLabel){
+  const who = esc(a.name || a.dccUsername || 'A district officer');
+  const when = days === 0 ? 'today' : `in 3 days`;
+  return emailShell(days === 0 ? 'A district birthday is today' : 'A district birthday is coming up',
+    `<p><b>${who}</b>${a.position ? ` — ${esc(a.position)}` : ''}</p>
+     <p>Birthday: <b>${esc(dateLabel)}</b> (${when}).</p>
+     <p>A quick note or shout-out goes a long way.</p>`,
+    { text: 'Open the Vault', url: `${PORTAL_URL}/vault.html` });
+}
+
 
 
 /* Serve a roster image from the repo with the right content-type (raw media type). */

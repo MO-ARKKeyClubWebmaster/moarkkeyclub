@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="Key%20Club%20Logo.png">
+<title>Vault | MO-ARK DCC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="portal.css">
+<style>
+/* ── Vault layout (chrome + tokens come from portal.css) ── */
+.v-wrap{max-width:1180px;margin:0 auto;padding:1.4rem 1.1rem 4rem;}
+.v-intro{display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem;}
+.v-mark{width:46px;height:46px;flex-shrink:0;}
+.v-h1{font-family:var(--ff-display);font-size:1.7rem;color:var(--navy);line-height:1.05;}
+.v-h1 em{font-style:italic;color:var(--gold);}
+.v-scope{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.v-scope b{color:var(--navy);}
+
+/* lockout / reauth */
+.v-lock{max-width:520px;margin:3rem auto;background:var(--white);border:1px solid var(--border);border-radius:16px;padding:2.2rem 1.8rem;text-align:center;box-shadow:0 8px 30px rgba(11,27,51,.08);}
+.v-lock svg{width:56px;height:56px;margin-bottom:1rem;}
+.v-lock h2{font-family:var(--ff-display);color:var(--navy);font-size:1.4rem;margin-bottom:.5rem;}
+.v-lock p{color:var(--muted);font-size:.9rem;line-height:1.6;margin-bottom:1.2rem;}
+
+/* toolbar */
+.v-toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem;}
+.v-search{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:10px;padding:.55rem .85rem;font-size:.86rem;font-family:var(--ff-body);outline:none;background:#fff;}
+.v-search:focus{border-color:var(--gold);}
+.v-btn{border:1.5px solid var(--border);background:#fff;color:var(--navy);border-radius:10px;padding:.55rem .95rem;font-size:.82rem;font-weight:600;font-family:var(--ff-body);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.v-btn:hover{border-color:var(--gold);color:var(--gold);}
+.v-btn.primary{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.v-btn.primary:hover{background:var(--gold-lt);color:var(--navy);}
+.v-btn.ghost-danger:hover{border-color:#c0392b;color:#c0392b;}
+.v-hint{font-size:.72rem;color:var(--muted);margin:.2rem 0 1rem;line-height:1.5;}
+
+/* table */
+.v-tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--white);box-shadow:0 2px 14px rgba(11,27,51,.05);}
+table.v-table{border-collapse:collapse;width:100%;min-width:1120px;font-size:.8rem;}
+.v-table thead th{position:sticky;top:0;background:linear-gradient(180deg,#0c1e38,#0b1b33);color:#fff;font-weight:600;font-size:.68rem;letter-spacing:.4px;text-transform:uppercase;padding:.6rem .55rem;text-align:left;white-space:nowrap;z-index:2;}
+.v-table tbody td{border-bottom:1px solid var(--border);padding:.32rem .4rem;vertical-align:middle;}
+.v-table tbody tr:hover{background:#f8fafc;}
+.v-table tbody tr.flagged{background:#fff7f4;}
+.v-table tbody tr.flagged:hover{background:#fff0ea;}
+.v-cellinput{width:100%;border:1px solid transparent;border-radius:7px;padding:.4rem .5rem;font-size:.8rem;font-family:var(--ff-body);color:var(--navy);background:transparent;outline:none;min-width:90px;}
+.v-cellinput:hover{border-color:var(--border);}
+.v-cellinput:focus{border-color:var(--gold);background:#fff;}
+.v-cellinput.wide{min-width:130px;}
+.v-cellinput.narrow{min-width:80px;}
+.v-pwcell{display:flex;align-items:center;gap:2px;}
+.v-pwcell .v-cellinput{min-width:110px;}
+.v-icobtn{border:none;background:transparent;cursor:pointer;padding:.28rem;border-radius:6px;color:var(--muted);display:inline-flex;flex-shrink:0;line-height:0;}
+.v-icobtn:hover{background:var(--gold-lt);color:var(--navy);}
+.v-icobtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.v-chk{width:17px;height:17px;accent-color:var(--gold);cursor:pointer;}
+.v-dcc{background:#fbf6ea;}
+.v-table thead th.dcc-h{background:linear-gradient(180deg,#7a5a12,#5f4610);}
+.v-rowdel{border:none;background:transparent;color:#c0392b;cursor:pointer;font-size:1.05rem;line-height:1;padding:.3rem .45rem;border-radius:6px;}
+.v-rowdel:hover{background:#fdecea;}
+.v-flagbadge{display:inline-block;font-size:.6rem;font-weight:700;color:#c0392b;background:#fdecea;border-radius:100px;padding:.12rem .5rem;margin-left:.3rem;vertical-align:middle;}
+.v-empty{padding:2rem;text-align:center;color:var(--muted);font-size:.85rem;}
+
+/* secrets */
+.v-secrets{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem;}
+.v-scard{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:.9rem 1rem;box-shadow:0 2px 10px rgba(11,27,51,.05);display:flex;flex-direction:column;gap:.5rem;}
+.v-scard .v-sname{font-weight:700;color:var(--navy);font-size:.92rem;}
+.v-scard .v-splat{font-size:.72rem;color:var(--muted);}
+.v-scopy{display:flex;align-items:center;gap:.5rem;background:var(--bg);border:1px dashed var(--border);border-radius:9px;padding:.5rem .7rem;cursor:pointer;transition:all .15s;}
+.v-scopy:hover{border-color:var(--gold);background:#fffdf6;}
+.v-scopy .v-sval{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;color:var(--navy);word-break:break-all;}
+.v-scard-edit{display:flex;flex-direction:column;gap:.4rem;}
+.v-scard-edit input{border:1.5px solid var(--border);border-radius:8px;padding:.45rem .6rem;font-size:.82rem;font-family:var(--ff-body);outline:none;}
+.v-scard-edit input:focus{border-color:var(--gold);}
+.v-scard-foot{display:flex;justify-content:space-between;align-items:center;}
+
+/* DLC placeholder */
+.v-dlc{max-width:560px;margin:2.5rem auto;text-align:center;color:var(--muted);}
+.v-dlc svg{width:64px;height:64px;margin-bottom:1rem;opacity:.5;}
+.v-dlc h2{font-family:var(--ff-display);color:var(--navy);font-size:1.5rem;margin-bottom:.5rem;}
+.v-dlc p{font-size:.9rem;line-height:1.6;}
+
+/* toast */
+#vToast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:.7rem 1.2rem;border-radius:100px;font-size:.85rem;font-weight:600;box-shadow:0 8px 26px rgba(11,27,51,.28);opacity:0;pointer-events:none;transition:all .25s;z-index:50;}
+#vToast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#vToast.err{background:#c0392b;}
+
+.v-savebar{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:.6rem;align-items:center;padding:.7rem 0 0;background:linear-gradient(transparent,var(--bg) 30%);}
+.v-dirty{font-size:.74rem;color:#c0392b;font-weight:600;margin-right:auto;display:none;}
+.v-dirty.on{display:inline;}
+</style>
+</head>
+<body>
+
+<header class="app-bar">
+  <a class="app-back" href="index.html">&lsaquo; Command Center</a>
+  <img class="app-logo" src="Key%20Club%20Logo.png" alt="">
+  <div class="app-title">Vault</div>
+</header>
+
+<div class="v-wrap" id="vRoot">
+
+  <div class="v-intro">
+    <svg class="v-mark" viewBox="0 0 96 96" role="img" aria-label="Vault">
+      <defs><linearGradient id="vBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173257"/><stop offset="1" stop-color="#0B1B33"/></linearGradient></defs>
+      <rect x="4" y="4" width="88" height="88" rx="21" fill="url(#vBg)" stroke="rgba(255,255,255,.10)" stroke-width="1.5"/>
+      <g fill="none" stroke="#E8B84B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="28" y="44" width="40" height="30" rx="6"/>
+        <path d="M36 44 v-8 a12 12 0 0 1 24 0 v8"/>
+        <circle cx="48" cy="55" r="3.2" fill="#E8B84B" stroke="none"/>
+        <line x1="48" y1="56" x2="48" y2="64"/>
+      </g>
+    </svg>
+    <div>
+      <div class="v-h1">The <em>Vault</em></div>
+      <div class="v-scope">Restricted to Webmaster, Governor &amp; District Administrator &middot; signed in as <b id="vRole">—</b></div>
+    </div>
+  </div>
+
+  <div class="console-tabs">
+    <button class="console-tab active" id="tab-accounts" onclick="vTab('accounts')">🔐 Account Vault</button>
+    <button class="console-tab" id="tab-secrets" onclick="vTab('secrets')">🗝 Secrets</button>
+    <button class="console-tab" id="tab-dlc" onclick="vTab('dlc')">🏆 DLC</button>
+  </div>
+
+  <!-- ═══════════ ACCOUNT VAULT ═══════════ -->
+  <div id="panel-accounts">
+    <div class="v-toolbar">
+      <input class="v-search" id="vAcctSearch" placeholder="Search name, position, platform, email…" oninput="vRenderAccounts()">
+      <button class="v-btn" onclick="vAddAccount()">+ Add row</button>
+      <button class="v-btn primary" onclick="vSaveAccounts()">💾 Save changes</button>
+    </div>
+    <div class="v-hint">
+      The <b>DCC Username</b> and <b>DCC Password</b> columns are the officer's real portal login — editing them and saving
+      actually changes how that person signs in. Passwords are stored on the private server and are never shipped to the
+      browser. Tick <b>Password needs update?</b> to flag a person whose credentials should be rotated. Birthdays accept
+      <b>MM-DD</b> or <b>YYYY-MM-DD</b>.
+    </div>
+    <div class="v-tablewrap">
+      <table class="v-table">
+        <thead><tr>
+          <th>Name</th>
+          <th>Division / Position</th>
+          <th>Email / Username</th>
+          <th>Alias Email / Username</th>
+          <th>Password</th>
+          <th>Platform</th>
+          <th>Birthday</th>
+          <th>Needs&nbsp;update?</th>
+          <th class="dcc-h">DCC Username</th>
+          <th class="dcc-h">DCC Password</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="vAcctBody"></tbody>
+      </table>
+    </div>
+    <div class="v-savebar">
+      <span class="v-dirty" id="vAcctDirty">● Unsaved changes</span>
+      <button class="v-btn" onclick="vReloadAccounts()">Reload</button>
+      <button class="v-btn primary" onclick="vSaveAccounts()">💾 Save changes</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ SECRETS ═══════════ -->
+  <div id="panel-secrets" style="display:none">
+    <div class="v-toolbar">
+      <input class="v-search" id="vSecSearch" placeholder="Search secrets…" oninput="vRenderSecrets()">
+      <button class="v-btn" onclick="vAddSecret()">+ Add secret</button>
+      <button class="v-btn primary" onclick="vSaveSecrets()">💾 Save secrets</button>
+    </div>
+    <div class="v-hint">Anything goes here — a code, a key, a Wi-Fi password, a link. <b>Click a secret to copy it.</b></div>
+    <div class="v-secrets" id="vSecBody"></div>
+    <div class="v-savebar">
+      <span class="v-dirty" id="vSecDirty">● Unsaved changes</span>
+      <button class="v-btn" onclick="vReloadSecrets()">Reload</button>
+      <button class="v-btn primary" onclick="vSaveSecrets()">💾 Save secrets</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ DLC ═══════════ -->
+  <div id="panel-dlc" style="display:none">
+    <div class="v-dlc">
+      <svg viewBox="0 0 96 96" fill="none" stroke="#0B1B33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M30 20 h36 v10 a18 18 0 0 1 -36 0 z"/>
+        <path d="M30 24 h-8 a8 8 0 0 0 8 12"/><path d="M66 24 h8 a8 8 0 0 1 -8 12"/>
+        <line x1="48" y1="48" x2="48" y2="60"/><path d="M38 72 h20 l-2 -12 h-16 z"/>
+      </svg>
+      <h2>DLC</h2>
+      <p>This space is reserved for District Leadership Conference tools. Nothing here yet — it'll be built out later.</p>
+    </div>
+  </div>
+
+</div>
+
+<div id="vToast"></div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script src="portal.js"></script>
+<script>
+const user = AUTH.requireAuth();
+const VAULT_BASE = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+
+(function initRole(){
+  if (!user) return;
+  const label = ({ governor:'Governor', webmaster:'Webmaster', 'district-admin':'District Administrator' })[user.role] || user.role;
+  const el = document.getElementById('vRole'); if (el) el.textContent = label;
+})();
+
+/* ── clearance gate ── */
+function lockOut(title, msg, showReauth){
+  document.getElementById('vRoot').innerHTML =
+    '<div class="v-lock">'
+    + '<svg viewBox="0 0 96 96" fill="none" stroke="#c0392b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">'
+    + '<rect x="24" y="42" width="48" height="34" rx="7"/><path d="M34 42 v-9 a14 14 0 0 1 28 0 v9"/></svg>'
+    + '<h2>' + title + '</h2><p>' + msg + '</p>'
+    + (showReauth
+        ? '<button class="v-btn primary" onclick="AUTH.logout()">Sign out &amp; sign back in</button>'
+        : '<a class="v-btn primary" href="index.html">Back to Command Center</a>')
+    + '</div>';
+}
+
+const CLEARED = ['webmaster','governor','district-admin'];
+let TOKEN = AUTH.getToken ? AUTH.getToken() : '';
+
+let accounts = [];
+let secrets  = [];
+let acctDirty = false, secDirty = false;
+
+function toast(msg, isErr){
+  const t = document.getElementById('vToast');
+  t.textContent = msg; t.className = 'show' + (isErr ? ' err' : '');
+  clearTimeout(toast._t); toast._t = setTimeout(function(){ t.className = ''; }, 1900);
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function markAcctDirty(){ acctDirty = true; document.getElementById('vAcctDirty').classList.add('on'); }
+function markSecDirty(){ secDirty = true; document.getElementById('vSecDirty').classList.add('on'); }
+
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); toast('Copied to clipboard'); }
+  catch(_){
+    try { const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('Copied to clipboard'); }
+    catch(e){ toast('Could not copy', true); }
+  }
+}
+
+/* ── tabs ── */
+function vTab(t){
+  ['accounts','secrets','dlc'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('panel-'+x).style.display = x===t ? '' : 'none';
+  });
+}
+
+/* ═══════════ ACCOUNT VAULT ═══════════ */
+const EYE = '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const COPY = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+
+function vRenderAccounts(){
+  const q = (document.getElementById('vAcctSearch').value||'').toLowerCase().trim();
+  const body = document.getElementById('vAcctBody');
+  const rows = accounts.filter(function(a){
+    if (!q) return true;
+    return [a.name,a.position,a.email,a.alias,a.platform,a.dccUsername].join(' ').toLowerCase().indexOf(q) >= 0;
+  });
+  if (!rows.length){ body.innerHTML = '<tr><td colspan="11" class="v-empty">No accounts match.</td></tr>'; return; }
+  body.innerHTML = rows.map(function(a){
+    const i = accounts.indexOf(a);
+    function txt(field, cls){ return '<input class="v-cellinput '+(cls||'')+'" data-i="'+i+'" data-f="'+field+'" value="'+esc(a[field]||'')+'">'; }
+    function pw(field){
+      return '<div class="v-pwcell">'
+        + '<input type="password" class="v-cellinput" data-i="'+i+'" data-f="'+field+'" value="'+esc(a[field]||'')+'" autocomplete="off">'
+        + '<button class="v-icobtn" title="Show / hide" data-eye="1">'+EYE+'</button>'
+        + '<button class="v-icobtn" title="Copy" data-copy="'+field+'" data-ci="'+i+'">'+COPY+'</button>'
+        + '</div>';
+    }
+    return '<tr class="'+(a.needsUpdate?'flagged':'')+'" data-row="'+i+'">'
+      + '<td>'+txt('name','wide')+'</td>'
+      + '<td>'+txt('position','wide')+'</td>'
+      + '<td>'+txt('email','wide')+'</td>'
+      + '<td>'+txt('alias','wide')+'</td>'
+      + '<td>'+pw('password')+'</td>'
+      + '<td>'+txt('platform')+'</td>'
+      + '<td>'+txt('birthday','narrow')+'</td>'
+      + '<td style="text-align:center">'+'<input type="checkbox" class="v-chk" data-i="'+i+'" data-chk="1" '+(a.needsUpdate?'checked':'')+'>'
+        + (a.needsUpdate?'<span class="v-flagbadge">FLAG</span>':'')+'</td>'
+      + '<td class="v-dcc">'+txt('dccUsername','wide')+'</td>'
+      + '<td class="v-dcc">'+pw('dccPassword')+'</td>'
+      + '<td><button class="v-rowdel" title="Delete row" data-del="'+i+'">✕</button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+// delegated events for the account table
+document.getElementById('vAcctBody').addEventListener('input', function(e){
+  const el = e.target;
+  if (el.classList.contains('v-cellinput')){
+    const i = +el.dataset.i, f = el.dataset.f;
+    if (accounts[i]){ accounts[i][f] = el.value; markAcctDirty(); }
+  }
+});
+document.getElementById('vAcctBody').addEventListener('change', function(e){
+  const el = e.target;
+  if (el.dataset.chk){
+    const i = +el.dataset.i;
+    if (accounts[i]){ accounts[i].needsUpdate = el.checked; markAcctDirty(); vRenderAccounts(); }
+  }
+});
+document.getElementById('vAcctBody').addEventListener('click', function(e){
+  const btn = e.target.closest('button'); if (!btn) return;
+  if (btn.dataset.eye){
+    const inp = btn.parentElement.querySelector('input');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  } else if (btn.dataset.copy){
+    const i = +btn.dataset.ci; if (accounts[i]) copyText(accounts[i][btn.dataset.copy]||'');
+  } else if (btn.dataset.del){
+    const i = +btn.dataset.del;
+    if (accounts[i] && confirm('Delete '+(accounts[i].name||accounts[i].dccUsername||'this row')+' from the vault? This also removes their login when you save.')){
+      accounts.splice(i,1); markAcctDirty(); vRenderAccounts();
+    }
+  }
+});
+
+function vAddAccount(){
+  accounts.push({ id:'', key:'', username:null, role:'', division:null, name:'', position:'',
+    email:'', alias:'', password:'', platform:'', birthday:'', needsUpdate:false,
+    dccUsername:'', dccPassword:'', altLogins:[] });
+  markAcctDirty();
+  document.getElementById('vAcctSearch').value = '';
+  vRenderAccounts();
+  const body = document.getElementById('vAcctBody');
+  const last = body.querySelector('tr:last-child input'); if (last) last.focus();
+}
+
+async function vSaveAccounts(){
+  try {
+    const res = await fetch(VAULT_BASE + '/vault/accounts', {
+      method:'PUT',
+      headers: Object.assign({ 'Content-Type':'application/json' }, AUTH.authHeader()),
+      body: JSON.stringify({ accounts: accounts, _actor: user.email, _actorName: user.name, _actorRole: user.role }),
+    });
+    if (res.status === 401 || res.status === 403) { toast('Session expired — sign in again', true); return; }
+    if (!res.ok) { toast('Save failed', true); return; }
+    const d = await res.json();
+    acctDirty = false; document.getElementById('vAcctDirty').classList.remove('on');
+    toast('Saved ' + (d.count||accounts.length) + ' accounts');
+    await vReloadAccounts(true);
+  } catch(e){ toast('Save failed — network', true); }
+}
+
+async function vReloadAccounts(quiet){
+  try {
+    const res = await fetch(VAULT_BASE + '/vault/accounts', { headers: AUTH.authHeader() });
+    if (res.status === 401 || res.status === 403){ lockOut('Session needs a refresh', 'Your sign-in predates the security update, so the Vault can\'t verify it. Please sign out and sign back in.', true); return; }
+    if (!res.ok){ toast('Could not load accounts', true); return; }
+    const d = await res.json();
+    accounts = (d.accounts||[]).map(function(a){ a.altLogins = a.altLogins||[]; return a; });
+    acctDirty = false; document.getElementById('vAcctDirty').classList.remove('on');
+    vRenderAccounts();
+    if (!quiet && d.seeded === false) toast('Showing default accounts — Save once to lock them in');
+  } catch(e){ toast('Could not load accounts — network', true); }
+}
+
+/* ═══════════ SECRETS ═══════════ */
+function vRenderSecrets(){
+  const q = (document.getElementById('vSecSearch').value||'').toLowerCase().trim();
+  const body = document.getElementById('vSecBody');
+  const rows = secrets.filter(function(s){ return !q || [s.name,s.platform,s.secret].join(' ').toLowerCase().indexOf(q)>=0; });
+  if (!rows.length){ body.innerHTML = '<div class="v-empty" style="grid-column:1/-1">No secrets yet. Add one above.</div>'; return; }
+  body.innerHTML = rows.map(function(s){
+    const i = secrets.indexOf(s);
+    return '<div class="v-scard">'
+      + '<div class="v-scard-edit">'
+      + '<input placeholder="Name" data-si="'+i+'" data-sf="name" value="'+esc(s.name||'')+'">'
+      + '<input placeholder="Platform" data-si="'+i+'" data-sf="platform" value="'+esc(s.platform||'')+'">'
+      + '</div>'
+      + '<div class="v-scopy" data-copysecret="'+i+'" title="Click to copy">'
+      +   '<span class="v-sval">'+(s.secret? esc(s.secret) : '<span style="color:var(--muted)">— empty —</span>')+'</span>'
+      +   '<span class="v-icobtn">'+COPY+'</span>'
+      + '</div>'
+      + '<input placeholder="Secret value" data-si="'+i+'" data-sf="secret" value="'+esc(s.secret||'')+'" style="border:1.5px solid var(--border);border-radius:8px;padding:.45rem .6rem;font-size:.82rem;font-family:ui-monospace,Menlo,monospace;outline:none;">'
+      + '<div class="v-scard-foot"><span class="v-splat">Secret</span>'
+      +   '<button class="v-btn ghost-danger" data-secdel="'+i+'" style="padding:.3rem .7rem;font-size:.74rem;">Delete</button></div>'
+      + '</div>';
+  }).join('');
+}
+document.getElementById('vSecBody').addEventListener('input', function(e){
+  const el = e.target; if (el.dataset.sf){ const i=+el.dataset.si; if (secrets[i]){ secrets[i][el.dataset.sf]=el.value; markSecDirty(); if(el.dataset.sf==='secret'){ const card=el.closest('.v-scard'); const val=card.querySelector('.v-sval'); if(val) val.innerHTML = el.value? esc(el.value) : '<span style="color:var(--muted)">— empty —</span>'; } } }
+});
+document.getElementById('vSecBody').addEventListener('click', function(e){
+  const cp = e.target.closest('[data-copysecret]');
+  if (cp){ const i=+cp.dataset.copysecret; if (secrets[i]) copyText(secrets[i].secret||''); return; }
+  const del = e.target.closest('[data-secdel]');
+  if (del){ const i=+del.dataset.secdel; if (secrets[i] && confirm('Delete this secret?')){ secrets.splice(i,1); markSecDirty(); vRenderSecrets(); } }
+});
+function vAddSecret(){ secrets.push({ id:'', name:'', platform:'', secret:'' }); markSecDirty(); document.getElementById('vSecSearch').value=''; vRenderSecrets(); }
+async function vSaveSecrets(){
+  try {
+    const res = await fetch(VAULT_BASE + '/vault/secrets', {
+      method:'PUT', headers: Object.assign({ 'Content-Type':'application/json' }, AUTH.authHeader()),
+      body: JSON.stringify({ secrets: secrets }),
+    });
+    if (res.status===401||res.status===403){ toast('Session expired — sign in again', true); return; }
+    if (!res.ok){ toast('Save failed', true); return; }
+    const d = await res.json();
+    secDirty=false; document.getElementById('vSecDirty').classList.remove('on');
+    toast('Saved '+(d.count||secrets.length)+' secrets'); await vReloadSecrets(true);
+  } catch(e){ toast('Save failed — network', true); }
+}
+async function vReloadSecrets(quiet){
+  try {
+    const res = await fetch(VAULT_BASE + '/vault/secrets', { headers: AUTH.authHeader() });
+    if (res.status===401||res.status===403){ return; }
+    if (!res.ok){ if(!quiet) toast('Could not load secrets', true); return; }
+    const d = await res.json();
+    secrets = (d.secrets||[]);
+    secDirty=false; document.getElementById('vSecDirty').classList.remove('on');
+    vRenderSecrets();
+  } catch(e){ if(!quiet) toast('Could not load secrets — network', true); }
+}
+
+/* ── warn before leaving with unsaved edits ── */
+window.addEventListener('beforeunload', function(e){ if (acctDirty || secDirty){ e.preventDefault(); e.returnValue=''; } });
+
+/* ── boot ── */
+(function boot(){
+  if (!user) return;                                   // requireAuth already redirected
+  if (!CLEARED.includes(user.role)){
+    lockOut('No clearance', 'The Vault is limited to the Webmaster, Governor and District Administrator. Your role doesn\'t have access.', false);
+    return;
+  }
+  if (!TOKEN){
+    lockOut('Session needs a refresh', 'Your sign-in predates the security update, so the Vault can\'t verify it yet. Please sign out and sign back in.', true);
+    return;
+  }
+  vReloadAccounts();
+  vReloadSecrets(true);
+})();
+</script>
+</body>
+</html>

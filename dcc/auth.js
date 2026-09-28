@@ -1,116 +1,82 @@
 /**
- * MO-ARK District Portal - Auth Module
- * Credentials live here. Keep this repo PRIVATE on GitHub.
- * To change a password: update the value in USERS below.
- * Display names, photos, divisions and regions live in portal.js (OFFICERS);
- * this file only checks credentials. On login the session's display name and
- * division are pulled from the roster when portal.js is loaded first.
+ * MO-ARK District Portal - Auth Module  (server-verified)
+ *
+ * SECURITY: passwords no longer live in this file. This file is served to
+ * every browser, so keeping credentials here meant anyone could open
+ * inspect-element / view-source and read them. Login is now verified by the
+ * portal Worker: AUTH.login() POSTs the identifier + password to /auth/login,
+ * and the Worker (which holds the credentials on the PRIVATE data branch, and
+ * whose source is never served to the web) returns the session plus a signed
+ * token. The token is required by the Vault's /vault/* endpoints.
+ *
+ * To change a password now: edit it in the Vault app (Account Vault →
+ * DCC Password → Save) or, before the Vault is first saved, in DEFAULT_ACCOUNTS
+ * inside dcc/worker.js. Never put a password back into this file.
  *
  * ── LOGIN IDENTIFIERS ─────────────────────────────────────────────────
- * Most officers sign in with their district email. Two adult accounts sign
- * in with a USERNAME instead (they have no district gmail):
- *     • Cheryl Anderson  → username DISTRICTADMIN   (District Administrator)
- *     • James Sturch     → username ADULTTREASURER  (adult Treasurer)
- * Usernames are case-insensitive. Emails are matched lowercased.
+ * Most officers sign in with their district email. The adult accounts sign in
+ * with a USERNAME (DISTRICTADMIN, ADULTTREASURER, MIRANDAYOUNG, CARLAOBRIEN,
+ * HOLLYHOFFMAN, STEPHCARTER). Usernames are case-insensitive; emails are
+ * matched lowercased. All of this is enforced server-side.
  */
 
 const AUTH = (() => {
 
-  // ── USER DATABASE ────────────────────────────────────────────────────
-  // role: 'ltg' | 'editor' | 'governor' | 'treasurer' | 'secretary' | 'webmaster'
-  //     | 'adult-treasurer' | 'district-admin'
-  // division: only for LTGs (1-10)
-  // Accounts that log in by username set `username` and leave `email` null.
-const USERS = [
-    // ── LTGs ──
-    { email: 'moarkkcltg1@gmail.com',      password: 'ServeFirst_Div1',      role: 'ltg', division: 1,  name: 'Division 1 LTG' },
-    { email: 'moarkkcltg002@gmail.com',    password: 'OneFamily_Div2',       role: 'ltg', division: 2,  name: 'Division 2 LTG' },
-    { email: 'moarkkeyclubltg3@gmail.com', password: 'BuildBetter_Div3',     role: 'ltg', division: 3,  name: 'Division 3 LTG' },
-    { email: 'moarkeyclubltg04@gmail.com', password: 'GuidingLight_Div4',    role: 'ltg', division: 4,  name: 'Bethany Liao' },
-    { email: 'moarkkcltg05@gmail.com',     password: 'RiseAndServe5',        role: 'ltg', division: 5,  name: 'Division 5 LTG' },
-    { email: 'moarkkcltg6@gmail.com',     password: 'SixStrong_KC6',        role: 'ltg', division: 6,  name: 'Division 6 LTG' },
-    { email: 'moarkkcltg007@gmail.com',    password: 'CareActLead_7',        role: 'ltg', division: 7,  name: 'Division 7 LTG' },
-    { email: 'moarkkcltg08@gmail.com',     password: 'Div8_ServiceAboveAll', role: 'ltg', division: 8,  name: 'Division 8 LTG' },
-    { email: 'moarkkcltg9@gmail.com',      password: 'NineForService',       role: 'ltg', division: 9,  name: 'Division 9 LTG' },
-    { email: 'moarkkcltg010@gmail.com',    password: 'Div10_MakeADiff',      role: 'ltg', division: 10, name: 'Division 10 LTG' },
-    // ── Board ──
-    { email: 'moarkkeyclubgovernor@gmail.com',  password: 'govpass1',  role: 'governor',  division: null, name: 'District Governor' },
-    { email: 'momoarkkctreasurer@gmail.com',    password: 'trspass1',  role: 'treasurer', division: null, name: 'District Treasurer' },
-    { email: 'moarkkcsecretary@gmail.com',     password: 'secpass1',  role: 'secretary', division: null, name: 'District Secretary' },
-    { email: 'moarkkeyclubwebmaster@gmail.com', password: 'webpass1',  role: 'webmaster', division: null, name: 'Webmaster' },
-    { email: 'moarkkeditor1@gmail.com',         password: 'edtpass1',  role: 'editor',    division: null, name: 'District Editor' },
-    // ── Adults (username login; console pwd == login pwd) ──
-    // District Administrator - full console access.
-    { username: 'DISTRICTADMIN', email: null, password: 'Caring-Compass-6274',
-      role: 'district-admin', division: null, name: 'Cheryl Anderson' },
-    // Adult Treasurer - full console access; final approver of reimbursements.
-    { username: 'ADULTTREASURER', email: 'james.sturch@southsideschools.org', password: 'Service-Anchor-8351',
-      role: 'adult-treasurer', division: null, name: 'James Sturch' },
-    // Adult Board Members - board-meetings-only console access, can receive/fill reimbursement forms.
-    { username: 'MIRANDAYOUNG', email: null, password: '1485',
-      role: 'adult-member', division: null, name: 'Miranda Young' },
-    { username: 'CARLAOBRIEN', email: null, password: '8151',
-      role: 'adult-member', division: null, name: "Carla O'Brien" },
-    { username: 'HOLLYHOFFMAN', email: null, password: '7146',
-      role: 'adult-member', division: null, name: 'Holly Hoffman' },
-    // Same console access as Carla (board meetings + forms).
-    // Login by USERNAME (case-insensitive); email is her contact address.
-    { username: 'STEPHCARTER', email: 'carter-stephanie@trojans.k12.mo.us', password: '1741',
-      role: 'adult-member', division: null, name: 'Stephanie Carter' },
-  ];
-
-  // Roles whose CONSOLE password is the SAME as their portal login password
-  // (the adults + the board treasurer). Everyone else in CONSOLE_PASSWORDS
-  // below uses a separate console password.
-  const CONSOLE_SAME_AS_LOGIN = ['adult-treasurer', 'district-admin', 'treasurer', 'adult-member'];
+  // Portal Worker base (holds credentials + signs tokens).
+  const AUTH_BASE   = 'https://moark-portal-api.moarkkeyclubwebmaster.workers.dev';
+  const SESSION_KEY = 'moark_portal_user';
+  const TOKEN_KEY   = 'moark_portal_token';
 
   // ── SESSION ──────────────────────────────────────────────────────────
-  const SESSION_KEY = 'moark_portal_user';
-
-  // Find a user by email OR username, case-insensitively, with a password check.
-  function findUser(identifier, password) {
-    const id = (identifier || '').trim();
-    const idLower = id.toLowerCase();
-    return USERS.find(u => {
-      const emailMatch = u.email && u.email.toLowerCase() === idLower;
-      const userMatch  = u.username && u.username.toLowerCase() === idLower;
-      return (emailMatch || userMatch) && u.password === password;
-    }) || null;
+  function getUser() {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    try { return raw ? JSON.parse(raw) : null; } catch (_) { return null; }
   }
+  function getToken() { try { return sessionStorage.getItem(TOKEN_KEY) || ''; } catch (_) { return ''; } }
+  // Convenience for authenticated fetches (Vault endpoints).
+  function authHeader() { const t = getToken(); return t ? { 'Authorization': 'Bearer ' + t } : {}; }
 
-  // The stable identity key for a session (roster + audit log key).
-  // Email accounts use the email; username-only accounts use the username.
-  function keyFor(u) { return (u.email || u.username || '').toLowerCase(); }
+  // Verify credentials against the Worker. Returns the session object on
+  // success, or null on bad credentials / network error.
+  async function login(identifier, password) {
+    let data = null;
+    try {
+      const res = await fetch(AUTH_BASE + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: (identifier || '').trim(), password: password || '' }),
+      });
+      if (!res.ok) return null;
+      data = await res.json();
+    } catch (_) { return null; }
+    if (!data || !data.session || !data.token) return null;
 
-  function login(identifier, password) {
-    const user = findUser(identifier, password);
-    if (!user) return null;
-    const email = keyFor(user);           // roster/audit key
-    // Prefer the real display name / division from the roster (portal.js OFFICERS).
-    let name = user.name, division = user.division;
-    if (typeof OFFICERS !== 'undefined') {
-      const rec = OFFICERS.get(email);
-      if (rec) {
-        if (rec.name) name = rec.name;
-        if (rec.division !== undefined && rec.division !== null) division = rec.division;
+    const session = data.session;
+    // Prefer the nicer display name / division from the roster (portal.js
+    // OFFICERS) when it's loaded first, exactly as before.
+    try {
+      if (typeof OFFICERS !== 'undefined') {
+        const rec = OFFICERS.get((session.email || '').toLowerCase());
+        if (rec) {
+          if (rec.name) session.name = rec.name;
+          if (rec.division !== undefined && rec.division !== null) session.division = rec.division;
+        }
       }
-    }
-    const session = { email, username: user.username || null, role: user.role, division, name };
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    } catch (_) { /* roster not loaded — server values stand */ }
+
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      sessionStorage.setItem(TOKEN_KEY, data.token);
+    } catch (_) { /* storage blocked — session still returned for this page */ }
     return session;
   }
 
-  function getUser() {
-    const raw = sessionStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
-  }
-
   async function logout() {
-    // Fire log before clearing session so actor is still known
+    // Fire the log before clearing the session so the actor is still known.
     try {
       const u = getUser();
       if (u) {
-        await fetch('https://moark-portal-api.moarkkeyclubwebmaster.workers.dev/log', {
+        await fetch(AUTH_BASE + '/log', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -123,8 +89,9 @@ const USERS = [
           }),
         });
       }
-    } catch(e) { /* silent */ }
-    sessionStorage.removeItem(SESSION_KEY);
+    } catch (e) { /* silent */ }
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+    try { sessionStorage.removeItem(TOKEN_KEY); } catch (_) {}
     window.location.href = 'index.html';
   }
 
@@ -156,14 +123,17 @@ const USERS = [
     return getUser();
   }
 
+  // ── VAULT ACCESS ───────────────────────────────────────────────────────
+  // Only these roles may open the Vault app. (The real enforcement is the
+  // signed token on the Worker's /vault/* endpoints; this just hides the UI.)
+  const VAULT_ROLES = ['webmaster', 'governor', 'district-admin'];
+  function canAccessVault() { const u = getUser(); return !!u && VAULT_ROLES.includes(u.role); }
+
   // ── CONSOLE ACCESS ───────────────────────────────────────────────────
   // Roles that can open the console at all.
   const CONSOLE_ROLES = ['webmaster', 'editor', 'governor', 'adult-treasurer', 'district-admin', 'treasurer', 'adult-member'];
 
   // Which panels each role sees inside the console.
-  //   compliance  - newsletter/MRF/DCM compliance tables
-  //   log         - live activity/audit log
-  //   boardmeetings - board meetings + reimbursement management
   const CONSOLE_SECTIONS = {
     webmaster:         ['compliance', 'log', 'boardmeetings'],
     governor:          ['compliance', 'log', 'boardmeetings'],
@@ -174,19 +144,10 @@ const USERS = [
     'adult-member':    ['boardmeetings'],   // adult board members: board meetings only
   };
 
-  // Separate console passwords for the roles that need one different from login.
-  const CONSOLE_PASSWORDS = {
-    webmaster: 'keyclub4life',
-    editor:    'serviceispower',
-    governor:  'moarkdistrict',
-  };
-
   function canAccessConsole() {
     const u = getUser();
     return u && CONSOLE_ROLES.includes(u.role);
   }
-
-  // Panels the current user may see (array). Empty if no console access.
   function consoleSections() {
     const u = getUser();
     if (!u) return [];
@@ -195,26 +156,15 @@ const USERS = [
   function canSeeConsoleSection(section) {
     return consoleSections().includes(section);
   }
-
-  function verifyConsolePassword(password) {
-    const u = getUser();
-    if (!u) return false;
-    // Adults + board treasurer: console password is the same as the login password.
-    if (CONSOLE_SAME_AS_LOGIN.includes(u.role)) {
-      const rec = USERS.find(x => AUTH_keyFor(x) === (u.email || '').toLowerCase());
-      return !!rec && password === rec.password;
-    }
-    // Everyone else: dedicated console password.
-    if (!CONSOLE_PASSWORDS[u.role]) return false;
-    return password === CONSOLE_PASSWORDS[u.role];
-  }
-  // keyFor is private above; expose an internal alias for verify lookup.
-  function AUTH_keyFor(u) { return (u.email || u.username || '').toLowerCase(); }
+  // The console no longer has a separate password gate (per-tab clearance is
+  // by role). Kept for backward compatibility: access == role clearance.
+  function verifyConsolePassword() { return canAccessConsole(); }
 
   return {
-    login, getUser, logout,
+    login, getUser, getToken, authHeader, logout,
     isLTG, isEditor, isGovernor, isWebmaster, isTreasurer, isSecretary, isAdultTreasurer, isDistrictAdmin,
     canReview, canSeeAll, requireAuth,
+    canAccessVault,
     canAccessConsole, consoleSections, canSeeConsoleSection, verifyConsolePassword,
   };
 })();
