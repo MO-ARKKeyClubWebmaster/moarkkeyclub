@@ -140,8 +140,8 @@
   <!-- ═══════════════════════ COMPLIANCE PANEL ═══════════════════════ -->
   <div id="noClearance" class="no-clearance" style="display:none;">
     <div class="no-clearance-ic"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-    <div class="no-clearance-title">Access restricted</div>
-    <div class="no-clearance-msg">You do not have the necessary clearance to view this section.</div>
+    <div class="no-clearance-title">You do not have clearance.</div>
+    <div class="no-clearance-msg">Only Webmaster, Governor, and District Administrator get access to this section.</div>
   </div>
 
   <div id="panel-compliance">
@@ -354,8 +354,17 @@ document.getElementById('lockScreen').style.display = 'none';
 document.getElementById('consoleContent').style.display = 'block';
 try { if (SECTIONS.length) LOG.record('CONSOLE_ACCESS', user.name + ' opened the console'); } catch(_){}
 
-function showNoClearance(){
+const TAB_ACCESS = {
+  compliance:    'Webmaster, Governor, Editor, Adult Treasurer, and District Administrator',
+  log:           'Webmaster, Governor, Adult Treasurer, and District Administrator',
+  boardmeetings: 'Webmaster, Governor, Treasurer, Adult Treasurer, District Administrator, and Adult Board Members',
+  boardmembers:  'Webmaster and Governor',
+};
+function showNoClearance(tab){
   ['compliance','log','boardmeetings','boardmembers'].forEach(function(t){ var pn=document.getElementById('panel-'+t); if(pn) pn.style.display='none'; });
+  var t=document.querySelector('#noClearance .no-clearance-title'); if(t) t.textContent='You do not have clearance.';
+  var m=document.querySelector('#noClearance .no-clearance-msg');
+  if(m) m.textContent='Only '+(TAB_ACCESS[tab]||'Webmaster, Governor, and District Administrator')+' get access to this section.';
   document.getElementById('noClearance').style.display = '';
 }
 
@@ -367,7 +376,7 @@ function switchTab(tab) {
     var pn=document.getElementById('panel-'+t); if(pn) pn.style.display='none';
   });
   document.getElementById('noClearance').style.display = 'none';
-  if (!canTab(tab)) { showNoClearance(); return; }
+  if (!canTab(tab)) { showNoClearance(tab); return; }
   var panel=document.getElementById('panel-'+tab); if(panel) panel.style.display='';
   if (tab === 'log' && allLogs === null) loadLogs();
   if (tab === 'boardmeetings') BM.ensureLoaded();

@@ -51,6 +51,8 @@ table.v-table{border-collapse:collapse;width:100%;min-width:1120px;font-size:.8r
 .v-cellinput.narrow{min-width:80px;}
 .v-pwcell{display:flex;align-items:center;gap:2px;}
 .v-pwcell .v-cellinput{min-width:110px;}
+.v-mask{-webkit-text-security:disc;}
+.v-mask.revealed{-webkit-text-security:none;}
 .v-icobtn{border:none;background:transparent;cursor:pointer;padding:.28rem;border-radius:6px;color:var(--muted);display:inline-flex;flex-shrink:0;line-height:0;}
 .v-icobtn:hover{background:var(--gold-lt);color:var(--navy);}
 .v-icobtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
@@ -268,10 +270,14 @@ function vRenderAccounts(){
   if (!rows.length){ body.innerHTML = '<tr><td colspan="11" class="v-empty">No accounts match.</td></tr>'; return; }
   body.innerHTML = rows.map(function(a){
     const i = accounts.indexOf(a);
-    function txt(field, cls){ return '<input class="v-cellinput '+(cls||'')+'" data-i="'+i+'" data-f="'+field+'" value="'+esc(a[field]||'')+'">'; }
+    var NOAF = ' autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other"';
+    function txt(field, cls){ return '<input class="v-cellinput '+(cls||'')+'" data-i="'+i+'" data-f="'+field+'" name="vf-'+field+'-'+i+'"'+NOAF+' value="'+esc(a[field]||'')+'">'; }
+    // Masked EDIT field: a plain text input (never type=password, so the browser
+    // password manager can't autofill the webmaster's saved login across every
+    // row). Masking is CSS; the eye button toggles it. Copy button copies live.
     function pw(field){
       return '<div class="v-pwcell">'
-        + '<input type="password" class="v-cellinput" data-i="'+i+'" data-f="'+field+'" value="'+esc(a[field]||'')+'" autocomplete="off">'
+        + '<input type="text" class="v-cellinput v-mask" data-i="'+i+'" data-f="'+field+'" name="vf-'+field+'-'+i+'"'+NOAF+' value="'+esc(a[field]||'')+'">'
         + '<button class="v-icobtn" title="Show / hide" data-eye="1">'+EYE+'</button>'
         + '<button class="v-icobtn" title="Copy" data-copy="'+field+'" data-ci="'+i+'">'+COPY+'</button>'
         + '</div>';
@@ -312,7 +318,7 @@ document.getElementById('vAcctBody').addEventListener('click', function(e){
   const btn = e.target.closest('button'); if (!btn) return;
   if (btn.dataset.eye){
     const inp = btn.parentElement.querySelector('input');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
+    inp.classList.toggle('revealed');
   } else if (btn.dataset.copy){
     const i = +btn.dataset.ci; if (accounts[i]) copyText(accounts[i][btn.dataset.copy]||'');
   } else if (btn.dataset.del){
@@ -428,7 +434,7 @@ window.addEventListener('beforeunload', function(e){ if (acctDirty || secDirty){
 (function boot(){
   if (!user) return;                                   // requireAuth already redirected
   if (!CLEARED.includes(user.role)){
-    lockOut('No clearance', 'The Vault is limited to the Webmaster, Governor and District Administrator. Your role doesn\'t have access.', false);
+    lockOut('You do not have clearance.', 'Only Webmaster, Governor, and District Administrator get access.', false);
     return;
   }
   if (!TOKEN){
