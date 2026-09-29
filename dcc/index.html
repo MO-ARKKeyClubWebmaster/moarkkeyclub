@@ -259,7 +259,7 @@
         <div class="app-tag">DKB</div>
       </div>
       <!-- App 4: Vault (webmaster / governor / district-admin only; hidden otherwise) -->
-      <div class="app" role="button" tabindex="0" id="appVault" data-href="vault.html" style="display:none"
+      <div class="app" role="button" tabindex="0" id="appVault" data-href="vault.html"
            onclick="location.href=this.dataset.href"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();location.href=this.dataset.href;}">
         <svg class="app-icon" viewBox="0 0 96 96" role="img" aria-label="Vault">
@@ -483,8 +483,6 @@
     document.getElementById('dccEyebrow').textContent = g.label;
     document.getElementById('dccGreet').textContent = g.text;
     document.body.classList.add('dcc-active');
-    var _vc = document.getElementById('appVault');
-    if (_vc) _vc.style.display = (AUTH.canAccessVault && AUTH.canAccessVault()) ? '' : 'none';
     startClock();
     dccInitInbox();
   }
