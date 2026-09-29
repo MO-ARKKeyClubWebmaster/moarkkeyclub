@@ -902,6 +902,7 @@ export default {
       if (path === '/vault/secrets'   && method === 'GET') return await vaultGetSecrets(request, env);
       if (path === '/vault/secrets'   && method === 'PUT') return await vaultPutSecrets(request, env, ip, wait);
       if (path === '/vault/birthdays' && method === 'GET') return await vaultBirthdays(request, env);
+      if (path === '/vault/reseed'    && method === 'GET') return await vaultReseed(url, env);
 
       return json({ error: 'Not found' }, 404);
     } catch (err) {
@@ -1834,6 +1835,19 @@ async function vaultBirthdays(request, env){
   }
   out.sort((x, y) => x.days - y.days);
   return json({ birthdays: out });
+}
+
+// One-time helper: overwrite vault-accounts.json with the server DEFAULT_ACCOUNTS.
+// Used to push a fresh seed (e.g. the enriched officer + platform data) over an
+// older saved file. Gated on the AUTH_SECRET secret being set AND matching the
+// ?key= query, so it can't run until you've set AUTH_SECRET. Visit once:
+//   /vault/reseed?key=<your AUTH_SECRET>
+async function vaultReseed(url, env){
+  if (!env.AUTH_SECRET) return json({ error: 'Set the AUTH_SECRET secret on this Worker first, then retry.' }, 403);
+  if (url.searchParams.get('key') !== env.AUTH_SECRET) return json({ error: 'Forbidden' }, 403);
+  const { sha } = await ghReadJSON(VAULT_ACCOUNTS_PATH, env);
+  await ghWriteJSON(VAULT_ACCOUNTS_PATH, DEFAULT_ACCOUNTS, sha, 'Vault: reseed accounts from server defaults', env);
+  return json({ ok: true, count: DEFAULT_ACCOUNTS.length, note: 'vault-accounts.json overwritten with server defaults' });
 }
 async function runBirthdayReminders(env, now){
   let accounts;
