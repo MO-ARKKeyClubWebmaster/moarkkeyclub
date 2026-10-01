@@ -575,5 +575,120 @@
       "divProject": "NO",
       "additionalNotes": "Nope"
     }
+  },
+  {
+    "id": "mrf-1790876329770-iphy",
+    "submittedAt": "2026-10-01T17:38:41.243Z",
+    "updatedAt": "2026-10-01T17:38:49.770Z",
+    "division": 3,
+    "ltgEmail": "moarkkeyclubltg3@gmail.com",
+    "ltgName": "Mary Ann Gingerich",
+    "month": "September",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Calvary Lutheran High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Central High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Gloria Deo High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "They have a new Service Club and don't plan to participate in any Key Club events.",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Republic High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Joplin High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Mountain Grove High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Kickapoo High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Monett High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Sacred Heart High School Key Club",
+        "contacted": "President",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Neosho High School Key Club",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Membership Development Committee",
+      "workWith": "Clark County's advisor",
+      "evaluation": "Worked alongside the other members to create flyers, slideshows, and plan for our webinar.",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "twice+",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
   }
 ]
