@@ -10,12 +10,72 @@
   "officerRole": "ltg",
   "officerDivision": 8,
   "contactEmail": "moarkkcltg08@gmail.com",
-  "status": "sent",
+  "status": "pending-adult",
   "routeToTreasurer": false,
-  "attendedAnswer": null,
-  "form": null,
-  "pdfUrl": null,
-  "submittedAt": null,
+  "attendedAnswer": true,
+  "form": {
+    "bm": {
+      "arrival": {
+        "from": "1705 NORTH HEIGHTS AVENUE",
+        "to": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "miles": 194.6,
+        "comment": ""
+      },
+      "departure": {
+        "from": "333 S John Q Hammons Pkwy, Springfield, MO 65806",
+        "to": "1705 NORTH HEIGHTS AVENUE",
+        "miles": 194.6,
+        "comment": ""
+      }
+    },
+    "clubVisits": [
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      },
+      {
+        "from": "",
+        "to": "",
+        "purpose": "",
+        "miles": 0
+      }
+    ],
+    "expenses": {
+      "postage": 0,
+      "printing": 0,
+      "ink": 0,
+      "supplies": 0,
+      "other": 0,
+      "otherLabel": ""
+    },
+    "totals": {
+      "bmMiles": 389.2,
+      "bmCost": 194.6,
+      "cvMiles": 0,
+      "cvCost": 0,
+      "grand": 194.6
+    },
+    "name": "ANDY SANTIZO",
+    "office": "LIEUTENANT GOVERNOR · DIVISION 8",
+    "certified": true,
+    "signature": "ANDY SANTIZO PLEITEZ"
+  },
+  "pdfUrl": "/reimb-pdf/rf-1789854195128-dqmy",
+  "submittedAt": "2026-10-01T02:36:08.708Z",
   "treasurer": {
     "decision": null,
     "comment": "",
@@ -30,12 +90,17 @@
     "by": ""
   },
   "createdAt": "2026-09-19T21:43:04.049Z",
-  "updatedAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-10-01T02:36:08.708Z",
   "history": [
     {
       "at": "2026-09-19T21:43:04.049Z",
       "event": "sent",
       "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-10-01T02:36:08.708Z",
+      "event": "submitted",
+      "by": "Andy Santizo"
     }
   ]
 }
