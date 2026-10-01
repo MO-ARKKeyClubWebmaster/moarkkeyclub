@@ -10,9 +10,9 @@
   "officerRole": "ltg",
   "officerDivision": 3,
   "contactEmail": "moarkkeyclubltg3@gmail.com",
-  "status": "sent",
+  "status": "no-reimb",
   "routeToTreasurer": false,
-  "attendedAnswer": null,
+  "attendedAnswer": true,
   "form": null,
   "pdfUrl": null,
   "submittedAt": null,
@@ -30,12 +30,18 @@
     "by": ""
   },
   "createdAt": "2026-09-19T21:43:04.049Z",
-  "updatedAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-10-01T14:09:17.521Z",
   "history": [
     {
       "at": "2026-09-19T21:43:04.049Z",
       "event": "sent",
       "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-10-01T14:09:17.521Z",
+      "event": "attended-no-reimb",
+      "by": "Mary Ann Gingerich"
     }
-  ]
+  ],
+  "didNotDrive": true
 }
