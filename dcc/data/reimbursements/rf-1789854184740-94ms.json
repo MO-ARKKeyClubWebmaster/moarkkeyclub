@@ -10,9 +10,9 @@
   "officerRole": "secretary",
   "officerDivision": null,
   "contactEmail": "moarkkcsecretary@gmail.com",
-  "status": "sent",
+  "status": "no-reimb",
   "routeToTreasurer": false,
-  "attendedAnswer": null,
+  "attendedAnswer": true,
   "form": null,
   "pdfUrl": null,
   "submittedAt": null,
@@ -30,12 +30,18 @@
     "by": ""
   },
   "createdAt": "2026-09-19T21:43:04.049Z",
-  "updatedAt": "2026-09-19T21:43:04.049Z",
+  "updatedAt": "2026-10-10T21:28:24.929Z",
   "history": [
     {
       "at": "2026-09-19T21:43:04.049Z",
       "event": "sent",
       "by": "Rahul Awasthi"
+    },
+    {
+      "at": "2026-10-10T21:28:24.929Z",
+      "event": "attended-no-reimb",
+      "by": "Omar Vargas Garcia"
     }
-  ]
+  ],
+  "didNotDrive": true
 }
