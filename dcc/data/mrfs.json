@@ -690,5 +690,39 @@
       "divProject": "No",
       "additionalNotes": "Nope"
     }
+  },
+  {
+    "id": "mrf-1792025895414-gbrl",
+    "submittedAt": "2026-10-15T00:58:14.884Z",
+    "updatedAt": "2026-10-15T00:58:15.414Z",
+    "division": 10,
+    "ltgEmail": "moarkkcltg010@gmail.com",
+    "ltgName": "Tanvi Narendhula",
+    "month": "October",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Marquette HS",
+        "contacted": "Advisor",
+        "contactHow": "Visit",
+        "problems": "n/a",
+        "projects": "Bagels and donuts meetings; Kleenex drive",
+        "report": "n/a",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Mem-Dev Committee",
+      "workWith": "all",
+      "evaluation": "Going well! We have our officer training workshop on the 24th so we hope to be able to train many officers and start of the year well.",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "no",
+      "newsletterQs": "no",
+      "divProject": "no",
+      "additionalNotes": "Nope"
+    }
   }
 ]
