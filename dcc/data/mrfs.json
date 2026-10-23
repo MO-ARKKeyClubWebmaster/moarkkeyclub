@@ -724,5 +724,102 @@
       "divProject": "no",
       "additionalNotes": "Nope"
     }
+  },
+  {
+    "id": "mrf-1792793843574-f36v",
+    "submittedAt": "2026-10-23T22:17:23.222Z",
+    "updatedAt": "2026-10-23T22:17:23.574Z",
+    "division": 4,
+    "ltgEmail": "moarkeyclubltg04@gmail.com",
+    "ltgName": "Bethany Liao",
+    "month": "October",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Fort Zumwalt West",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "1 of 2 contacts gave me \"email not delivered\", so I asked the other one for updated contacts. No reply :(",
+        "projects": "",
+        "report": "A significant lack of communication",
+        "kiwanis": "No"
+      },
+      {
+        "clubName": "Liberty High",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "1 of 2 contacts from email list gave me not delivered, so I did research and got a contact from the new club advisor? Asked them to confirm and give me contacts for their student leaders.",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      },
+      {
+        "clubName": "Lutheran High",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      },
+      {
+        "clubName": "St. Charles West",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      },
+      {
+        "clubName": "Wentzville Holt",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      },
+      {
+        "clubName": "Wright City",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      },
+      {
+        "clubName": "Francis Howell High",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      },
+      {
+        "clubName": "St. Charles High",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "1 of 2 contacts gave me no email found, so I researched and got the contact for their new club advisor. Asked to confirm and asked for student leaders email.",
+        "projects": "",
+        "report": "",
+        "kiwanis": ""
+      }
+    ],
+    "committee": {
+      "name": "",
+      "workWith": "",
+      "evaluation": "",
+      "wantMore": ""
+    },
+    "personal": {
+      "clubContactFreq": "twice+",
+      "staffContact": "Yes; for the clubs that gave me \"no email address found\", I found the new and updated club advisors and asked them to confirm + give me the contact info for their student leaders.",
+      "newsletterQs": "No.",
+      "divProject": "",
+      "additionalNotes": "Nope"
+    }
   }
 ]
