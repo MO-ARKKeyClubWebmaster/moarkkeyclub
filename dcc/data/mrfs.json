@@ -821,5 +821,39 @@
       "divProject": "",
       "additionalNotes": "Nope"
     }
+  },
+  {
+    "id": "mrf-1792860495505-kzmq",
+    "submittedAt": "2026-10-24T16:48:11.158Z",
+    "updatedAt": "2026-10-24T16:48:15.505Z",
+    "division": 1,
+    "ltgEmail": "moarkkcltg1@gmail.com",
+    "ltgName": "Savanna Scruggs",
+    "month": "September",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Center High School",
+        "contacted": "President",
+        "contactHow": "Visit",
+        "problems": "",
+        "projects": "They began working on a Trunk or Treat project as well as DLC work",
+        "report": "",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Mem Dev Comittee",
+      "workWith": "Mary Ann, Pritam, Tanvi, Bethany, Omar, and Amara",
+      "evaluation": "We completed the slides for Officer training and worked on videos and poster to advertise the workshop.",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "no",
+      "newsletterQs": "no",
+      "divProject": "no",
+      "additionalNotes": "Nope"
+    }
   }
 ]
