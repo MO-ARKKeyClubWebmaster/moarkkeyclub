@@ -1,0 +1,25 @@
+{
+  "id": "moark-1793396672591-l4piq",
+  "division": 4,
+  "ltgEmail": "moarkeyclubltg04@gmail.com",
+  "ltgName": "Bethany Liao",
+  "year": "2026-2027",
+  "month": "November",
+  "type": "newsletter",
+  "fileName": "Newsletter 2.pdf",
+  "fileSize": 726900,
+  "pdfUrl": "/pdf/moark-1793396672591-l4piq",
+  "status": "pending-editor",
+  "submittedAt": "2026-10-30T21:44:32.591Z",
+  "updatedAt": "2026-10-30T21:44:32.591Z",
+  "deleted": false,
+  "thread": [
+    {
+      "from": "ltg",
+      "fromName": "Bethany Liao",
+      "to": "editor",
+      "message": "hi nandu",
+      "timestamp": "2026-10-30T21:44:32.591Z"
+    }
+  ]
+}
