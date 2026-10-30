@@ -879,5 +879,29 @@
       "divProject": "no",
       "additionalNotes": "Nope"
     }
+  },
+  {
+    "id": "mrf-1793398987344-57an",
+    "submittedAt": "2026-10-30T22:23:07.045Z",
+    "updatedAt": "2026-10-30T22:23:07.344Z",
+    "division": 2,
+    "ltgEmail": "moarkkcltg002@gmail.com",
+    "ltgName": "Pritam Avuthu",
+    "month": "October",
+    "year": "2026-2027",
+    "clubs": [],
+    "committee": {
+      "name": "Membership Development",
+      "workWith": "Omar Vargas Garcia",
+      "evaluation": "Unfortunately couldn't make it to Officer Training Workshop",
+      "wantMore": "busy"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "No",
+      "additionalNotes": "Nope"
+    }
   }
 ]
