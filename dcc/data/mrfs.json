@@ -903,5 +903,111 @@
       "divProject": "No",
       "additionalNotes": "Nope"
     }
+  },
+  {
+    "id": "mrf-1793407932758-gg00",
+    "submittedAt": "2026-10-31T00:52:11.963Z",
+    "updatedAt": "2026-10-31T00:52:12.758Z",
+    "division": 3,
+    "ltgEmail": "moarkkeyclubltg3@gmail.com",
+    "ltgName": "Mary Ann Gingerich",
+    "month": "October",
+    "year": "2026-2027",
+    "clubs": [
+      {
+        "clubName": "Calvary Lutheran",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Central",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Republic",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Joplin",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Mountain Grove",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Kickapoo",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Monett",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "None",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Sacred Heart",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "Also contacted all officers",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      },
+      {
+        "clubName": "Neosho",
+        "contacted": "Advisor",
+        "contactHow": "Email",
+        "problems": "Also contacted president",
+        "projects": "None reported",
+        "report": "Nothing",
+        "kiwanis": "Yes"
+      }
+    ],
+    "committee": {
+      "name": "Membership Committee",
+      "workWith": "Omar, Bethany, Savanna, Tanvi, Pritam",
+      "evaluation": "Help with hosting the Officer Training Webinar",
+      "wantMore": "no"
+    },
+    "personal": {
+      "clubContactFreq": "twice+",
+      "staffContact": "No",
+      "newsletterQs": "No",
+      "divProject": "A Division Wide Fall Rally was held but we had very few attendees. Other than that it went well.",
+      "additionalNotes": "Nope"
+    }
   }
 ]
