@@ -1033,5 +1033,29 @@
       "divProject": "no",
       "additionalNotes": "I have tried reaching out to clubs and have received absolutely no response or reply, not even about newsletters."
     }
+  },
+  {
+    "id": "mrf-1795398581826-s0vf",
+    "submittedAt": "2026-11-23T01:49:41.212Z",
+    "updatedAt": "2026-11-23T01:49:41.826Z",
+    "division": 6,
+    "ltgEmail": "moarkkcltg6@gmail.com",
+    "ltgName": "Ava Long",
+    "month": "November",
+    "year": "2026-2027",
+    "clubs": [],
+    "committee": {
+      "name": "DLC Decorating",
+      "workWith": "n/a",
+      "evaluation": "Have been in contact with the hotel and our coordinator. I would like to discuss about DLC planning further in the next meeting.",
+      "wantMore": "yes"
+    },
+    "personal": {
+      "clubContactFreq": "once",
+      "staffContact": "Yes",
+      "newsletterQs": "No",
+      "divProject": "Yes. Held the Fall Rally this month, all clubs in Division were invited. We wrote cards for local nursing home in Harrison AR. We wrote 60 cards at this event.",
+      "additionalNotes": "Nope"
+    }
   }
 ]
